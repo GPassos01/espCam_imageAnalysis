@@ -208,6 +208,80 @@ class DataValidator:
             return (actual_images / expected_images) * 100
         return 0
 
+    def analyze_trends(self):
+        """Analisa tendências nos dados"""
+        if len(self.stats_history) < 5:
+            return
+            
+        print(f"\n📈 ANÁLISE DE TENDÊNCIAS:")
+        
+        # Analisar crescimento de bytes
+        recent_stats = self.stats_history[-5:]
+        byte_growth = []
+        for i in range(1, len(recent_stats)):
+            growth = recent_stats[i]['bytes_enviados'] - recent_stats[i-1]['bytes_enviados']
+            byte_growth.append(growth)
+        
+        avg_growth = sum(byte_growth) / len(byte_growth)
+        print(f"📊 Crescimento médio: {avg_growth:.1f} bytes/período")
+        
+        # Projetar próximos 5 minutos
+        current_bytes = recent_stats[-1]['bytes_enviados']
+        projection = current_bytes + (avg_growth * 20)  # 20 períodos ≈ 5 min
+        print(f"🔮 Projeção 5min: {projection:,.0f} bytes")
+        
+        # Analisar eficiência de compressão
+        compressions = []
+        for sensor in self.sensor_data[-10:]:  # Últimos 10
+            if 'compressed_size' in sensor and 'image_size' in sensor:
+                ratio = sensor['compressed_size'] / sensor['image_size']
+                compressions.append(ratio)
+        
+        if compressions:
+            avg_compression = sum(compressions) / len(compressions)
+            print(f"📦 Compressão média: {avg_compression:.1%}")
+            
+            if avg_compression > 0.8:
+                print(f"⚠️ Compressão baixa detectada!")
+            elif avg_compression < 0.4:
+                print(f"✅ Ótima eficiência de compressão!")
+    
+    def check_data_quality(self):
+        """Verifica qualidade dos dados"""
+        print(f"\n🔍 VERIFICAÇÃO DE QUALIDADE:")
+        
+        # Verificar consistência temporal
+        timestamps = [stat['timestamp'] for stat in self.stats_history[-10:]]
+        if len(timestamps) > 1:
+            intervals = []
+            for i in range(1, len(timestamps)):
+                interval = timestamps[i] - timestamps[i-1]
+                intervals.append(interval)
+            
+            avg_interval = sum(intervals) / len(intervals)
+            max_gap = max(intervals)
+            
+            print(f"⏱️ Intervalo médio: {avg_interval:.1f}s")
+            if max_gap > avg_interval * 2:
+                print(f"⚠️ Gap detectado: {max_gap:.1f}s")
+            else:
+                print(f"✅ Temporização consistente")
+        
+        # Verificar variabilidade dos dados
+        if len(self.sensor_data) > 5:
+            sizes = [s['image_size'] for s in self.sensor_data[-10:]]
+            avg_size = sum(sizes) / len(sizes)
+            variance = sum([(s - avg_size)**2 for s in sizes]) / len(sizes)
+            std_dev = variance**0.5
+            
+            print(f"📏 Tamanho médio: {avg_size:.0f} bytes")
+            print(f"📊 Desvio padrão: {std_dev:.0f} bytes")
+            
+            if std_dev > avg_size * 0.5:
+                print(f"📈 Alta variabilidade detectada")
+            else:
+                print(f"📊 Variabilidade normal")
+
 def main():
     print("🔍 VALIDADOR DE DADOS - Sistema de Monitoramento de Enchentes")
     print("🎯 Conectando ao broker MQTT...")
@@ -237,9 +311,14 @@ def main():
         # Timer para relatórios periódicos
         def periodic_report():
             while True:
-                time.sleep(30)
-                print(f"\n⏰ RELATÓRIO PERIÓDICO:")
-                validator.print_summary()
+                time.sleep(30)  # Relatório a cada 30 segundos
+                if validator.total_messages > 0:
+                    print(f"\n{'='*50}")
+                    print(f"📊 RELATÓRIO PERIÓDICO - {datetime.now().strftime('%H:%M:%S')}")
+                    print(f"{'='*50}")
+                    validator.print_summary()
+                    validator.analyze_trends()  # Nova análise
+                    validator.check_data_quality()  # Nova verificação
         
         report_thread = threading.Thread(target=periodic_report, daemon=True)
         report_thread.start()

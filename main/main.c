@@ -50,11 +50,12 @@
 #define TOPIC_NETWORK_STATS "enchentes/rede/estatisticas"
 #define TOPIC_ALERT         "enchentes/alertas"
 
-// Configurações do sistema
-#define IMAGE_CAPTURE_INTERVAL  30000   // 30 segundos
-#define NETWORK_MONITOR_INTERVAL 5000   // 5 segundos
-#define CHANGE_THRESHOLD        0.15    // 15% de diferença para considerar mudança
-#define MAX_IMAGE_SIZE          (50 * 1024) // 50KB máximo por imagem
+// Configurações do sistema - MODO TESTE OTIMIZADO
+#define IMAGE_CAPTURE_INTERVAL  15000   // 15 segundos (otimizado)
+#define NETWORK_MONITOR_INTERVAL 3000   // 3 segundos (mais frequente) 
+#define CHANGE_THRESHOLD        0.12    // 12% de diferença (mais sensível)
+#define MAX_IMAGE_SIZE          (80 * 1024) // 80KB máximo (aumentado)
+#define MIN_IMAGE_SIZE          (15 * 1024) // 15KB mínimo (novo)
 
 static const char *TAG = "ENCHENTES_MONITOR_TESTE";
 
@@ -87,75 +88,170 @@ typedef struct {
 
 static network_stats_t net_stats = {0};
 
-// Função para gerar dados simulados de imagem
+// Função para gerar dados simulados de imagem - VERSÃO MELHORADA
 static simulated_frame_t* generate_simulated_image(void) {
     simulated_frame_t *frame = malloc(sizeof(simulated_frame_t));
     if (!frame) {
         return NULL;
     }
     
-    // Simular tamanho de imagem variável (10KB a 50KB)
-    size_t base_size = 10 * 1024 + (esp_random() % (40 * 1024));
-    frame->len = base_size;
+    // Simular tamanho de imagem variável baseado em condições "ambientais"
+    uint32_t current_time = esp_timer_get_time() / 1000000LL;
+    uint32_t time_of_day = current_time % 86400; // Segundos no dia
+    
+    // Simular variações por "período do dia" 
+    float size_factor = 1.0;
+    if (time_of_day < 21600 || time_of_day > 75600) { // "Noite" - imagens menores
+        size_factor = 0.7;
+    } else if (time_of_day > 43200 && time_of_day < 54000) { // "Tarde" - imagens maiores
+        size_factor = 1.3;
+    }
+    
+    size_t base_size = MIN_IMAGE_SIZE + (esp_random() % (MAX_IMAGE_SIZE - MIN_IMAGE_SIZE));
+    frame->len = (size_t)(base_size * size_factor);
+    
+    // Limitar ao máximo permitido
+    if (frame->len > MAX_IMAGE_SIZE) frame->len = MAX_IMAGE_SIZE;
+    if (frame->len < MIN_IMAGE_SIZE) frame->len = MIN_IMAGE_SIZE;
+    
     frame->buf = malloc(frame->len);
-    frame->timestamp = esp_timer_get_time() / 1000000LL;
+    frame->timestamp = current_time;
     
     if (!frame->buf) {
         free(frame);
         return NULL;
     }
     
-    // Preencher com dados simulados
-    // Simular padrões que mudam com o tempo para testar detecção de mudanças
-    uint32_t pattern_seed = frame->timestamp / 60; // Muda a cada minuto
+    // Preencher com dados mais realistas
+    uint32_t pattern_seed = frame->timestamp / 120; // Muda a cada 2 minutos
+    uint8_t noise_level = (esp_random() % 30) + 10; // Ruído de 10-40
     
     for (size_t i = 0; i < frame->len; i++) {
-        // Criar padrão que varia baseado no tempo e posição
-        uint8_t pattern_value = (pattern_seed + i + (esp_random() % 50)) % 256;
-        frame->buf[i] = pattern_value;
+        // Criar padrão mais complexo baseado em posição e tempo
+        uint8_t base_pattern = (pattern_seed + i/100) % 256;
+        uint8_t noise = (esp_random() % noise_level);
+        uint8_t temporal_variation = (frame->timestamp/60 + i/200) % 50;
+        
+        frame->buf[i] = (base_pattern + noise + temporal_variation) % 256;
     }
     
-    ESP_LOGI(TAG, "Imagem simulada gerada: %zu bytes, timestamp: %lu", frame->len, frame->timestamp);
+    ESP_LOGI(TAG, "🎯 Imagem simulada: %zu bytes, fator: %.1f, padrão: %lu", 
+             frame->len, size_factor, pattern_seed);
     return frame;
 }
 
-// Função para calcular diferença entre imagens simuladas
+// Função para calcular diferença entre imagens simuladas - VERSÃO OTIMIZADA
 static float calculate_image_difference(simulated_frame_t *img1, simulated_frame_t *img2) {
-    if (!img1 || !img2 || img1->len != img2->len) {
-        return 1.0f; // Máxima diferença se imagens inválidas
+    if (!img1 || !img2) {
+        return 1.0f; // Máxima diferença se uma imagem for inválida
     }
     
-    uint32_t diff_pixels = 0;
-    uint32_t total_pixels = img1->len;
+    // Se tamanhos são muito diferentes, considerar mudança significativa
+    float size_ratio = (float)img1->len / img2->len;
+    if (size_ratio < 0.7 || size_ratio > 1.4) {
+        ESP_LOGI(TAG, "📏 Diferença de tamanho significativa: %.2f", size_ratio);
+        return 0.8f; // Alta diferença por mudança de tamanho
+    }
     
-    // Comparação simples pixel a pixel
-    for (uint32_t i = 0; i < total_pixels; i += 4) { // Amostragem para otimização
-        if (abs(img1->buf[i] - img2->buf[i]) > 30) { // Threshold de diferença
-            diff_pixels++;
+    // Usar o menor tamanho para comparação
+    uint32_t compare_size = (img1->len < img2->len) ? img1->len : img2->len;
+    uint32_t diff_pixels = 0;
+    uint32_t significant_diffs = 0;
+    
+    // Algoritmo otimizado - comparação por blocos
+    uint32_t block_size = 16;
+    uint32_t threshold = 25; // Threshold para diferença pixel
+    
+    for (uint32_t i = 0; i < compare_size; i += block_size) {
+        uint32_t block_end = (i + block_size > compare_size) ? compare_size : i + block_size;
+        uint32_t block_diffs = 0;
+        
+        for (uint32_t j = i; j < block_end; j++) {
+            int pixel_diff = abs(img1->buf[j] - img2->buf[j]);
+            if (pixel_diff > threshold) {
+                block_diffs++;
+                if (pixel_diff > threshold * 2) {
+                    significant_diffs++;
+                }
+            }
+        }
+        
+        // Se mais de 50% do bloco mudou, contar como bloco diferente
+        if (block_diffs > (block_end - i) / 2) {
+            diff_pixels += block_diffs;
         }
     }
     
-    return (float)diff_pixels / (total_pixels / 4);
+    float base_difference = (float)diff_pixels / (compare_size / block_size);
+    float significant_factor = (float)significant_diffs / compare_size;
+    
+    // Combinar diferenças base e significativas
+    float final_difference = (base_difference * 0.7) + (significant_factor * 0.3);
+    
+    ESP_LOGI(TAG, "🔍 Análise: %.1f%% base, %.1f%% significativa → %.1f%% final", 
+             base_difference * 100, significant_factor * 100, final_difference * 100);
+    
+    return final_difference;
 }
 
-// Função para comprimir dados da imagem (simples)
+// Função para comprimir dados da imagem - VERSÃO MELHORADA
 static size_t compress_image_data(simulated_frame_t *frame, uint8_t *output, size_t max_output_size) {
-    if (!frame || !output || frame->len > max_output_size) {
+    if (!frame || !output || frame->len > max_output_size * 4) {
         return 0;
     }
     
-    // Compressão simples - reduzir resolução/qualidade
-    size_t compressed_size = frame->len / 2; // Simulação de compressão 50%
+    // Simular compressão inteligente baseada no conteúdo
+    size_t input_size = frame->len;
+    
+    // Analisar "complexidade" da imagem (variação nos dados)
+    uint32_t complexity = 0;
+    for (size_t i = 1; i < input_size && i < 1000; i++) {
+        complexity += abs(frame->buf[i] - frame->buf[i-1]);
+    }
+    complexity = complexity / ((input_size < 1000) ? input_size : 1000);
+    
+    // Taxa de compressão baseada na complexidade
+    float compression_ratio;
+    if (complexity < 20) {
+        compression_ratio = 0.3f; // Imagem "simples" - comprime bem
+    } else if (complexity < 50) {
+        compression_ratio = 0.5f; // Média complexidade
+    } else if (complexity < 80) {
+        compression_ratio = 0.7f; // Alta complexidade
+    } else {
+        compression_ratio = 0.85f; // Muito complexa - comprime pouco
+    }
+    
+    // Adicionar variação aleatória à compressão
+    compression_ratio += (esp_random() % 20 - 10) / 100.0f; // ±10%
+    
+    // Limitar dentro de valores realistas
+    if (compression_ratio < 0.25f) compression_ratio = 0.25f;
+    if (compression_ratio > 0.9f) compression_ratio = 0.9f;
+    
+    size_t compressed_size = (size_t)(input_size * compression_ratio);
     if (compressed_size > max_output_size) {
         compressed_size = max_output_size;
+        compression_ratio = (float)compressed_size / input_size;
     }
     
-    // Copiar dados reduzindo amostragem
-    for (size_t i = 0, j = 0; i < frame->len && j < compressed_size; i += 2, j++) {
-        output[j] = frame->buf[i];
+    // Simular algoritmo de compressão por blocos
+    size_t output_idx = 0;
+    for (size_t i = 0; i < input_size && output_idx < compressed_size; i += 2) {
+        if (i + 1 < input_size) {
+            // Simular compressão por média de pixels adjacentes
+            output[output_idx] = (frame->buf[i] + frame->buf[i+1]) / 2;
+        } else {
+            output[output_idx] = frame->buf[i];
+        }
+        output_idx++;
     }
     
-    net_stats.taxa_compressao = (float)compressed_size / frame->len;
+    net_stats.taxa_compressao = compression_ratio;
+    
+    ESP_LOGI(TAG, "📦 Compressão: %zu→%zu bytes (%.1f%%), complexidade: %lu", 
+             input_size, compressed_size, compression_ratio * 100, complexity);
+    
     return compressed_size;
 }
 
