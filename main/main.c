@@ -1,9 +1,10 @@
 /*
- * Projeto de Monitoramento de Enchentes - ESP32
+ * Projeto de Monitoramento de Enchentes - ESP32 (Versão Teste de Rede)
  * Desenvolvido para Iniciação Científica - Gabriel Passos de Oliveira
  * IGCE/UNESP - 2024
  * 
- * Sistema de monitoramento inteligente com análise de imagens e envio otimizado via MQTT
+ * Sistema de monitoramento inteligente com simulação de análise de imagens 
+ * para teste de rede e MQTT (SEM CÂMERA)
  */
 
 #include <stdio.h>
@@ -11,6 +12,8 @@
 #include <stddef.h>
 #include <string.h>
 #include <math.h>
+#include <time.h>
+#include <stdlib.h>
 
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
@@ -30,9 +33,9 @@
 #include "esp_netif.h"
 #include "nvs_flash.h"
 #include "esp_timer.h"
-#include "esp_camera.h"
 #include "mqtt_client.h"
 #include "driver/gpio.h"
+#include "esp_random.h"
 
 // Configurações de rede
 #define WIFI_SSID        "Steps 2.4G"
@@ -47,31 +50,13 @@
 #define TOPIC_NETWORK_STATS "enchentes/rede/estatisticas"
 #define TOPIC_ALERT         "enchentes/alertas"
 
-// Configurações da câmera ESP32-CAM (OV2640)
-#define CAM_PIN_PWDN    32
-#define CAM_PIN_RESET   -1
-#define CAM_PIN_XCLK    0
-#define CAM_PIN_SIOD    26
-#define CAM_PIN_SIOC    27
-#define CAM_PIN_D7      35
-#define CAM_PIN_D6      34
-#define CAM_PIN_D5      39
-#define CAM_PIN_D4      36
-#define CAM_PIN_D3      21
-#define CAM_PIN_D2      19
-#define CAM_PIN_D1      18
-#define CAM_PIN_D0      5
-#define CAM_PIN_VSYNC   25
-#define CAM_PIN_HREF    23
-#define CAM_PIN_PCLK    22
-
 // Configurações do sistema
 #define IMAGE_CAPTURE_INTERVAL  30000   // 30 segundos
 #define NETWORK_MONITOR_INTERVAL 5000   // 5 segundos
 #define CHANGE_THRESHOLD        0.15    // 15% de diferença para considerar mudança
 #define MAX_IMAGE_SIZE          (50 * 1024) // 50KB máximo por imagem
 
-static const char *TAG = "ENCHENTES_MONITOR";
+static const char *TAG = "ENCHENTES_MONITOR_TESTE";
 
 // Event groups para sincronização
 static EventGroupHandle_t wifi_event_group;
@@ -79,8 +64,15 @@ const int WIFI_CONNECTED_BIT = BIT0;
 
 // Handles globais
 static esp_mqtt_client_handle_t mqtt_client;
-static camera_fb_t *last_frame = NULL;
-static SemaphoreHandle_t camera_mutex;
+
+// Estrutura para simular dados de imagem
+typedef struct {
+    uint8_t *buf;
+    size_t len;
+    uint32_t timestamp;
+} simulated_frame_t;
+
+static simulated_frame_t *last_frame = NULL;
 
 // Estatísticas de rede
 typedef struct {
@@ -95,8 +87,40 @@ typedef struct {
 
 static network_stats_t net_stats = {0};
 
-// Função para calcular diferença entre imagens
-static float calculate_image_difference(camera_fb_t *img1, camera_fb_t *img2) {
+// Função para gerar dados simulados de imagem
+static simulated_frame_t* generate_simulated_image(void) {
+    simulated_frame_t *frame = malloc(sizeof(simulated_frame_t));
+    if (!frame) {
+        return NULL;
+    }
+    
+    // Simular tamanho de imagem variável (10KB a 50KB)
+    size_t base_size = 10 * 1024 + (esp_random() % (40 * 1024));
+    frame->len = base_size;
+    frame->buf = malloc(frame->len);
+    frame->timestamp = esp_timer_get_time() / 1000000LL;
+    
+    if (!frame->buf) {
+        free(frame);
+        return NULL;
+    }
+    
+    // Preencher com dados simulados
+    // Simular padrões que mudam com o tempo para testar detecção de mudanças
+    uint32_t pattern_seed = frame->timestamp / 60; // Muda a cada minuto
+    
+    for (size_t i = 0; i < frame->len; i++) {
+        // Criar padrão que varia baseado no tempo e posição
+        uint8_t pattern_value = (pattern_seed + i + (esp_random() % 50)) % 256;
+        frame->buf[i] = pattern_value;
+    }
+    
+    ESP_LOGI(TAG, "Imagem simulada gerada: %zu bytes, timestamp: %lu", frame->len, frame->timestamp);
+    return frame;
+}
+
+// Função para calcular diferença entre imagens simuladas
+static float calculate_image_difference(simulated_frame_t *img1, simulated_frame_t *img2) {
     if (!img1 || !img2 || img1->len != img2->len) {
         return 1.0f; // Máxima diferença se imagens inválidas
     }
@@ -115,23 +139,23 @@ static float calculate_image_difference(camera_fb_t *img1, camera_fb_t *img2) {
 }
 
 // Função para comprimir dados da imagem (simples)
-static size_t compress_image_data(camera_fb_t *fb, uint8_t *output, size_t max_output_size) {
-    if (!fb || !output || fb->len > max_output_size) {
+static size_t compress_image_data(simulated_frame_t *frame, uint8_t *output, size_t max_output_size) {
+    if (!frame || !output || frame->len > max_output_size) {
         return 0;
     }
     
     // Compressão simples - reduzir resolução/qualidade
-    size_t compressed_size = fb->len / 2; // Simulação de compressão 50%
+    size_t compressed_size = frame->len / 2; // Simulação de compressão 50%
     if (compressed_size > max_output_size) {
         compressed_size = max_output_size;
     }
     
     // Copiar dados reduzindo amostragem
-    for (size_t i = 0, j = 0; i < fb->len && j < compressed_size; i += 2, j++) {
-        output[j] = fb->buf[i];
+    for (size_t i = 0, j = 0; i < frame->len && j < compressed_size; i += 2, j++) {
+        output[j] = frame->buf[i];
     }
     
-    net_stats.taxa_compressao = (float)compressed_size / fb->len;
+    net_stats.taxa_compressao = (float)compressed_size / frame->len;
     return compressed_size;
 }
 
@@ -177,7 +201,7 @@ static void mqtt_event_handler(void *handler_args, esp_event_base_t base, int32_
             break;
             
         case MQTT_EVENT_DATA:
-            ESP_LOGI(TAG, "MQTT Dados recebidos");
+            ESP_LOGI(TAG, "MQTT Dados recebidos: %.*s", event->data_len, event->data);
             // Processar comandos recebidos se necessário
             break;
             
@@ -253,80 +277,8 @@ static void mqtt_init(void) {
     esp_mqtt_client_start(mqtt_client);
 }
 
-// Inicializar câmera
-static esp_err_t camera_init(void) {
-    camera_config_t config = {
-        .pin_pwdn = CAM_PIN_PWDN,
-        .pin_reset = CAM_PIN_RESET,
-        .pin_xclk = CAM_PIN_XCLK,
-        .pin_sscb_sda = CAM_PIN_SIOD,
-        .pin_sscb_scl = CAM_PIN_SIOC,
-        
-        .pin_d7 = CAM_PIN_D7,
-        .pin_d6 = CAM_PIN_D6,
-        .pin_d5 = CAM_PIN_D5,
-        .pin_d4 = CAM_PIN_D4,
-        .pin_d3 = CAM_PIN_D3,
-        .pin_d2 = CAM_PIN_D2,
-        .pin_d1 = CAM_PIN_D1,
-        .pin_d0 = CAM_PIN_D0,
-        .pin_vsync = CAM_PIN_VSYNC,
-        .pin_href = CAM_PIN_HREF,
-        .pin_pclk = CAM_PIN_PCLK,
-        
-        .xclk_freq_hz = 20000000,
-        .ledc_timer = LEDC_TIMER_0,
-        .ledc_channel = LEDC_CHANNEL_0,
-        
-        .pixel_format = PIXFORMAT_JPEG,
-        .frame_size = FRAMESIZE_SVGA, // 800x600
-        .jpeg_quality = 12,
-        .fb_count = 1,
-        .fb_location = CAMERA_FB_IN_PSRAM,
-        .grab_mode = CAMERA_GRAB_WHEN_EMPTY,
-    };
-    
-    // Inicializar câmera
-    esp_err_t err = esp_camera_init(&config);
-    if (err != ESP_OK) {
-        ESP_LOGE(TAG, "Falha na inicialização da câmera: 0x%x", err);
-        return err;
-    }
-    
-    // Ajustar configurações do sensor
-    sensor_t *s = esp_camera_sensor_get();
-    if (s) {
-        s->set_brightness(s, 0);     // -2 a 2
-        s->set_contrast(s, 0);       // -2 a 2
-        s->set_saturation(s, 0);     // -2 a 2
-        s->set_special_effect(s, 0); // 0 a 6 (0=Nenhum, 1=Negativo, etc.)
-        s->set_whitebal(s, 1);       // 0 = desabilitado, 1 = habilitado
-        s->set_awb_gain(s, 1);       // 0 = desabilitado, 1 = habilitado
-        s->set_wb_mode(s, 0);        // 0 a 4 - se awb_gain habilitado
-        s->set_exposure_ctrl(s, 1);  // 0 = desabilitado, 1 = habilitado
-        s->set_aec2(s, 0);           // 0 = desabilitado, 1 = habilitado
-        s->set_ae_level(s, 0);       // -2 a 2
-        s->set_aec_value(s, 300);    // 0 a 1200
-        s->set_gain_ctrl(s, 1);      // 0 = desabilitado, 1 = habilitado
-        s->set_agc_gain(s, 0);       // 0 a 30
-        s->set_gainceiling(s, (gainceiling_t)0); // 0 a 6
-        s->set_bpc(s, 0);            // 0 = desabilitado, 1 = habilitado
-        s->set_wpc(s, 1);            // 0 = desabilitado, 1 = habilitado
-        s->set_raw_gma(s, 1);        // 0 = desabilitado, 1 = habilitado
-        s->set_lenc(s, 1);           // 0 = desabilitado, 1 = habilitado
-        s->set_hmirror(s, 0);        // 0 = desabilitado, 1 = habilitado
-        s->set_vflip(s, 0);          // 0 = desabilitado, 1 = habilitado
-        s->set_dcw(s, 1);            // 0 = desabilitado, 1 = habilitado
-        s->set_colorbar(s, 0);       // 0 = desabilitado, 1 = habilitado
-    }
-    
-    ESP_LOGI(TAG, "Câmera inicializada com sucesso");
-    return ESP_OK;
-}
-
-// Task para captura e análise de imagens
-static void image_capture_task(void *pvParameters) {
-    camera_fb_t *fb = NULL;
+// Task para simulação de captura e análise de imagens
+static void image_simulation_task(void *pvParameters) {
     uint8_t *compressed_data = malloc(MAX_IMAGE_SIZE);
     
     if (!compressed_data) {
@@ -335,54 +287,55 @@ static void image_capture_task(void *pvParameters) {
         return;
     }
     
+    ESP_LOGI(TAG, "🔄 Iniciando simulação de captura de imagens...");
+    
     while (1) {
         // Aguardar conexão WiFi
         xEventGroupWaitBits(wifi_event_group, WIFI_CONNECTED_BIT, pdFALSE, pdFALSE, portMAX_DELAY);
         
-        // Capturar imagem
-        xSemaphoreTake(camera_mutex, portMAX_DELAY);
-        fb = esp_camera_fb_get();
-        xSemaphoreGive(camera_mutex);
+        // Gerar imagem simulada
+        simulated_frame_t *current_frame = generate_simulated_image();
         
-        if (!fb) {
-            ESP_LOGE(TAG, "Falha na captura da imagem");
+        if (!current_frame) {
+            ESP_LOGE(TAG, "Falha na geração da imagem simulada");
             vTaskDelay(pdMS_TO_TICKS(5000));
             continue;
         }
         
-        ESP_LOGI(TAG, "Imagem capturada: %zu bytes", fb->len);
+        ESP_LOGI(TAG, "📸 Imagem simulada capturada: %zu bytes", current_frame->len);
         
         bool should_send = true;
         float difference = 0.0;
         
         // Comparar com última imagem se existir
         if (last_frame) {
-            difference = calculate_image_difference(fb, last_frame);
-            ESP_LOGI(TAG, "Diferença calculada: %.2f%%", difference * 100);
+            difference = calculate_image_difference(current_frame, last_frame);
+            ESP_LOGI(TAG, "📊 Diferença calculada: %.2f%%", difference * 100);
             
             if (difference < CHANGE_THRESHOLD) {
                 should_send = false;
                 net_stats.imagens_descartadas++;
-                ESP_LOGI(TAG, "Imagem descartada - mudança insuficiente");
+                ESP_LOGI(TAG, "🚫 Imagem descartada - mudança insuficiente (%.1f%% < %.1f%%)", 
+                        difference * 100, CHANGE_THRESHOLD * 100);
             }
         }
         
         if (should_send) {
             // Comprimir dados da imagem
-            size_t compressed_size = compress_image_data(fb, compressed_data, MAX_IMAGE_SIZE);
+            size_t compressed_size = compress_image_data(current_frame, compressed_data, MAX_IMAGE_SIZE);
             
             if (compressed_size > 0) {
                 // Preparar dados do sensor para envio
                 char sensor_data[256];
                 snprintf(sensor_data, sizeof(sensor_data),
-                    "{\"timestamp\":%lld,\"image_size\":%zu,\"compressed_size\":%zu,\"difference\":%.3f,\"location\":\"rio_monitoring\"}",
-                    esp_timer_get_time() / 1000000LL, fb->len, compressed_size, difference);
+                    "{\"timestamp\":%lu,\"image_size\":%zu,\"compressed_size\":%zu,\"difference\":%.3f,\"location\":\"rio_monitoring_simulacao\",\"modo\":\"teste_sem_camera\"}",
+                    current_frame->timestamp, current_frame->len, compressed_size, difference);
                 
                 // Enviar dados do sensor
                 int msg_id = esp_mqtt_client_publish(mqtt_client, TOPIC_SENSOR_DATA, 
                                                    sensor_data, 0, 1, 0);
                 if (msg_id >= 0) {
-                    ESP_LOGI(TAG, "Dados do sensor enviados, msg_id=%d", msg_id);
+                    ESP_LOGI(TAG, "📤 Dados do sensor enviados, msg_id=%d", msg_id);
                     net_stats.bytes_enviados += strlen(sensor_data);
                 }
                 
@@ -405,26 +358,28 @@ static void image_capture_task(void *pvParameters) {
                 }
                 
                 net_stats.imagens_enviadas++;
-                ESP_LOGI(TAG, "Imagem enviada com sucesso - %zu bytes comprimidos", compressed_size);
+                ESP_LOGI(TAG, "✅ Imagem simulada enviada com sucesso - %zu bytes comprimidos (taxa: %.1f%%)", 
+                        compressed_size, net_stats.taxa_compressao * 100);
                 
                 // Verificar se é uma mudança significativa (possível enchente)
                 if (difference > 0.5) { // 50% de mudança - possível alerta
                     char alert_msg[200];
                     snprintf(alert_msg, sizeof(alert_msg),
-                        "{\"alert\":\"significant_change\",\"difference\":%.3f,\"timestamp\":%lld}",
-                        difference, esp_timer_get_time() / 1000000LL);
+                        "{\"alert\":\"significant_change\",\"difference\":%.3f,\"timestamp\":%lu,\"modo\":\"simulacao\"}",
+                        difference, current_frame->timestamp);
                     
                     esp_mqtt_client_publish(mqtt_client, TOPIC_ALERT, alert_msg, 0, 1, 0);
-                    ESP_LOGW(TAG, "ALERTA: Mudança significativa detectada (%.1f%%)", difference * 100);
+                    ESP_LOGW(TAG, "🚨 ALERTA: Mudança significativa detectada na simulação (%.1f%%)", difference * 100);
                 }
             }
         }
         
         // Liberar frame anterior e armazenar atual
         if (last_frame) {
-            esp_camera_fb_return(last_frame);
+            if (last_frame->buf) free(last_frame->buf);
+            free(last_frame);
         }
-        last_frame = fb;
+        last_frame = current_frame;
         
         // Aguardar próxima captura
         vTaskDelay(pdMS_TO_TICKS(IMAGE_CAPTURE_INTERVAL));
@@ -436,6 +391,8 @@ static void image_capture_task(void *pvParameters) {
 
 // Task para monitoramento de rede
 static void network_monitor_task(void *pvParameters) {
+    ESP_LOGI(TAG, "📡 Iniciando monitoramento de rede...");
+    
     while (1) {
         // Aguardar conexão WiFi
         xEventGroupWaitBits(wifi_event_group, WIFI_CONNECTED_BIT, pdFALSE, pdFALSE, portMAX_DELAY);
@@ -457,7 +414,8 @@ static void network_monitor_task(void *pvParameters) {
             "\"imagens_descartadas\":%lu,"
             "\"taxa_compressao\":%.3f,"
             "\"memoria_livre\":%lu,"
-            "\"uptime\":%lld"
+            "\"uptime\":%lld,"
+            "\"modo\":\"teste_sem_camera\""
             "}",
             esp_timer_get_time() / 1000000LL,
             net_stats.bytes_enviados,
@@ -475,14 +433,17 @@ static void network_monitor_task(void *pvParameters) {
         int msg_id = esp_mqtt_client_publish(mqtt_client, TOPIC_NETWORK_STATS, 
                                            stats_report, 0, 1, 0);
         if (msg_id >= 0) {
-            ESP_LOGI(TAG, "Estatísticas de rede enviadas");
+            ESP_LOGI(TAG, "📊 Estatísticas de rede enviadas");
             net_stats.bytes_enviados += strlen(stats_report);
         }
         
-        ESP_LOGI(TAG, "Stats - Enviados: %lu bytes, Imagens: %lu/%lu, Compressão: %.1f%%", 
-                net_stats.bytes_enviados, net_stats.imagens_enviadas, 
-                net_stats.imagens_enviadas + net_stats.imagens_descartadas,
-                net_stats.taxa_compressao * 100);
+        // Calcular e exibir eficiência
+        uint32_t total_imgs = net_stats.imagens_enviadas + net_stats.imagens_descartadas;
+        float eficiencia = total_imgs > 0 ? (float)net_stats.imagens_descartadas / total_imgs * 100 : 0;
+        
+        ESP_LOGI(TAG, "📈 Stats - Enviados: %lu bytes, Imagens: %lu/%lu, Eficiência: %.1f%%, Compressão: %.1f%%", 
+                net_stats.bytes_enviados, net_stats.imagens_enviadas, total_imgs,
+                eficiencia, net_stats.taxa_compressao * 100);
         
         vTaskDelay(pdMS_TO_TICKS(NETWORK_MONITOR_INTERVAL));
     }
@@ -491,8 +452,9 @@ static void network_monitor_task(void *pvParameters) {
 }
 
 void app_main(void) {
-    ESP_LOGI(TAG, "=== Iniciando Sistema de Monitoramento de Enchentes ===");
+    ESP_LOGI(TAG, "=== Iniciando Sistema de Monitoramento de Enchentes (TESTE SEM CÂMERA) ===");
     ESP_LOGI(TAG, "Projeto IC - Gabriel Passos de Oliveira - IGCE/UNESP");
+    ESP_LOGI(TAG, "Modo: Simulação para teste de rede e MQTT");
     
     // Inicializar NVS
     esp_err_t ret = nvs_flash_init();
@@ -502,18 +464,8 @@ void app_main(void) {
     }
     ESP_ERROR_CHECK(ret);
     
-    // Criar mutex para proteção da câmera
-    camera_mutex = xSemaphoreCreateMutex();
-    if (!camera_mutex) {
-        ESP_LOGE(TAG, "Falha ao criar mutex da câmera");
-        return;
-    }
-    
-    // Inicializar câmera
-    if (camera_init() != ESP_OK) {
-        ESP_LOGE(TAG, "Falha na inicialização da câmera");
-        return;
-    }
+    // Inicializar gerador de números aleatórios
+    srand(time(NULL));
     
     // Inicializar WiFi
     wifi_init_sta();
@@ -525,16 +477,21 @@ void app_main(void) {
     vTaskDelay(pdMS_TO_TICKS(2000));
     
     // Criar tasks
-    xTaskCreate(image_capture_task, "image_capture", 8192, NULL, 5, NULL);
+    xTaskCreate(image_simulation_task, "image_simulation", 8192, NULL, 5, NULL);
     xTaskCreate(network_monitor_task, "network_monitor", 4096, NULL, 3, NULL);
     
-    ESP_LOGI(TAG, "Sistema inicializado com sucesso!");
-    ESP_LOGI(TAG, "Captura de imagens a cada %d segundos", IMAGE_CAPTURE_INTERVAL / 1000);
-    ESP_LOGI(TAG, "Threshold de mudança: %.1f%%", CHANGE_THRESHOLD * 100);
+    ESP_LOGI(TAG, "✅ Sistema inicializado com sucesso!");
+    ESP_LOGI(TAG, "📸 Simulação de captura de imagens a cada %d segundos", IMAGE_CAPTURE_INTERVAL / 1000);
+    ESP_LOGI(TAG, "🔍 Threshold de mudança: %.1f%%", CHANGE_THRESHOLD * 100);
+    ESP_LOGI(TAG, "🌐 Monitoramento de rede a cada %d segundos", NETWORK_MONITOR_INTERVAL / 1000);
     
     // Task principal - monitoramento geral
     while (1) {
-        ESP_LOGI(TAG, "Sistema funcionando - Memoria livre: %lu bytes", esp_get_free_heap_size());
+        uint32_t total_imgs = net_stats.imagens_enviadas + net_stats.imagens_descartadas;
+        float eficiencia = total_imgs > 0 ? (float)net_stats.imagens_descartadas / total_imgs * 100 : 0;
+        
+        ESP_LOGI(TAG, "🔧 Sistema funcionando - Memória livre: %lu bytes | Eficiência: %.1f%%", 
+                esp_get_free_heap_size(), eficiencia);
         vTaskDelay(pdMS_TO_TICKS(60000)); // Log a cada minuto
     }
 }
