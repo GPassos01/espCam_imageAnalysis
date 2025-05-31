@@ -1,9 +1,0 @@
-CMake Error at /home/gpassos/esp/esp-idf/tools/cmake/build.cmake:268 (message):
-  Failed to resolve component 'esp_camera'.
-Call Stack (most recent call first):
-  /home/gpassos/esp/esp-idf/tools/cmake/build.cmake:304 (__build_resolve_and_add_req)
-  /home/gpassos/esp/esp-idf/tools/cmake/build.cmake:607 (__build_expand_requirements)
-  /home/gpassos/esp/esp-idf/tools/cmake/project.cmake:710 (idf_build_process)
-  CMakeLists.txt:9 (project)
-
-

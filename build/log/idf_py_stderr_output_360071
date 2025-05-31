@@ -1,0 +1,3 @@
+info: INFO: Symbol IDF_TARGET_LINUX defined in multiple locations (see below). Please check if this is a correct behavior or a random name match:
+    /home/gpassos/esp/esp-idf/Kconfig:78
+    /home/gpassos/esp/esp-idf/Kconfig:162

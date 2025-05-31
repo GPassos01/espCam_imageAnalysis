@@ -1,0 +1,1767 @@
+ets Jul 29 2019 12:21:46
+
+rst:0x1 (POWERON_RESET),boot:0x13 (SPI_FAST_FLASH_BOOT)
+configsip: 0, SPIWP:0xee
+clk_drv:0x00,q_drv:0x00,d_drv:0x00,cs0_drv:0x00,hd_drv:0x00,wp_drv:0x00
+mode:DIO, clock div:2
+load:0x3fff0030,len:7176
+load:0x40078000,len:15564
+ho 0 tail 12 room 4
+load:0x40080400,len:4
+load:0x40080404,len:3904
+entry 0x40080640
+[0;32mI (31) boot: ESP-IDF v5.3 2nd stage bootloader[0m
+[0;32mI (31) boot: compile time May 31 2025 02:05:00[0m
+[0;32mI (31) boot: Multicore bootloader[0m
+[0;32mI (35) boot: chip revision: v3.1[0m
+[0;32mI (39) boot.esp32: SPI Speed      : 40MHz[0m
+[0;32mI (44) boot.esp32: SPI Mode       : DIO[0m
+[0;32mI (48) boot.esp32: SPI Flash Size : 2MB[0m
+[0;32mI (53) boot: Enabling RNG early entropy source...[0m
+[0;32mI (58) boot: Partition Table:[0m
+[0;32mI (62) boot: ## Label            Usage          Type ST Offset   Length[0m
+[0;32mI (69) boot:  0 nvs              WiFi data        01 02 00009000 00006000[0m
+[0;32mI (76) boot:  1 phy_init         RF data          01 01 0000f000 00001000[0m
+[0;32mI (84) boot:  2 factory          factory app      00 00 00010000 00100000[0m
+[0;32mI (91) boot:  3 storage          Unknown data     01 82 00110000 000f0000[0m
+[0;32mI (99) boot: End of partition table[0m
+[0;32mI (103) esp_image: segment 0: paddr=00010020 vaddr=3f400020 size=24ff4h (151540) map[0m
+[0;32mI (164) esp_image: segment 1: paddr=0003501c vaddr=3ffb0000 size=03e38h ( 15928) load[0m
+[0;32mI (170) esp_image: segment 2: paddr=00038e5c vaddr=40080000 size=071bch ( 29116) load[0m
+[0;32mI (181) esp_image: segment 3: paddr=00040020 vaddr=400d0020 size=9beech (638700) map[0m
+[0;32mI (400) esp_image: segment 4: paddr=000dbf14 vaddr=400871bc size=10168h ( 65896) load[0m
+[0;32mI (438) boot: Loaded app from partition at offset 0x10000[0m
+[0;32mI (438) boot: Disabling RNG early entropy source...[0m
+[0;32mI (450) cpu_start: Multicore app[0m
+[0;32mI (459) cpu_start: Pro cpu start user code[0m
+[0;32mI (459) cpu_start: cpu freq: 160000000 Hz[0m
+[0;32mI (459) app_init: Application information:[0m
+[0;32mI (462) app_init: Project name:     wifi_sniffer[0m
+[0;32mI (467) app_init: App version:      v1.0.0-2-gae08c24-dirty[0m
+[0;32mI (473) app_init: Compile time:     May 31 2025 02:04:33[0m
+[0;32mI (479) app_init: ELF file SHA256:  ae74dc96e...[0m
+[0;32mI (484) app_init: ESP-IDF:          v5.3[0m
+[0;32mI (489) efuse_init: Min chip rev:     v0.0[0m
+[0;32mI (494) efuse_init: Max chip rev:     v3.99 [0m
+[0;32mI (499) efuse_init: Chip rev:         v3.1[0m
+[0;32mI (504) heap_init: Initializing. RAM available for dynamic allocation:[0m
+[0;32mI (511) heap_init: At 3FFAE6E0 len 00001920 (6 KiB): DRAM[0m
+[0;32mI (517) heap_init: At 3FFB8660 len 000279A0 (158 KiB): DRAM[0m
+[0;32mI (523) heap_init: At 3FFE0440 len 00003AE0 (14 KiB): D/IRAM[0m
+[0;32mI (529) heap_init: At 3FFE4350 len 0001BCB0 (111 KiB): D/IRAM[0m
+[0;32mI (536) heap_init: At 40097324 len 00008CDC (35 KiB): IRAM[0m
+[0;32mI (544) spi_flash: detected chip: generic[0m
+[0;32mI (547) spi_flash: flash io: dio[0m
+[0;33mW (551) spi_flash: Detected size(4096k) larger than the size in the binary image header(2048k). Using the size in the binary image header.[0m
+[0;32mI (565) main_task: Started on CPU0[0m
+[0;32mI (569) main_task: Calling app_main()[0m
+[0;32mI (572) ENCHENTES_MONITOR_TESTE: === Iniciando Sistema de Monitoramento de Enchentes (TESTE SEM CÂMERA) ===[0m
+[0;32mI (582) ENCHENTES_MONITOR_TESTE: Projeto IC - Gabriel Passos de Oliveira - IGCE/UNESP[0m
+[0;32mI (591) ENCHENTES_MONITOR_TESTE: Modo: Simulação para teste de rede e MQTT[0m
+[0;32mI (626) wifi:wifi driver task: 3ffc209c, prio:23, stack:6656, core=0[0m
+[0;32mI (640) wifi:wifi firmware version: 0caa81945[0m
+[0;32mI (641) wifi:wifi certification version: v7.0[0m
+[0;32mI (641) wifi:config NVS flash: enabled[0m
+[0;32mI (641) wifi:config nano formating: disabled[0m
+[0;32mI (646) wifi:Init data frame dynamic rx buffer num: 32[0m
+[0;32mI (650) wifi:Init static rx mgmt buffer num: 5[0m
+[0;32mI (654) wifi:Init management short buffer num: 32[0m
+[0;32mI (659) wifi:Init dynamic tx buffer num: 32[0m
+[0;32mI (663) wifi:Init static rx buffer size: 2212[0m
+[0;32mI (667) wifi:Init static rx buffer num: 10[0m
+[0;32mI (671) wifi:Init dynamic rx buffer num: 32[0m
+[0;32mI (676) wifi_init: rx ba win: 6[0m
+[0;32mI (678) wifi_init: accept mbox: 6[0m
+[0;32mI (682) wifi_init: tcpip mbox: 32[0m
+[0;32mI (686) wifi_init: udp mbox: 6[0m
+[0;32mI (690) wifi_init: tcp mbox: 6[0m
+[0;32mI (694) wifi_init: tcp tx win: 5760[0m
+[0;32mI (698) wifi_init: tcp rx win: 5760[0m
+[0;32mI (702) wifi_init: tcp mss: 1440[0m
+[0;32mI (706) wifi_init: WiFi IRAM OP enabled[0m
+[0;32mI (711) wifi_init: WiFi RX IRAM OP enabled[0m
+[0;32mI (720) phy_init: phy_version 4830,54550f7,Jun 20 2024,14:22:08[0m
+[0;32mI (806) wifi:mode : sta (08:a6:f7:46:ee:74)[0m
+[0;32mI (807) wifi:enable tsf[0m
+[0;32mI (809) ENCHENTES_MONITOR_TESTE: Inicialização WiFi finalizada.[0m
+[0;32mI (823) wifi:new:<7,0>, old:<1,0>, ap:<255,255>, sta:<7,0>, prof:1, snd_ch_cfg:0x0[0m
+[0;32mI (824) wifi:state: init -> auth (0xb0)[0m
+[0;32mI (827) wifi:state: auth -> assoc (0x0)[0m
+[0;32mI (836) wifi:state: assoc -> run (0x10)[0m
+[0;32mI (936) wifi:connected with Steps 2.4G, aid = 16, channel 7, BW20, bssid = f8:79:28:a1:3c:b0[0m
+[0;32mI (936) wifi:security: WPA2-PSK, phy: bgn, rssi: -16[0m
+[0;32mI (941) wifi:pm start, type: 1[0m
+
+[0;32mI (942) wifi:dp: 1, bi: 102400, li: 3, scale listen interval from 307200 us to 307200 us[0m
+[0;32mI (963) wifi:AP's beacon interval = 102400 us, DTIM period = 1[0m
+[0;32mI (3119) wifi:<ba-add>idx:0 (ifx:0, f8:79:28:a1:3c:b0), tid:0, ssn:3, winSize:64[0m
+[0;32mI (3955) esp_netif_handlers: sta ip: 192.168.1.7, mask: 255.255.255.0, gw: 192.168.1.1[0m
+[0;32mI (3955) ENCHENTES_MONITOR_TESTE: IP obtido:192.168.1.7[0m
+[0;32mI (3959) ENCHENTES_MONITOR_TESTE: Conectado ao WiFi SSID:Steps 2.4G[0m
+[0;32mI (3992) ENCHENTES_MONITOR_TESTE: MQTT Conectado[0m
+[0;32mI (4003) ENCHENTES_MONITOR_TESTE: MQTT Subscrito, msg_id=17904[0m
+[0;32mI (5968) ENCHENTES_MONITOR_TESTE: 🔄 Iniciando simulação de captura de imagens...[0m
+[0;32mI (5975) ENCHENTES_MONITOR_TESTE: 📡 Iniciando monitoramento de rede...[0m
+[0;32mI (5980) ENCHENTES_MONITOR_TESTE: 📊 Estatísticas de rede enviadas[0m
+[0;32mI (5982) ENCHENTES_MONITOR_TESTE: 📈 Stats - Enviados: 226 bytes, Imagens: 0/0, Eficiência: 0.0%, Compressão: 0.0%[0m
+[0;32mI (5989) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=3598[0m
+[0;32mI (5994) ENCHENTES_MONITOR_TESTE: Imagem simulada gerada: 24596 bytes, timestamp: 5[0m
+[0;32mI (5999) ENCHENTES_MONITOR_TESTE: ✅ Sistema inicializado com sucesso![0m
+[0;32mI (6006) ENCHENTES_MONITOR_TESTE: 📸 Imagem simulada capturada: 24596 bytes[0m
+[0;32mI (6027) ENCHENTES_MONITOR_TESTE: 📤 Dados do sensor enviados, msg_id=34438[0m
+[0;32mI (6035) ENCHENTES_MONITOR_TESTE: 📸 Simulação de captura de imagens a cada 30 segundos[0m
+[0;32mI (6037) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=34438[0m
+[0;32mI (6046) ENCHENTES_MONITOR_TESTE: 🔍 Threshold de mudança: 15.0%[0m
+[0;32mI (6052) ENCHENTES_MONITOR_TESTE: 🌐 Monitoramento de rede a cada 5 segundos[0m
+[0;32mI (6060) ENCHENTES_MONITOR_TESTE: 🔧 Sistema funcionando - Memória livre: 113148 bytes | Eficiência: 0.0%[0m
+[0;32mI (6091) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=28851[0m
+[0;32mI (6198) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=58600[0m
+[0;32mI (6302) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=55256[0m
+[0;32mI (6402) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=63408[0m
+[0;32mI (6607) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=41305[0m
+[0;32mI (6663) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=45833[0m
+[0;32mI (6706) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=11393[0m
+[0;32mI (6915) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=31637[0m
+[0;32mI (6974) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=28771[0m
+[0;32mI (7018) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=5415[0m
+[0;32mI (7130) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=63052[0m
+[0;32mI (7230) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=46282[0m
+[0;32mI (7291) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=49476[0m
+[0;32mI (7383) ENCHENTES_MONITOR_TESTE: ✅ Imagem simulada enviada com sucesso - 12298 bytes comprimidos (taxa: 50.0%)[0m
+[0;32mI (11005) ENCHENTES_MONITOR_TESTE: 📊 Estatísticas de rede enviadas[0m
+[0;32mI (11006) ENCHENTES_MONITOR_TESTE: 📈 Stats - Enviados: 12898 bytes, Imagens: 1/1, Eficiência: 0.0%, Compressão: 50.0%[0m
+[0;32mI (11015) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=18051[0m
+[0;32mI (16027) ENCHENTES_MONITOR_TESTE: 📊 Estatísticas de rede enviadas[0m
+[0;32mI (16028) ENCHENTES_MONITOR_TESTE: 📈 Stats - Enviados: 13131 bytes, Imagens: 1/1, Eficiência: 0.0%, Compressão: 50.0%[0m
+[0;32mI (16036) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=35364[0m
+[0;32mI (21049) ENCHENTES_MONITOR_TESTE: 📊 Estatísticas de rede enviadas[0m
+[0;32mI (21050) ENCHENTES_MONITOR_TESTE: 📈 Stats - Enviados: 13364 bytes, Imagens: 1/1, Eficiência: 0.0%, Compressão: 50.0%[0m
+[0;32mI (21061) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=31949[0m
+[0;32mI (26063) ENCHENTES_MONITOR_TESTE: 📊 Estatísticas de rede enviadas[0m
+[0;32mI (26064) ENCHENTES_MONITOR_TESTE: 📈 Stats - Enviados: 13597 bytes, Imagens: 1/1, Eficiência: 0.0%, Compressão: 50.0%[0m
+[0;32mI (26071) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=37605[0m
+[0;32mI (31085) ENCHENTES_MONITOR_TESTE: 📊 Estatísticas de rede enviadas[0m
+[0;32mI (31086) ENCHENTES_MONITOR_TESTE: 📈 Stats - Enviados: 13830 bytes, Imagens: 1/1, Eficiência: 0.0%, Compressão: 50.0%[0m
+[0;32mI (31096) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=13385[0m
+[0;32mI (36107) ENCHENTES_MONITOR_TESTE: 📊 Estatísticas de rede enviadas[0m
+[0;32mI (36108) ENCHENTES_MONITOR_TESTE: 📈 Stats - Enviados: 14063 bytes, Imagens: 1/1, Eficiência: 0.0%, Compressão: 50.0%[0m
+[0;32mI (36114) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=52983[0m
+[0;32mI (37404) ENCHENTES_MONITOR_TESTE: Imagem simulada gerada: 21532 bytes, timestamp: 36[0m
+[0;32mI (37405) ENCHENTES_MONITOR_TESTE: 📸 Imagem simulada capturada: 21532 bytes[0m
+[0;32mI (37410) ENCHENTES_MONITOR_TESTE: 📊 Diferença calculada: 100.00%[0m
+[0;32mI (37425) ENCHENTES_MONITOR_TESTE: 📤 Dados do sensor enviados, msg_id=29697[0m
+[0;32mI (37436) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=29697[0m
+[0;32mI (37441) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=51415[0m
+[0;32mI (37635) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=21944[0m
+[0;32mI (37691) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=24057[0m
+[0;32mI (37801) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=49500[0m
+[0;32mI (37910) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=24591[0m
+[0;32mI (38013) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=7756[0m
+[0;32mI (38146) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=4113[0m
+[0;32mI (38222) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=20390[0m
+[0;32mI (38323) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=37143[0m
+[0;32mI (38425) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=46684[0m
+[0;32mI (38482) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=52364[0m
+[0;32mI (38575) ENCHENTES_MONITOR_TESTE: ✅ Imagem simulada enviada com sucesso - 10766 bytes comprimidos (taxa: 50.0%)[0m
+[0;33mW (38581) ENCHENTES_MONITOR_TESTE: 🚨 ALERTA: Mudança significativa detectada na simulação (100.0%)[0m
+[0;32mI (38592) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=9327[0m
+[0;32mI (41129) ENCHENTES_MONITOR_TESTE: 📊 Estatísticas de rede enviadas[0m
+[0;32mI (41130) ENCHENTES_MONITOR_TESTE: 📈 Stats - Enviados: 25204 bytes, Imagens: 2/2, Eficiência: 0.0%, Compressão: 50.0%[0m
+[0;32mI (41138) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=34393[0m
+[0;32mI (46151) ENCHENTES_MONITOR_TESTE: 📊 Estatísticas de rede enviadas[0m
+[0;32mI (46152) ENCHENTES_MONITOR_TESTE: 📈 Stats - Enviados: 25437 bytes, Imagens: 2/2, Eficiência: 0.0%, Compressão: 50.0%[0m
+[0;32mI (46161) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=287[0m
+[0;32mI (51173) ENCHENTES_MONITOR_TESTE: 📊 Estatísticas de rede enviadas[0m
+[0;32mI (51174) ENCHENTES_MONITOR_TESTE: 📈 Stats - Enviados: 25670 bytes, Imagens: 2/2, Eficiência: 0.0%, Compressão: 50.0%[0m
+[0;32mI (51183) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=62379[0m
+[0;32mI (56195) ENCHENTES_MONITOR_TESTE: 📊 Estatísticas de rede enviadas[0m
+[0;32mI (56196) ENCHENTES_MONITOR_TESTE: 📈 Stats - Enviados: 25903 bytes, Imagens: 2/2, Eficiência: 0.0%, Compressão: 50.0%[0m
+[0;32mI (56205) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=24011[0m
+[0;32mI (61209) ENCHENTES_MONITOR_TESTE: 📊 Estatísticas de rede enviadas[0m
+[0;32mI (61210) ENCHENTES_MONITOR_TESTE: 📈 Stats - Enviados: 26136 bytes, Imagens: 2/2, Eficiência: 0.0%, Compressão: 50.0%[0m
+[0;32mI (61216) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=12265[0m
+[0;32mI (66070) ENCHENTES_MONITOR_TESTE: 🔧 Sistema funcionando - Memória livre: 120040 bytes | Eficiência: 0.0%[0m
+[0;32mI (66231) ENCHENTES_MONITOR_TESTE: 📊 Estatísticas de rede enviadas[0m
+[0;32mI (66232) ENCHENTES_MONITOR_TESTE: 📈 Stats - Enviados: 26369 bytes, Imagens: 2/2, Eficiência: 0.0%, Compressão: 50.0%[0m
+[0;32mI (66242) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=41400[0m
+[0;32mI (68611) ENCHENTES_MONITOR_TESTE: Imagem simulada gerada: 26688 bytes, timestamp: 68[0m
+[0;32mI (68612) ENCHENTES_MONITOR_TESTE: 📸 Imagem simulada capturada: 26688 bytes[0m
+[0;32mI (68617) ENCHENTES_MONITOR_TESTE: 📊 Diferença calculada: 100.00%[0m
+[0;32mI (68631) ENCHENTES_MONITOR_TESTE: 📤 Dados do sensor enviados, msg_id=13445[0m
+[0;32mI (68640) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=13445[0m
+[0;32mI (68705) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=43274[0m
+[0;32mI (68792) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=28952[0m
+[0;32mI (68896) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=5818[0m
+[0;32mI (69005) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=53121[0m
+[0;32mI (69178) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=19613[0m
+[0;32mI (69239) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=25941[0m
+[0;32mI (69321) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=43701[0m
+[0;32mI (69481) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=62370[0m
+[0;32mI (69490) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=44804[0m
+[0;32mI (69638) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=59869[0m
+[0;32mI (69742) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=24094[0m
+[0;32mI (69844) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=45550[0m
+[0;32mI (69950) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=37930[0m
+[0;32mI (70006) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=28397[0m
+[0;32mI (70100) ENCHENTES_MONITOR_TESTE: ✅ Imagem simulada enviada com sucesso - 13344 bytes comprimidos (taxa: 50.0%)[0m
+[0;33mW (70106) ENCHENTES_MONITOR_TESTE: 🚨 ALERTA: Mudança significativa detectada na simulação (100.0%)[0m
+[0;32mI (70117) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=30539[0m
+[0;32mI (71253) ENCHENTES_MONITOR_TESTE: 📊 Estatísticas de rede enviadas[0m
+[0;32mI (71254) ENCHENTES_MONITOR_TESTE: 📈 Stats - Enviados: 40088 bytes, Imagens: 3/3, Eficiência: 0.0%, Compressão: 50.0%[0m
+[0;32mI (71262) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=37972[0m
+[0;32mI (76275) ENCHENTES_MONITOR_TESTE: 📊 Estatísticas de rede enviadas[0m
+[0;32mI (76276) ENCHENTES_MONITOR_TESTE: 📈 Stats - Enviados: 40321 bytes, Imagens: 3/3, Eficiência: 0.0%, Compressão: 50.0%[0m
+[0;32mI (76286) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=65094[0m
+[0;32mI (81297) ENCHENTES_MONITOR_TESTE: 📊 Estatísticas de rede enviadas[0m
+[0;32mI (81298) ENCHENTES_MONITOR_TESTE: 📈 Stats - Enviados: 40554 bytes, Imagens: 3/3, Eficiência: 0.0%, Compressão: 50.0%[0m
+[0;32mI (81308) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=26689[0m
+[0;32mI (86312) ENCHENTES_MONITOR_TESTE: 📊 Estatísticas de rede enviadas[0m
+[0;32mI (86313) ENCHENTES_MONITOR_TESTE: 📈 Stats - Enviados: 40787 bytes, Imagens: 3/3, Eficiência: 0.0%, Compressão: 50.0%[0m
+[0;32mI (86321) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=52642[0m
+[0;32mI (91334) ENCHENTES_MONITOR_TESTE: 📊 Estatísticas de rede enviadas[0m
+[0;32mI (91335) ENCHENTES_MONITOR_TESTE: 📈 Stats - Enviados: 41020 bytes, Imagens: 3/3, Eficiência: 0.0%, Compressão: 50.0%[0m
+[0;32mI (91341) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=21617[0m
+[0;32mI (96356) ENCHENTES_MONITOR_TESTE: 📊 Estatísticas de rede enviadas[0m
+[0;32mI (96357) ENCHENTES_MONITOR_TESTE: 📈 Stats - Enviados: 41253 bytes, Imagens: 3/3, Eficiência: 0.0%, Compressão: 50.0%[0m
+[0;32mI (96367) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=29742[0m
+[0;32mI (100144) ENCHENTES_MONITOR_TESTE: Imagem simulada gerada: 35129 bytes, timestamp: 99[0m
+[0;32mI (100145) ENCHENTES_MONITOR_TESTE: 📸 Imagem simulada capturada: 35129 bytes[0m
+[0;32mI (100150) ENCHENTES_MONITOR_TESTE: 📊 Diferença calculada: 100.00%[0m
+[0;32mI (100165) ENCHENTES_MONITOR_TESTE: 📤 Dados do sensor enviados, msg_id=8674[0m
+[0;32mI (100175) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=8674[0m
+[0;32mI (100230) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=59582[0m
+[0;32mI (100405) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=12631[0m
+[0;32mI (100493) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=13042[0m
+[0;32mI (100534) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=25920[0m
+[0;32mI (100640) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=16642[0m
+[0;32mI (100758) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=61782[0m
+[0;32mI (100863) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=18508[0m
+[0;32mI (101022) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=30295[0m
+[0;32mI (101124) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=8941[0m
+[0;32mI (101166) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=32847[0m
+[0;32mI (101280) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=24965[0m
+[0;32mI (101374) ENCHENTES_MONITOR_TESTE: 📊 Estatísticas de rede enviadas[0m
+[0;32mI (101375) ENCHENTES_MONITOR_TESTE: 📈 Stats - Enviados: 53917 bytes, Imagens: 3/3, Eficiência: 0.0%, Compressão: 50.0%[0m
+[0;32mI (101434) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=29193[0m
+[0;32mI (101451) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=6554[0m
+[0;32mI (101456) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=62723[0m
+[0;32mI (101599) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=53610[0m
+[0;32mI (101838) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=64731[0m
+[0;32mI (101843) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=22299[0m
+[0;32mI (101943) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=60397[0m
+[0;32mI (101970) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=38552[0m
+[0;32mI (102061) ENCHENTES_MONITOR_TESTE: ✅ Imagem simulada enviada com sucesso - 17564 bytes comprimidos (taxa: 50.0%)[0m
+[0;33mW (102067) ENCHENTES_MONITOR_TESTE: 🚨 ALERTA: Mudança significativa detectada na simulação (100.0%)[0m
+[0;32mI (102073) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=41662[0m
+[0;32mI (106389) ENCHENTES_MONITOR_TESTE: 📊 Estatísticas de rede enviadas[0m
+[0;32mI (106390) ENCHENTES_MONITOR_TESTE: 📈 Stats - Enviados: 59428 bytes, Imagens: 4/4, Eficiência: 0.0%, Compressão: 50.0%[0m
+[0;32mI (106396) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=64960[0m
+[0;32mI (111411) ENCHENTES_MONITOR_TESTE: 📊 Estatísticas de rede enviadas[0m
+[0;32mI (111412) ENCHENTES_MONITOR_TESTE: 📈 Stats - Enviados: 59663 bytes, Imagens: 4/4, Eficiência: 0.0%, Compressão: 50.0%[0m
+[0;32mI (111421) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=20986[0m
+[0;32mI (116433) ENCHENTES_MONITOR_TESTE: 📊 Estatísticas de rede enviadas[0m
+[0;32mI (116434) ENCHENTES_MONITOR_TESTE: 📈 Stats - Enviados: 59898 bytes, Imagens: 4/4, Eficiência: 0.0%, Compressão: 50.0%[0m
+[0;32mI (116443) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=3397[0m
+[0;32mI (121455) ENCHENTES_MONITOR_TESTE: 📊 Estatísticas de rede enviadas[0m
+[0;32mI (121456) ENCHENTES_MONITOR_TESTE: 📈 Stats - Enviados: 60133 bytes, Imagens: 4/4, Eficiência: 0.0%, Compressão: 50.0%[0m
+[0;32mI (121463) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=1486[0m
+[0;32mI (126071) ENCHENTES_MONITOR_TESTE: 🔧 Sistema funcionando - Memória livre: 106460 bytes | Eficiência: 0.0%[0m
+[0;32mI (126477) ENCHENTES_MONITOR_TESTE: 📊 Estatísticas de rede enviadas[0m
+[0;32mI (126478) ENCHENTES_MONITOR_TESTE: 📈 Stats - Enviados: 60368 bytes, Imagens: 4/4, Eficiência: 0.0%, Compressão: 50.0%[0m
+[0;32mI (126485) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=21850[0m
+[0;32mI (131498) ENCHENTES_MONITOR_TESTE: 📊 Estatísticas de rede enviadas[0m
+[0;32mI (131499) ENCHENTES_MONITOR_TESTE: 📈 Stats - Enviados: 60603 bytes, Imagens: 4/4, Eficiência: 0.0%, Compressão: 50.0%[0m
+[0;32mI (131512) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=61217[0m
+[0;32mI (132115) ENCHENTES_MONITOR_TESTE: Imagem simulada gerada: 44796 bytes, timestamp: 131[0m
+[0;32mI (132115) ENCHENTES_MONITOR_TESTE: 📸 Imagem simulada capturada: 44796 bytes[0m
+[0;32mI (132121) ENCHENTES_MONITOR_TESTE: 📊 Diferença calculada: 100.00%[0m
+[0;32mI (132135) ENCHENTES_MONITOR_TESTE: 📤 Dados do sensor enviados, msg_id=47858[0m
+[0;32mI (132149) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=47858[0m
+[0;32mI (132158) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=6381[0m
+[0;32mI (132300) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=35598[0m
+[0;32mI (132462) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=58158[0m
+[0;32mI (132467) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=3482[0m
+[0;32mI (132616) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=1455[0m
+[0;32mI (132718) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=47523[0m
+[0;32mI (132822) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=6930[0m
+[0;32mI (132973) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=13169[0m
+[0;32mI (133030) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=11568[0m
+[0;32mI (133144) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=12612[0m
+[0;32mI (133238) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=48634[0m
+[0;32mI (133347) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=62855[0m
+[0;32mI (133455) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=32171[0m
+[0;32mI (133687) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=21294[0m
+[0;32mI (133722) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=62240[0m
+[0;32mI (133731) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=50446[0m
+[0;32mI (133873) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=61631[0m
+[0;32mI (133973) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=25477[0m
+[0;32mI (134083) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=11606[0m
+[0;32mI (134181) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=10148[0m
+[0;32mI (134401) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=825[0m
+[0;32mI (134437) ENCHENTES_MONITOR_TESTE: ✅ Imagem simulada enviada com sucesso - 22398 bytes comprimidos (taxa: 50.0%)[0m
+[0;33mW (134441) ENCHENTES_MONITOR_TESTE: 🚨 ALERTA: Mudança significativa detectada na simulação (100.0%)[0m
+[0;32mI (134449) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=48865[0m
+[0;32mI (134501) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=6305[0m
+[0;32mI (136514) ENCHENTES_MONITOR_TESTE: 📊 Estatísticas de rede enviadas[0m
+[0;32mI (136515) ENCHENTES_MONITOR_TESTE: 📈 Stats - Enviados: 83379 bytes, Imagens: 5/5, Eficiência: 0.0%, Compressão: 50.0%[0m
+[0;32mI (136523) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=4794[0m
+[0;32mI (141536) ENCHENTES_MONITOR_TESTE: 📊 Estatísticas de rede enviadas[0m
+[0;32mI (141537) ENCHENTES_MONITOR_TESTE: 📈 Stats - Enviados: 83614 bytes, Imagens: 5/5, Eficiência: 0.0%, Compressão: 50.0%[0m
+[0;32mI (141545) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=33813[0m
+[0;32mI (146558) ENCHENTES_MONITOR_TESTE: 📊 Estatísticas de rede enviadas[0m
+[0;32mI (146559) ENCHENTES_MONITOR_TESTE: 📈 Stats - Enviados: 83849 bytes, Imagens: 5/5, Eficiência: 0.0%, Compressão: 50.0%[0m
+[0;32mI (146565) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=34059[0m
+[0;32mI (151577) ENCHENTES_MONITOR_TESTE: 📊 Estatísticas de rede enviadas[0m
+[0;32mI (151578) ENCHENTES_MONITOR_TESTE: 📈 Stats - Enviados: 84084 bytes, Imagens: 5/5, Eficiência: 0.0%, Compressão: 50.0%[0m
+[0;32mI (151584) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=37421[0m
+[0;32mI (156599) ENCHENTES_MONITOR_TESTE: 📊 Estatísticas de rede enviadas[0m
+[0;32mI (156600) ENCHENTES_MONITOR_TESTE: 📈 Stats - Enviados: 84319 bytes, Imagens: 5/5, Eficiência: 0.0%, Compressão: 50.0%[0m
+[0;32mI (156607) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=48989[0m
+[0;32mI (161621) ENCHENTES_MONITOR_TESTE: 📊 Estatísticas de rede enviadas[0m
+[0;32mI (161622) ENCHENTES_MONITOR_TESTE: 📈 Stats - Enviados: 84554 bytes, Imagens: 5/5, Eficiência: 0.0%, Compressão: 50.0%[0m
+[0;32mI (161632) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=14939[0m
+[0;32mI (164457) ENCHENTES_MONITOR_TESTE: Imagem simulada gerada: 10388 bytes, timestamp: 163[0m
+[0;32mI (164457) ENCHENTES_MONITOR_TESTE: 📸 Imagem simulada capturada: 10388 bytes[0m
+[0;32mI (164463) ENCHENTES_MONITOR_TESTE: 📊 Diferença calculada: 100.00%[0m
+[0;32mI (164476) ENCHENTES_MONITOR_TESTE: 📤 Dados do sensor enviados, msg_id=44233[0m
+[0;32mI (164486) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=44233[0m
+[0;32mI (164539) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=55133[0m
+[0;32mI (164636) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=33317[0m
+[0;32mI (164751) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=49469[0m
+[0;32mI (164848) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=46914[0m
+[0;32mI (165022) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=4295[0m
+[0;32mI (165105) ENCHENTES_MONITOR_TESTE: ✅ Imagem simulada enviada com sucesso - 5194 bytes comprimidos (taxa: 50.0%)[0m
+[0;33mW (165111) ENCHENTES_MONITOR_TESTE: 🚨 ALERTA: Mudança significativa detectada na simulação (100.0%)[0m
+[0;32mI (165121) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=21535[0m
+[0;32mI (165255) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=27562[0m
+[0;32mI (166643) ENCHENTES_MONITOR_TESTE: 📊 Estatísticas de rede enviadas[0m
+[0;32mI (166644) ENCHENTES_MONITOR_TESTE: 📈 Stats - Enviados: 90126 bytes, Imagens: 6/6, Eficiência: 0.0%, Compressão: 50.0%[0m
+[0;32mI (166659) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=56656[0m
+[0;32mI (171658) ENCHENTES_MONITOR_TESTE: 📊 Estatísticas de rede enviadas[0m
+[0;32mI (171659) ENCHENTES_MONITOR_TESTE: 📈 Stats - Enviados: 90362 bytes, Imagens: 6/6, Eficiência: 0.0%, Compressão: 50.0%[0m
+[0;32mI (171666) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=49771[0m
+[0;32mI (176680) ENCHENTES_MONITOR_TESTE: 📊 Estatísticas de rede enviadas[0m
+[0;32mI (176680) ENCHENTES_MONITOR_TESTE: 📈 Stats - Enviados: 90598 bytes, Imagens: 6/6, Eficiência: 0.0%, Compressão: 50.0%[0m
+[0;32mI (176698) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=21600[0m
+[0;32mI (181694) ENCHENTES_MONITOR_TESTE: 📊 Estatísticas de rede enviadas[0m
+[0;32mI (181696) ENCHENTES_MONITOR_TESTE: 📈 Stats - Enviados: 90834 bytes, Imagens: 6/6, Eficiência: 0.0%, Compressão: 50.0%[0m
+[0;32mI (181708) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=20105[0m
+[0;32mI (186072) ENCHENTES_MONITOR_TESTE: 🔧 Sistema funcionando - Memória livre: 131196 bytes | Eficiência: 0.0%[0m
+[0;32mI (186709) ENCHENTES_MONITOR_TESTE: 📊 Estatísticas de rede enviadas[0m
+[0;32mI (186710) ENCHENTES_MONITOR_TESTE: 📈 Stats - Enviados: 91070 bytes, Imagens: 6/6, Eficiência: 0.0%, Compressão: 50.0%[0m
+[0;32mI (186716) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=56798[0m
+[0;32mI (191726) ENCHENTES_MONITOR_TESTE: 📊 Estatísticas de rede enviadas[0m
+[0;32mI (191727) ENCHENTES_MONITOR_TESTE: 📈 Stats - Enviados: 91306 bytes, Imagens: 6/6, Eficiência: 0.0%, Compressão: 50.0%[0m
+[0;32mI (191735) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=35727[0m
+[0;32mI (195143) ENCHENTES_MONITOR_TESTE: Imagem simulada gerada: 27083 bytes, timestamp: 194[0m
+[0;32mI (195143) ENCHENTES_MONITOR_TESTE: 📸 Imagem simulada capturada: 27083 bytes[0m
+[0;32mI (195149) ENCHENTES_MONITOR_TESTE: 📊 Diferença calculada: 100.00%[0m
+[0;32mI (195163) ENCHENTES_MONITOR_TESTE: 📤 Dados do sensor enviados, msg_id=20974[0m
+[0;32mI (195178) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=20974[0m
+[0;32mI (195183) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=13814[0m
+[0;32mI (195330) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=28068[0m
+[0;32mI (195432) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=48570[0m
+[0;32mI (195535) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=13880[0m
+[0;32mI (195646) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=10605[0m
+[0;32mI (195745) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=18045[0m
+[0;32mI (195847) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=33178[0m
+[0;32mI (195963) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=30921[0m
+[0;32mI (196063) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=49441[0m
+[0;32mI (196160) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=19988[0m
+[0;32mI (196267) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=44847[0m
+[0;32mI (196466) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=16442[0m
+[0;32mI (196512) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=6410[0m
+[0;32mI (196534) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=14084[0m
+[0;32mI (196626) ENCHENTES_MONITOR_TESTE: ✅ Imagem simulada enviada com sucesso - 13541 bytes comprimidos (taxa: 50.0%)[0m
+[0;33mW (196632) ENCHENTES_MONITOR_TESTE: 🚨 ALERTA: Mudança significativa detectada na simulação (100.0%)[0m
+[0;32mI (196643) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=34814[0m
+[0;32mI (196744) ENCHENTES_MONITOR_TESTE: 📊 Estatísticas de rede enviadas[0m
+[0;32mI (196745) ENCHENTES_MONITOR_TESTE: 📈 Stats - Enviados: 105227 bytes, Imagens: 7/7, Eficiência: 0.0%, Compressão: 50.0%[0m
+[0;32mI (196751) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=7559[0m
+[0;32mI (201762) ENCHENTES_MONITOR_TESTE: 📊 Estatísticas de rede enviadas[0m
+[0;32mI (201763) ENCHENTES_MONITOR_TESTE: 📈 Stats - Enviados: 105464 bytes, Imagens: 7/7, Eficiência: 0.0%, Compressão: 50.0%[0m
+[0;32mI (201770) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=58719[0m
+[0;32mI (206779) ENCHENTES_MONITOR_TESTE: 📊 Estatísticas de rede enviadas[0m
+[0;32mI (206780) ENCHENTES_MONITOR_TESTE: 📈 Stats - Enviados: 105701 bytes, Imagens: 7/7, Eficiência: 0.0%, Compressão: 50.0%[0m
+[0;32mI (206786) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=29411[0m
+[0;32mI (211797) ENCHENTES_MONITOR_TESTE: 📊 Estatísticas de rede enviadas[0m
+[0;32mI (211798) ENCHENTES_MONITOR_TESTE: 📈 Stats - Enviados: 105938 bytes, Imagens: 7/7, Eficiência: 0.0%, Compressão: 50.0%[0m
+[0;32mI (211806) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=35769[0m
+[0;32mI (216815) ENCHENTES_MONITOR_TESTE: 📊 Estatísticas de rede enviadas[0m
+[0;32mI (216816) ENCHENTES_MONITOR_TESTE: 📈 Stats - Enviados: 106175 bytes, Imagens: 7/7, Eficiência: 0.0%, Compressão: 50.0%[0m
+[0;32mI (216826) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=21472[0m
+[0;32mI (221831) ENCHENTES_MONITOR_TESTE: 📊 Estatísticas de rede enviadas[0m
+[0;32mI (221832) ENCHENTES_MONITOR_TESTE: 📈 Stats - Enviados: 106412 bytes, Imagens: 7/7, Eficiência: 0.0%, Compressão: 50.0%[0m
+[0;32mI (221848) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=13304[0m
+[0;32mI (226652) ENCHENTES_MONITOR_TESTE: Imagem simulada gerada: 14939 bytes, timestamp: 226[0m
+[0;32mI (226652) ENCHENTES_MONITOR_TESTE: 📸 Imagem simulada capturada: 14939 bytes[0m
+[0;32mI (226658) ENCHENTES_MONITOR_TESTE: 📊 Diferença calculada: 100.00%[0m
+[0;32mI (226671) ENCHENTES_MONITOR_TESTE: 📤 Dados do sensor enviados, msg_id=27869[0m
+[0;32mI (226682) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=27869[0m
+[0;32mI (226732) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=47152[0m
+[0;32mI (226840) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=45221[0m
+[0;32mI (226846) ENCHENTES_MONITOR_TESTE: 📊 Estatísticas de rede enviadas[0m
+[0;32mI (226846) ENCHENTES_MONITOR_TESTE: 📈 Stats - Enviados: 108838 bytes, Imagens: 7/7, Eficiência: 0.0%, Compressão: 50.0%[0m
+[0;32mI (226857) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=22340[0m
+[0;32mI (226951) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=15533[0m
+[0;32mI (227039) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=25363[0m
+[0;32mI (227180) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=22370[0m
+[0;32mI (227261) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=31677[0m
+[0;32mI (227484) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=19342[0m
+[0;32mI (227512) ENCHENTES_MONITOR_TESTE: ✅ Imagem simulada enviada com sucesso - 7469 bytes comprimidos (taxa: 50.0%)[0m
+[0;33mW (227517) ENCHENTES_MONITOR_TESTE: 🚨 ALERTA: Mudança significativa detectada na simulação (100.0%)[0m
+[0;32mI (227529) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=56195[0m
+[0;32mI (227773) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=30394[0m
+[0;32mI (231868) ENCHENTES_MONITOR_TESTE: 📊 Estatísticas de rede enviadas[0m
+[0;32mI (231869) ENCHENTES_MONITOR_TESTE: 📈 Stats - Enviados: 114496 bytes, Imagens: 8/8, Eficiência: 0.0%, Compressão: 50.0%[0m
+[0;32mI (231879) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=58053[0m
+[0;32mI (236883) ENCHENTES_MONITOR_TESTE: 📊 Estatísticas de rede enviadas[0m
+[0;32mI (236884) ENCHENTES_MONITOR_TESTE: 📈 Stats - Enviados: 114733 bytes, Imagens: 8/8, Eficiência: 0.0%, Compressão: 50.0%[0m
+[0;32mI (236894) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=24861[0m
+[0;32mI (241898) ENCHENTES_MONITOR_TESTE: 📊 Estatísticas de rede enviadas[0m
+[0;32mI (241899) ENCHENTES_MONITOR_TESTE: 📈 Stats - Enviados: 114970 bytes, Imagens: 8/8, Eficiência: 0.0%, Compressão: 50.0%[0m
+[0;32mI (241910) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=20378[0m
+[0;32mI (246073) ENCHENTES_MONITOR_TESTE: 🔧 Sistema funcionando - Memória livre: 126644 bytes | Eficiência: 0.0%[0m
+[0;32mI (246921) ENCHENTES_MONITOR_TESTE: 📊 Estatísticas de rede enviadas[0m
+[0;32mI (246922) ENCHENTES_MONITOR_TESTE: 📈 Stats - Enviados: 115207 bytes, Imagens: 8/8, Eficiência: 0.0%, Compressão: 50.0%[0m
+[0;32mI (246930) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=50554[0m
+[0;32mI (251938) ENCHENTES_MONITOR_TESTE: 📊 Estatísticas de rede enviadas[0m
+[0;32mI (251939) ENCHENTES_MONITOR_TESTE: 📈 Stats - Enviados: 115444 bytes, Imagens: 8/8, Eficiência: 0.0%, Compressão: 50.0%[0m
+[0;32mI (251947) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=38179[0m
+[0;32mI (256956) ENCHENTES_MONITOR_TESTE: 📊 Estatísticas de rede enviadas[0m
+[0;32mI (256957) ENCHENTES_MONITOR_TESTE: 📈 Stats - Enviados: 115681 bytes, Imagens: 8/8, Eficiência: 0.0%, Compressão: 50.0%[0m
+[0;32mI (256965) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=64689[0m
+[0;32mI (257538) ENCHENTES_MONITOR_TESTE: Imagem simulada gerada: 16145 bytes, timestamp: 256[0m
+[0;32mI (257539) ENCHENTES_MONITOR_TESTE: 📸 Imagem simulada capturada: 16145 bytes[0m
+[0;32mI (257544) ENCHENTES_MONITOR_TESTE: 📊 Diferença calculada: 100.00%[0m
+[0;32mI (257557) ENCHENTES_MONITOR_TESTE: 📤 Dados do sensor enviados, msg_id=14712[0m
+[0;32mI (257569) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=14712[0m
+[0;32mI (257624) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=27289[0m
+[0;32mI (257721) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=38050[0m
+[0;32mI (257899) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=64776[0m
+[0;32mI (257987) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=63046[0m
+[0;32mI (258028) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=5812[0m
+[0;32mI (258205) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=59255[0m
+[0;32mI (258273) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=16419[0m
+[0;32mI (258305) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=33839[0m
+[0;32mI (258396) ENCHENTES_MONITOR_TESTE: ✅ Imagem simulada enviada com sucesso - 8072 bytes comprimidos (taxa: 50.0%)[0m
+[0;33mW (258402) ENCHENTES_MONITOR_TESTE: 🚨 ALERTA: Mudança significativa detectada na simulação (100.0%)[0m
+[0;32mI (258410) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=13428[0m
+[0;32mI (261974) ENCHENTES_MONITOR_TESTE: 📊 Estatísticas de rede enviadas[0m
+[0;32mI (261975) ENCHENTES_MONITOR_TESTE: 📈 Stats - Enviados: 124132 bytes, Imagens: 9/9, Eficiência: 0.0%, Compressão: 50.0%[0m
+[0;32mI (261983) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=11227[0m
+[0;32mI (266991) ENCHENTES_MONITOR_TESTE: 📊 Estatísticas de rede enviadas[0m
+[0;32mI (266992) ENCHENTES_MONITOR_TESTE: 📈 Stats - Enviados: 124369 bytes, Imagens: 9/9, Eficiência: 0.0%, Compressão: 50.0%[0m
+[0;32mI (267007) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=49973[0m
+[0;32mI (272008) ENCHENTES_MONITOR_TESTE: 📊 Estatísticas de rede enviadas[0m
+[0;32mI (272009) ENCHENTES_MONITOR_TESTE: 📈 Stats - Enviados: 124606 bytes, Imagens: 9/9, Eficiência: 0.0%, Compressão: 50.0%[0m
+[0;32mI (272016) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=38290[0m
+[0;32mI (277025) ENCHENTES_MONITOR_TESTE: 📊 Estatísticas de rede enviadas[0m
+[0;32mI (277026) ENCHENTES_MONITOR_TESTE: 📈 Stats - Enviados: 124843 bytes, Imagens: 9/9, Eficiência: 0.0%, Compressão: 50.0%[0m
+[0;32mI (277036) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=59280[0m
+[0;32mI (282044) ENCHENTES_MONITOR_TESTE: 📊 Estatísticas de rede enviadas[0m
+[0;32mI (282045) ENCHENTES_MONITOR_TESTE: 📈 Stats - Enviados: 125080 bytes, Imagens: 9/9, Eficiência: 0.0%, Compressão: 50.0%[0m
+[0;32mI (282060) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=48737[0m
+[0;32mI (287059) ENCHENTES_MONITOR_TESTE: 📊 Estatísticas de rede enviadas[0m
+[0;32mI (287060) ENCHENTES_MONITOR_TESTE: 📈 Stats - Enviados: 125317 bytes, Imagens: 9/9, Eficiência: 0.0%, Compressão: 50.0%[0m
+[0;32mI (287069) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=44194[0m
+[0;32mI (288436) ENCHENTES_MONITOR_TESTE: Imagem simulada gerada: 30839 bytes, timestamp: 287[0m
+[0;32mI (288437) ENCHENTES_MONITOR_TESTE: 📸 Imagem simulada capturada: 30839 bytes[0m
+[0;32mI (288442) ENCHENTES_MONITOR_TESTE: 📊 Diferença calculada: 100.00%[0m
+[0;32mI (288456) ENCHENTES_MONITOR_TESTE: 📤 Dados do sensor enviados, msg_id=15203[0m
+[0;32mI (288465) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=15203[0m
+[0;32mI (288521) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=30006[0m
+[0;32mI (288617) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=64473[0m
+[0;32mI (288724) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=50614[0m
+[0;32mI (288836) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=745[0m
+[0;32mI (288933) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=30078[0m
+[0;32mI (289131) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=61633[0m
+[0;32mI (289197) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=26946[0m
+[0;32mI (289239) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=4448[0m
+[0;32mI (289350) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=58355[0m
+[0;32mI (289459) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=1574[0m
+[0;32mI (289554) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=17141[0m
+[0;32mI (289663) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=25729[0m
+[0;32mI (289774) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=35508[0m
+[0;32mI (289870) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=14593[0m
+[0;32mI (289976) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=32689[0m
+[0;32mI (290033) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=49267[0m
+[0;32mI (290128) ENCHENTES_MONITOR_TESTE: ✅ Imagem simulada enviada com sucesso - 15419 bytes comprimidos (taxa: 50.0%)[0m
+[0;33mW (290134) ENCHENTES_MONITOR_TESTE: 🚨 ALERTA: Mudança significativa detectada na simulação (100.0%)[0m
+[0;32mI (290151) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=48684[0m
+[0;32mI (292080) ENCHENTES_MONITOR_TESTE: 📊 Estatísticas de rede enviadas[0m
+[0;32mI (292081) ENCHENTES_MONITOR_TESTE: 📈 Stats - Enviados: 141117 bytes, Imagens: 10/10, Eficiência: 0.0%, Compressão: 50.0%[0m
+[0;32mI (292090) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=42041[0m
+[0;32mI (297102) ENCHENTES_MONITOR_TESTE: 📊 Estatísticas de rede enviadas[0m
+[0;32mI (297103) ENCHENTES_MONITOR_TESTE: 📈 Stats - Enviados: 141355 bytes, Imagens: 10/10, Eficiência: 0.0%, Compressão: 50.0%[0m
+[0;32mI (297119) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=23332[0m
+[0;32mI (302117) ENCHENTES_MONITOR_TESTE: 📊 Estatísticas de rede enviadas[0m
+[0;32mI (302118) ENCHENTES_MONITOR_TESTE: 📈 Stats - Enviados: 141593 bytes, Imagens: 10/10, Eficiência: 0.0%, Compressão: 50.0%[0m
+[0;32mI (302124) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=37658[0m
+[0;32mI (306074) ENCHENTES_MONITOR_TESTE: 🔧 Sistema funcionando - Memória livre: 110744 bytes | Eficiência: 0.0%[0m
+[0;32mI (307139) ENCHENTES_MONITOR_TESTE: 📊 Estatísticas de rede enviadas[0m
+[0;32mI (307139) ENCHENTES_MONITOR_TESTE: 📈 Stats - Enviados: 141831 bytes, Imagens: 10/10, Eficiência: 0.0%, Compressão: 50.0%[0m
+[0;32mI (307155) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=20901[0m
+[0;32mI (312153) ENCHENTES_MONITOR_TESTE: 📊 Estatísticas de rede enviadas[0m
+[0;32mI (312154) ENCHENTES_MONITOR_TESTE: 📈 Stats - Enviados: 142069 bytes, Imagens: 10/10, Eficiência: 0.0%, Compressão: 50.0%[0m
+[0;32mI (312180) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=20849[0m
+[0;32mI (317168) ENCHENTES_MONITOR_TESTE: 📊 Estatísticas de rede enviadas[0m
+[0;32mI (317169) ENCHENTES_MONITOR_TESTE: 📈 Stats - Enviados: 142307 bytes, Imagens: 10/10, Eficiência: 0.0%, Compressão: 50.0%[0m
+[0;32mI (317175) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=7842[0m
+[0;32mI (320169) ENCHENTES_MONITOR_TESTE: Imagem simulada gerada: 30242 bytes, timestamp: 319[0m
+[0;32mI (320170) ENCHENTES_MONITOR_TESTE: 📸 Imagem simulada capturada: 30242 bytes[0m
+[0;32mI (320175) ENCHENTES_MONITOR_TESTE: 📊 Diferença calculada: 100.00%[0m
+[0;32mI (320189) ENCHENTES_MONITOR_TESTE: 📤 Dados do sensor enviados, msg_id=15963[0m
+[0;32mI (320201) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=15963[0m
+[0;32mI (320260) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=38078[0m
+[0;32mI (320361) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=27217[0m
+[0;32mI (320464) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=22647[0m
+[0;32mI (320670) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=59442[0m
+[0;32mI (320722) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=23094[0m
+[0;32mI (320761) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=63576[0m
+[0;32mI (320884) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=38674[0m
+[0;32mI (320987) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=3359[0m
+[0;32mI (321182) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=41104[0m
+[0;32mI (321247) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=15163[0m
+[0;32mI (321288) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=10253[0m
+[0;32mI (321392) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=27395[0m
+[0;32mI (321591) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=11527[0m
+[0;32mI (321597) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=6446[0m
+[0;32mI (321664) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=42471[0m
+[0;32mI (321756) ENCHENTES_MONITOR_TESTE: ✅ Imagem simulada enviada com sucesso - 15121 bytes comprimidos (taxa: 50.0%)[0m
+[0;33mW (321762) ENCHENTES_MONITOR_TESTE: 🚨 ALERTA: Mudança significativa detectada na simulação (100.0%)[0m
+[0;32mI (321771) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=13720[0m
+[0;32mI (322186) ENCHENTES_MONITOR_TESTE: 📊 Estatísticas de rede enviadas[0m
+[0;32mI (322187) ENCHENTES_MONITOR_TESTE: 📈 Stats - Enviados: 157809 bytes, Imagens: 11/11, Eficiência: 0.0%, Compressão: 50.0%[0m
+[0;32mI (322197) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=60047[0m
+[0;32mI (327208) ENCHENTES_MONITOR_TESTE: 📊 Estatísticas de rede enviadas[0m
+[0;32mI (327209) ENCHENTES_MONITOR_TESTE: 📈 Stats - Enviados: 158047 bytes, Imagens: 11/11, Eficiência: 0.0%, Compressão: 50.0%[0m
+[0;32mI (327228) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=30698[0m
+[0;32mI (332224) ENCHENTES_MONITOR_TESTE: 📊 Estatísticas de rede enviadas[0m
+[0;32mI (332225) ENCHENTES_MONITOR_TESTE: 📈 Stats - Enviados: 158285 bytes, Imagens: 11/11, Eficiência: 0.0%, Compressão: 50.0%[0m
+[0;32mI (332240) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=2200[0m
+[0;32mI (337239) ENCHENTES_MONITOR_TESTE: 📊 Estatísticas de rede enviadas[0m
+[0;32mI (337240) ENCHENTES_MONITOR_TESTE: 📈 Stats - Enviados: 158523 bytes, Imagens: 11/11, Eficiência: 0.0%, Compressão: 50.0%[0m
+[0;32mI (337248) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=58912[0m
+[0;32mI (342256) ENCHENTES_MONITOR_TESTE: 📊 Estatísticas de rede enviadas[0m
+[0;32mI (342257) ENCHENTES_MONITOR_TESTE: 📈 Stats - Enviados: 158761 bytes, Imagens: 11/11, Eficiência: 0.0%, Compressão: 50.0%[0m
+[0;32mI (342267) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=757[0m
+[0;32mI (347278) ENCHENTES_MONITOR_TESTE: 📊 Estatísticas de rede enviadas[0m
+[0;32mI (347279) ENCHENTES_MONITOR_TESTE: 📈 Stats - Enviados: 158999 bytes, Imagens: 11/11, Eficiência: 0.0%, Compressão: 50.0%[0m
+[0;32mI (347295) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=33706[0m
+[0;31mE (351767) ENCHENTES_MONITOR_TESTE: Falha na geração da imagem simulada[0m
+[0;32mI (352293) ENCHENTES_MONITOR_TESTE: 📊 Estatísticas de rede enviadas[0m
+[0;32mI (352294) ENCHENTES_MONITOR_TESTE: 📈 Stats - Enviados: 159237 bytes, Imagens: 11/11, Eficiência: 0.0%, Compressão: 50.0%[0m
+[0;32mI (352315) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=64766[0m
+[0;32mI (356782) ENCHENTES_MONITOR_TESTE: Imagem simulada gerada: 16056 bytes, timestamp: 356[0m
+[0;32mI (356783) ENCHENTES_MONITOR_TESTE: 📸 Imagem simulada capturada: 16056 bytes[0m
+[0;32mI (356788) ENCHENTES_MONITOR_TESTE: 📊 Diferença calculada: 100.00%[0m
+[0;32mI (356802) ENCHENTES_MONITOR_TESTE: 📤 Dados do sensor enviados, msg_id=51643[0m
+[0;32mI (356813) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=51643[0m
+[0;32mI (356818) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=57040[0m
+[0;32mI (357033) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=43244[0m
+[0;32mI (357073) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=33327[0m
+[0;32mI (357181) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=38987[0m
+[0;32mI (357284) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=54415[0m
+[0;32mI (357306) ENCHENTES_MONITOR_TESTE: 📊 Estatísticas de rede enviadas[0m
+[0;32mI (357307) ENCHENTES_MONITOR_TESTE: 📈 Stats - Enviados: 164736 bytes, Imagens: 11/11, Eficiência: 0.0%, Compressão: 50.0%[0m
+[0;32mI (357316) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=54254[0m
+[0;32mI (357392) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=63340[0m
+[0;32mI (357490) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=21962[0m
+[0;32mI (357544) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=65240[0m
+[0;32mI (357637) ENCHENTES_MONITOR_TESTE: ✅ Imagem simulada enviada com sucesso - 8028 bytes comprimidos (taxa: 50.0%)[0m
+[0;33mW (357643) ENCHENTES_MONITOR_TESTE: 🚨 ALERTA: Mudança significativa detectada na simulação (100.0%)[0m
+[0;32mI (357650) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=48306[0m
+[0;32mI (362321) ENCHENTES_MONITOR_TESTE: 📊 Estatísticas de rede enviadas[0m
+[0;32mI (362322) ENCHENTES_MONITOR_TESTE: 📈 Stats - Enviados: 167882 bytes, Imagens: 12/12, Eficiência: 0.0%, Compressão: 50.0%[0m
+[0;32mI (362328) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=47290[0m
+[0;32mI (366075) ENCHENTES_MONITOR_TESTE: 🔧 Sistema funcionando - Memória livre: 125528 bytes | Eficiência: 0.0%[0m
+[0;32mI (367343) ENCHENTES_MONITOR_TESTE: 📊 Estatísticas de rede enviadas[0m
+[0;32mI (367344) ENCHENTES_MONITOR_TESTE: 📈 Stats - Enviados: 168120 bytes, Imagens: 12/12, Eficiência: 0.0%, Compressão: 50.0%[0m
+[0;32mI (367350) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=50551[0m
+[0;32mI (372362) ENCHENTES_MONITOR_TESTE: 📊 Estatísticas de rede enviadas[0m
+[0;32mI (372363) ENCHENTES_MONITOR_TESTE: 📈 Stats - Enviados: 168358 bytes, Imagens: 12/12, Eficiência: 0.0%, Compressão: 50.0%[0m
+[0;32mI (372369) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=21475[0m
+[0;32mI (377380) ENCHENTES_MONITOR_TESTE: 📊 Estatísticas de rede enviadas[0m
+[0;32mI (377381) ENCHENTES_MONITOR_TESTE: 📈 Stats - Enviados: 168596 bytes, Imagens: 12/12, Eficiência: 0.0%, Compressão: 50.0%[0m
+[0;32mI (377389) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=57114[0m
+[0;32mI (382398) ENCHENTES_MONITOR_TESTE: 📊 Estatísticas de rede enviadas[0m
+[0;32mI (382399) ENCHENTES_MONITOR_TESTE: 📈 Stats - Enviados: 168834 bytes, Imagens: 12/12, Eficiência: 0.0%, Compressão: 50.0%[0m
+[0;32mI (382419) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=32153[0m
+[0;32mI (387414) ENCHENTES_MONITOR_TESTE: 📊 Estatísticas de rede enviadas[0m
+[0;32mI (387415) ENCHENTES_MONITOR_TESTE: 📈 Stats - Enviados: 169072 bytes, Imagens: 12/12, Eficiência: 0.0%, Compressão: 50.0%[0m
+[0;32mI (387432) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=50791[0m
+[0;32mI (387672) ENCHENTES_MONITOR_TESTE: Imagem simulada gerada: 25301 bytes, timestamp: 387[0m
+[0;32mI (387673) ENCHENTES_MONITOR_TESTE: 📸 Imagem simulada capturada: 25301 bytes[0m
+[0;32mI (387678) ENCHENTES_MONITOR_TESTE: 📊 Diferença calculada: 100.00%[0m
+[0;32mI (387692) ENCHENTES_MONITOR_TESTE: 📤 Dados do sensor enviados, msg_id=50669[0m
+[0;32mI (387701) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=50669[0m
+[0;32mI (387759) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=44170[0m
+[0;32mI (387956) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=61826[0m
+[0;32mI (388014) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=28827[0m
+[0;32mI (388057) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=40745[0m
+[0;32mI (388166) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=63090[0m
+[0;32mI (388277) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=20648[0m
+[0;32mI (388370) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=19889[0m
+[0;32mI (388564) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=51420[0m
+[0;32mI (388644) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=22635[0m
+[0;32mI (388684) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=36338[0m
+[0;32mI (388798) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=63407[0m
+[0;32mI (388909) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=18124[0m
+[0;32mI (388958) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=376[0m
+[0;32mI (389051) ENCHENTES_MONITOR_TESTE: ✅ Imagem simulada enviada com sucesso - 12650 bytes comprimidos (taxa: 50.0%)[0m
+[0;33mW (389056) ENCHENTES_MONITOR_TESTE: 🚨 ALERTA: Mudança significativa detectada na simulação (100.0%)[0m
+[0;32mI (389064) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=59836[0m
+[0;32mI (392429) ENCHENTES_MONITOR_TESTE: 📊 Estatísticas de rede enviadas[0m
+[0;32mI (392430) ENCHENTES_MONITOR_TESTE: 📈 Stats - Enviados: 182103 bytes, Imagens: 13/13, Eficiência: 0.0%, Compressão: 50.0%[0m
+[0;32mI (392439) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=43295[0m
+[0;32mI (397444) ENCHENTES_MONITOR_TESTE: 📊 Estatísticas de rede enviadas[0m
+[0;32mI (397445) ENCHENTES_MONITOR_TESTE: 📈 Stats - Enviados: 182341 bytes, Imagens: 13/13, Eficiência: 0.0%, Compressão: 50.0%[0m
+[0;32mI (397454) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=52933[0m
+[0;32mI (402466) ENCHENTES_MONITOR_TESTE: 📊 Estatísticas de rede enviadas[0m
+[0;32mI (402467) ENCHENTES_MONITOR_TESTE: 📈 Stats - Enviados: 182579 bytes, Imagens: 13/13, Eficiência: 0.0%, Compressão: 50.0%[0m
+[0;32mI (402474) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=47517[0m
+[0;32mI (407486) ENCHENTES_MONITOR_TESTE: 📊 Estatísticas de rede enviadas[0m
+[0;32mI (407487) ENCHENTES_MONITOR_TESTE: 📈 Stats - Enviados: 182817 bytes, Imagens: 13/13, Eficiência: 0.0%, Compressão: 50.0%[0m
+[0;32mI (407495) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=59559[0m
+[0;32mI (412504) ENCHENTES_MONITOR_TESTE: 📊 Estatísticas de rede enviadas[0m
+[0;32mI (412505) ENCHENTES_MONITOR_TESTE: 📈 Stats - Enviados: 183055 bytes, Imagens: 13/13, Eficiência: 0.0%, Compressão: 50.0%[0m
+[0;32mI (412512) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=33731[0m
+[0;32mI (417522) ENCHENTES_MONITOR_TESTE: 📊 Estatísticas de rede enviadas[0m
+[0;32mI (417523) ENCHENTES_MONITOR_TESTE: 📈 Stats - Enviados: 183293 bytes, Imagens: 13/13, Eficiência: 0.0%, Compressão: 50.0%[0m
+[0;32mI (417540) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=9540[0m
+[0;32mI (419083) ENCHENTES_MONITOR_TESTE: Imagem simulada gerada: 21203 bytes, timestamp: 418[0m
+[0;32mI (419084) ENCHENTES_MONITOR_TESTE: 📸 Imagem simulada capturada: 21203 bytes[0m
+[0;32mI (419089) ENCHENTES_MONITOR_TESTE: 📊 Diferença calculada: 100.00%[0m
+[0;32mI (419103) ENCHENTES_MONITOR_TESTE: 📤 Dados do sensor enviados, msg_id=42165[0m
+[0;32mI (419112) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=42165[0m
+[0;32mI (419284) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=59069[0m
+[0;32mI (419321) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=14729[0m
+[0;32mI (419325) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=51582[0m
+[0;32mI (419477) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=28880[0m
+[0;32mI (419585) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=23147[0m
+[0;32mI (419687) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=43451[0m
+[0;32mI (419897) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=55237[0m
+[0;32mI (419948) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=3130[0m
+[0;32mI (419995) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=24246[0m
+[0;32mI (420107) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=49058[0m
+[0;32mI (420158) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=9906[0m
+[0;32mI (420252) ENCHENTES_MONITOR_TESTE: ✅ Imagem simulada enviada com sucesso - 10601 bytes comprimidos (taxa: 50.0%)[0m
+[0;33mW (420258) ENCHENTES_MONITOR_TESTE: 🚨 ALERTA: Mudança significativa detectada na simulação (100.0%)[0m
+[0;32mI (420270) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=35625[0m
+[0;32mI (422538) ENCHENTES_MONITOR_TESTE: 📊 Estatísticas de rede enviadas[0m
+[0;32mI (422539) ENCHENTES_MONITOR_TESTE: 📈 Stats - Enviados: 194275 bytes, Imagens: 14/14, Eficiência: 0.0%, Compressão: 50.0%[0m
+[0;32mI (422547) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=10452[0m
+[0;32mI (426076) ENCHENTES_MONITOR_TESTE: 🔧 Sistema funcionando - Memória livre: 120380 bytes | Eficiência: 0.0%[0m
+[0;32mI (427553) ENCHENTES_MONITOR_TESTE: 📊 Estatísticas de rede enviadas[0m
+[0;32mI (427554) ENCHENTES_MONITOR_TESTE: 📈 Stats - Enviados: 194513 bytes, Imagens: 14/14, Eficiência: 0.0%, Compressão: 50.0%[0m
+[0;32mI (427566) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=41075[0m
+[0;32mI (432568) ENCHENTES_MONITOR_TESTE: 📊 Estatísticas de rede enviadas[0m
+[0;32mI (432569) ENCHENTES_MONITOR_TESTE: 📈 Stats - Enviados: 194751 bytes, Imagens: 14/14, Eficiência: 0.0%, Compressão: 50.0%[0m
+[0;32mI (432577) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=26522[0m
+[0;32mI (437583) ENCHENTES_MONITOR_TESTE: 📊 Estatísticas de rede enviadas[0m
+[0;32mI (437584) ENCHENTES_MONITOR_TESTE: 📈 Stats - Enviados: 194989 bytes, Imagens: 14/14, Eficiência: 0.0%, Compressão: 50.0%[0m
+[0;32mI (437590) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=30949[0m
+[0;32mI (442602) ENCHENTES_MONITOR_TESTE: 📊 Estatísticas de rede enviadas[0m
+[0;32mI (442603) ENCHENTES_MONITOR_TESTE: 📈 Stats - Enviados: 195227 bytes, Imagens: 14/14, Eficiência: 0.0%, Compressão: 50.0%[0m
+[0;32mI (442611) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=10169[0m
+[0;32mI (447624) ENCHENTES_MONITOR_TESTE: 📊 Estatísticas de rede enviadas[0m
+[0;32mI (447625) ENCHENTES_MONITOR_TESTE: 📈 Stats - Enviados: 195465 bytes, Imagens: 14/14, Eficiência: 0.0%, Compressão: 50.0%[0m
+[0;32mI (447633) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=25942[0m
+[0;32mI (450305) ENCHENTES_MONITOR_TESTE: Imagem simulada gerada: 42152 bytes, timestamp: 449[0m
+[0;32mI (450305) ENCHENTES_MONITOR_TESTE: 📸 Imagem simulada capturada: 42152 bytes[0m
+[0;32mI (450311) ENCHENTES_MONITOR_TESTE: 📊 Diferença calculada: 100.00%[0m
+[0;32mI (450325) ENCHENTES_MONITOR_TESTE: 📤 Dados do sensor enviados, msg_id=10833[0m
+[0;32mI (450335) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=10833[0m
+[0;32mI (450343) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=26144[0m
+[0;32mI (450491) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=58398[0m
+[0;32mI (450623) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=23865[0m
+[0;32mI (450699) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=60824[0m
+[0;32mI (450821) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=12158[0m
+[0;32mI (450920) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=43499[0m
+[0;32mI (451026) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=16883[0m
+[0;32mI (451115) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=2506[0m
+[0;32mI (451331) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=19472[0m
+[0;32mI (451341) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=58306[0m
+[0;32mI (451434) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=7588[0m
+[0;32mI (451536) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=60840[0m
+[0;32mI (451642) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=8395[0m
+[0;32mI (451745) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=62180[0m
+[0;32mI (451846) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=62615[0m
+[0;32mI (451959) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=6125[0m
+[0;32mI (452065) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=44411[0m
+[0;32mI (452165) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=34861[0m
+[0;32mI (452273) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=28282[0m
+[0;32mI (452373) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=45306[0m
+[0;32mI (452432) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=19819[0m
+[0;32mI (452524) ENCHENTES_MONITOR_TESTE: ✅ Imagem simulada enviada com sucesso - 21076 bytes comprimidos (taxa: 50.0%)[0m
+[0;33mW (452530) ENCHENTES_MONITOR_TESTE: 🚨 ALERTA: Mudança significativa detectada na simulação (100.0%)[0m
+[0;32mI (452536) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=23582[0m
+[0;32mI (452645) ENCHENTES_MONITOR_TESTE: 📊 Estatísticas de rede enviadas[0m
+[0;32mI (452646) ENCHENTES_MONITOR_TESTE: 📈 Stats - Enviados: 216921 bytes, Imagens: 15/15, Eficiência: 0.0%, Compressão: 50.0%[0m
+[0;32mI (452655) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=20910[0m
+[0;32mI (457663) ENCHENTES_MONITOR_TESTE: 📊 Estatísticas de rede enviadas[0m
+[0;32mI (457664) ENCHENTES_MONITOR_TESTE: 📈 Stats - Enviados: 217158 bytes, Imagens: 15/15, Eficiência: 0.0%, Compressão: 50.0%[0m
+[0;32mI (457670) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=7720[0m
+[0;32mI (462681) ENCHENTES_MONITOR_TESTE: 📊 Estatísticas de rede enviadas[0m
+[0;32mI (462682) ENCHENTES_MONITOR_TESTE: 📈 Stats - Enviados: 217395 bytes, Imagens: 15/15, Eficiência: 0.0%, Compressão: 50.0%[0m
+[0;32mI (462698) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=14257[0m
+[0;32mI (467697) ENCHENTES_MONITOR_TESTE: 📊 Estatísticas de rede enviadas[0m
+[0;32mI (467698) ENCHENTES_MONITOR_TESTE: 📈 Stats - Enviados: 217632 bytes, Imagens: 15/15, Eficiência: 0.0%, Compressão: 50.0%[0m
+[0;32mI (467707) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=23570[0m
+[0;32mI (472716) ENCHENTES_MONITOR_TESTE: 📊 Estatísticas de rede enviadas[0m
+[0;32mI (472717) ENCHENTES_MONITOR_TESTE: 📈 Stats - Enviados: 217869 bytes, Imagens: 15/15, Eficiência: 0.0%, Compressão: 50.0%[0m
+[0;32mI (472725) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=32172[0m
+[0;32mI (477734) ENCHENTES_MONITOR_TESTE: 📊 Estatísticas de rede enviadas[0m
+[0;32mI (477735) ENCHENTES_MONITOR_TESTE: 📈 Stats - Enviados: 218106 bytes, Imagens: 15/15, Eficiência: 0.0%, Compressão: 50.0%[0m
+[0;32mI (477755) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=50860[0m
+[0;32mI (482546) ENCHENTES_MONITOR_TESTE: Imagem simulada gerada: 12144 bytes, timestamp: 481[0m
+[0;32mI (482547) ENCHENTES_MONITOR_TESTE: 📸 Imagem simulada capturada: 12144 bytes[0m
+[0;32mI (482552) ENCHENTES_MONITOR_TESTE: 📊 Diferença calculada: 100.00%[0m
+[0;32mI (482565) ENCHENTES_MONITOR_TESTE: 📤 Dados do sensor enviados, msg_id=29616[0m
+[0;32mI (482576) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=29616[0m
+[0;32mI (482632) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=23672[0m
+[0;32mI (482734) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=18533[0m
+[0;32mI (482748) ENCHENTES_MONITOR_TESTE: 📊 Estatísticas de rede enviadas[0m
+[0;32mI (482749) ENCHENTES_MONITOR_TESTE: 📈 Stats - Enviados: 220533 bytes, Imagens: 15/15, Eficiência: 0.0%, Compressão: 50.0%[0m
+[0;32mI (482760) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=64472[0m
+[0;32mI (482835) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=6202[0m
+[0;32mI (482977) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=53128[0m
+[0;32mI (483079) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=3904[0m
+[0;32mI (483102) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=54650[0m
+[0;32mI (483195) ENCHENTES_MONITOR_TESTE: ✅ Imagem simulada enviada com sucesso - 6072 bytes comprimidos (taxa: 50.0%)[0m
+[0;33mW (483201) ENCHENTES_MONITOR_TESTE: 🚨 ALERTA: Mudança significativa detectada na simulação (100.0%)[0m
+[0;32mI (483209) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=13276[0m
+[0;32mI (486077) ENCHENTES_MONITOR_TESTE: 🔧 Sistema funcionando - Memória livre: 129440 bytes | Eficiência: 0.0%[0m
+[0;32mI (487769) ENCHENTES_MONITOR_TESTE: 📊 Estatísticas de rede enviadas[0m
+[0;32mI (487770) ENCHENTES_MONITOR_TESTE: 📈 Stats - Enviados: 224795 bytes, Imagens: 16/16, Eficiência: 0.0%, Compressão: 50.0%[0m
+[0;32mI (487778) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=64892[0m
+[0;32mI (492787) ENCHENTES_MONITOR_TESTE: 📊 Estatísticas de rede enviadas[0m
+[0;32mI (492788) ENCHENTES_MONITOR_TESTE: 📈 Stats - Enviados: 225033 bytes, Imagens: 16/16, Eficiência: 0.0%, Compressão: 50.0%[0m
+[0;32mI (492795) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=37297[0m
+[0;32mI (497804) ENCHENTES_MONITOR_TESTE: 📊 Estatísticas de rede enviadas[0m
+[0;32mI (497805) ENCHENTES_MONITOR_TESTE: 📈 Stats - Enviados: 225271 bytes, Imagens: 16/16, Eficiência: 0.0%, Compressão: 50.0%[0m
+[0;32mI (497811) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=52344[0m
+[0;32mI (502822) ENCHENTES_MONITOR_TESTE: 📊 Estatísticas de rede enviadas[0m
+[0;32mI (502823) ENCHENTES_MONITOR_TESTE: 📈 Stats - Enviados: 225509 bytes, Imagens: 16/16, Eficiência: 0.0%, Compressão: 50.0%[0m
+[0;32mI (502838) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=24096[0m
+[0;32mI (507838) ENCHENTES_MONITOR_TESTE: 📊 Estatísticas de rede enviadas[0m
+[0;32mI (507839) ENCHENTES_MONITOR_TESTE: 📈 Stats - Enviados: 225747 bytes, Imagens: 16/16, Eficiência: 0.0%, Compressão: 50.0%[0m
+[0;32mI (507845) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=28257[0m
+[0;32mI (512857) ENCHENTES_MONITOR_TESTE: 📊 Estatísticas de rede enviadas[0m
+[0;32mI (512858) ENCHENTES_MONITOR_TESTE: 📈 Stats - Enviados: 225985 bytes, Imagens: 16/16, Eficiência: 0.0%, Compressão: 50.0%[0m
+[0;32mI (512866) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=12812[0m
+[0;32mI (513237) ENCHENTES_MONITOR_TESTE: Imagem simulada gerada: 32395 bytes, timestamp: 512[0m
+[0;32mI (513237) ENCHENTES_MONITOR_TESTE: 📸 Imagem simulada capturada: 32395 bytes[0m
+[0;32mI (513243) ENCHENTES_MONITOR_TESTE: 📊 Diferença calculada: 100.00%[0m
+[0;32mI (513257) ENCHENTES_MONITOR_TESTE: 📤 Dados do sensor enviados, msg_id=12185[0m
+[0;32mI (513268) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=12185[0m
+[0;32mI (513273) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=3733[0m
+[0;32mI (513414) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=31895[0m
+[0;32mI (513613) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=30926[0m
+[0;32mI (513694) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=30208[0m
+[0;32mI (513735) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=57768[0m
+[0;32mI (513844) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=51951[0m
+[0;32mI (513948) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=48554[0m
+[0;32mI (514049) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=11993[0m
+[0;32mI (514154) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=48575[0m
+[0;32mI (514258) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=7804[0m
+[0;32mI (514413) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=53213[0m
+[0;32mI (514518) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=26293[0m
+[0;32mI (514619) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=65449[0m
+[0;32mI (514722) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=19518[0m
+[0;32mI (514792) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=6986[0m
+[0;32mI (514848) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=46376[0m
+[0;32mI (514937) ENCHENTES_MONITOR_TESTE: ✅ Imagem simulada enviada com sucesso - 16197 bytes comprimidos (taxa: 50.0%)[0m
+[0;33mW (514943) ENCHENTES_MONITOR_TESTE: 🚨 ALERTA: Mudança significativa detectada na simulação (100.0%)[0m
+[0;32mI (514952) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=65405[0m
+[0;32mI (517875) ENCHENTES_MONITOR_TESTE: 📊 Estatísticas de rede enviadas[0m
+[0;32mI (517876) ENCHENTES_MONITOR_TESTE: 📈 Stats - Enviados: 242563 bytes, Imagens: 17/17, Eficiência: 0.0%, Compressão: 50.0%[0m
+[0;32mI (517893) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=63610[0m
+[0;32mI (522890) ENCHENTES_MONITOR_TESTE: 📊 Estatísticas de rede enviadas[0m
+[0;32mI (522891) ENCHENTES_MONITOR_TESTE: 📈 Stats - Enviados: 242801 bytes, Imagens: 17/17, Eficiência: 0.0%, Compressão: 50.0%[0m
+[0;32mI (522897) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=32980[0m
+[0;32mI (527910) ENCHENTES_MONITOR_TESTE: 📊 Estatísticas de rede enviadas[0m
+[0;32mI (527911) ENCHENTES_MONITOR_TESTE: 📈 Stats - Enviados: 243039 bytes, Imagens: 17/17, Eficiência: 0.0%, Compressão: 50.0%[0m
+[0;32mI (527917) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=35617[0m
+[0;32mI (532928) ENCHENTES_MONITOR_TESTE: 📊 Estatísticas de rede enviadas[0m
+[0;32mI (532929) ENCHENTES_MONITOR_TESTE: 📈 Stats - Enviados: 243277 bytes, Imagens: 17/17, Eficiência: 0.0%, Compressão: 50.0%[0m
+[0;32mI (532950) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=13091[0m
+[0;32mI (537944) ENCHENTES_MONITOR_TESTE: 📊 Estatísticas de rede enviadas[0m
+[0;32mI (537945) ENCHENTES_MONITOR_TESTE: 📈 Stats - Enviados: 243515 bytes, Imagens: 17/17, Eficiência: 0.0%, Compressão: 50.0%[0m
+[0;32mI (537954) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=60923[0m
+[0;32mI (542963) ENCHENTES_MONITOR_TESTE: 📊 Estatísticas de rede enviadas[0m
+[0;32mI (542964) ENCHENTES_MONITOR_TESTE: 📈 Stats - Enviados: 243753 bytes, Imagens: 17/17, Eficiência: 0.0%, Compressão: 50.0%[0m
+[0;32mI (542972) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=51470[0m
+[0;32mI (544973) ENCHENTES_MONITOR_TESTE: Imagem simulada gerada: 26197 bytes, timestamp: 544[0m
+[0;32mI (544973) ENCHENTES_MONITOR_TESTE: 📸 Imagem simulada capturada: 26197 bytes[0m
+[0;32mI (544979) ENCHENTES_MONITOR_TESTE: 📊 Diferença calculada: 100.00%[0m
+[0;32mI (544992) ENCHENTES_MONITOR_TESTE: 📤 Dados do sensor enviados, msg_id=28753[0m
+[0;32mI (545003) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=28753[0m
+[0;32mI (545008) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=8859[0m
+[0;32mI (545238) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=5274[0m
+[0;32mI (545316) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=36817[0m
+[0;32mI (545359) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=16495[0m
+[0;32mI (545462) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=46110[0m
+[0;32mI (545570) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=39535[0m
+[0;32mI (545677) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=38362[0m
+[0;32mI (545776) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=52756[0m
+[0;32mI (545897) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=41624[0m
+[0;32mI (545986) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=28268[0m
+[0;32mI (546078) ENCHENTES_MONITOR_TESTE: 🔧 Sistema funcionando - Memória livre: 78732 bytes | Eficiência: 0.0%[0m
+[0;32mI (546099) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=790[0m
+[0;32mI (546202) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=49010[0m
+[0;32mI (546263) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=22166[0m
+[0;32mI (546356) ENCHENTES_MONITOR_TESTE: ✅ Imagem simulada enviada com sucesso - 13098 bytes comprimidos (taxa: 50.0%)[0m
+[0;33mW (546361) ENCHENTES_MONITOR_TESTE: 🚨 ALERTA: Mudança significativa detectada na simulação (100.0%)[0m
+[0;32mI (546371) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=28183[0m
+[0;32mI (547978) ENCHENTES_MONITOR_TESTE: 📊 Estatísticas de rede enviadas[0m
+[0;32mI (547979) ENCHENTES_MONITOR_TESTE: 📈 Stats - Enviados: 257232 bytes, Imagens: 18/18, Eficiência: 0.0%, Compressão: 50.0%[0m
+[0;32mI (547997) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=55910[0m
+[0;32mI (552993) ENCHENTES_MONITOR_TESTE: 📊 Estatísticas de rede enviadas[0m
+[0;32mI (552994) ENCHENTES_MONITOR_TESTE: 📈 Stats - Enviados: 257470 bytes, Imagens: 18/18, Eficiência: 0.0%, Compressão: 50.0%[0m
+[0;32mI (553006) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=17402[0m
+[0;32mI (558008) ENCHENTES_MONITOR_TESTE: 📊 Estatísticas de rede enviadas[0m
+[0;32mI (558009) ENCHENTES_MONITOR_TESTE: 📈 Stats - Enviados: 257708 bytes, Imagens: 18/18, Eficiência: 0.0%, Compressão: 50.0%[0m
+[0;32mI (558018) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=19566[0m
+[0;32mI (563023) ENCHENTES_MONITOR_TESTE: 📊 Estatísticas de rede enviadas[0m
+[0;32mI (563024) ENCHENTES_MONITOR_TESTE: 📈 Stats - Enviados: 257946 bytes, Imagens: 18/18, Eficiência: 0.0%, Compressão: 50.0%[0m
+[0;32mI (563036) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=26323[0m
+[0;32mI (568038) ENCHENTES_MONITOR_TESTE: 📊 Estatísticas de rede enviadas[0m
+[0;32mI (568039) ENCHENTES_MONITOR_TESTE: 📈 Stats - Enviados: 258184 bytes, Imagens: 18/18, Eficiência: 0.0%, Compressão: 50.0%[0m
+[0;32mI (568053) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=22214[0m
+[0;32mI (573053) ENCHENTES_MONITOR_TESTE: 📊 Estatísticas de rede enviadas[0m
+[0;32mI (573054) ENCHENTES_MONITOR_TESTE: 📈 Stats - Enviados: 258422 bytes, Imagens: 18/18, Eficiência: 0.0%, Compressão: 50.0%[0m
+[0;32mI (573060) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=28068[0m
+[0;32mI (576404) ENCHENTES_MONITOR_TESTE: Imagem simulada gerada: 38571 bytes, timestamp: 575[0m
+[0;32mI (576404) ENCHENTES_MONITOR_TESTE: 📸 Imagem simulada capturada: 38571 bytes[0m
+[0;32mI (576410) ENCHENTES_MONITOR_TESTE: 📊 Diferença calculada: 100.00%[0m
+[0;32mI (576424) ENCHENTES_MONITOR_TESTE: 📤 Dados do sensor enviados, msg_id=26495[0m
+[0;32mI (576434) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=26495[0m
+[0;32mI (576486) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=51873[0m
+[0;32mI (576594) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=52711[0m
+[0;32mI (576702) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=54068[0m
+[0;32mI (576796) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=13736[0m
+[0;32mI (576983) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=35627[0m
+[0;32mI (577063) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=4887[0m
+[0;32mI (577107) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=36162[0m
+[0;32mI (577289) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=35932[0m
+[0;32mI (577333) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=40132[0m
+[0;32mI (577434) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=41085[0m
+[0;32mI (577528) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=32617[0m
+[0;32mI (577639) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=34464[0m
+[0;32mI (577800) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=30931[0m
+[0;32mI (577841) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=21697[0m
+[0;32mI (577957) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=38176[0m
+[0;32mI (578052) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=26170[0m
+[0;32mI (578073) ENCHENTES_MONITOR_TESTE: 📊 Estatísticas de rede enviadas[0m
+[0;32mI (578074) ENCHENTES_MONITOR_TESTE: 📈 Stats - Enviados: 275186 bytes, Imagens: 18/18, Eficiência: 0.0%, Compressão: 50.0%[0m
+[0;32mI (578082) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=58911[0m
+[0;32mI (578162) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=59941[0m
+[0;32mI (578271) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=17917[0m
+[0;32mI (578324) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=25229[0m
+[0;32mI (578413) ENCHENTES_MONITOR_TESTE: ✅ Imagem simulada enviada com sucesso - 19285 bytes comprimidos (taxa: 50.0%)[0m
+[0;33mW (578419) ENCHENTES_MONITOR_TESTE: 🚨 ALERTA: Mudança significativa detectada na simulação (100.0%)[0m
+[0;32mI (578425) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=29152[0m
+[0;32mI (583088) ENCHENTES_MONITOR_TESTE: 📊 Estatísticas de rede enviadas[0m
+[0;32mI (583089) ENCHENTES_MONITOR_TESTE: 📈 Stats - Enviados: 278325 bytes, Imagens: 19/19, Eficiência: 0.0%, Compressão: 50.0%[0m
+[0;32mI (583095) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=34054[0m
+[0;32mI (588110) ENCHENTES_MONITOR_TESTE: 📊 Estatísticas de rede enviadas[0m
+[0;32mI (588111) ENCHENTES_MONITOR_TESTE: 📈 Stats - Enviados: 278563 bytes, Imagens: 19/19, Eficiência: 0.0%, Compressão: 50.0%[0m
+[0;32mI (588121) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=30699[0m
+[0;32mI (593133) ENCHENTES_MONITOR_TESTE: 📊 Estatísticas de rede enviadas[0m
+[0;32mI (593134) ENCHENTES_MONITOR_TESTE: 📈 Stats - Enviados: 278801 bytes, Imagens: 19/19, Eficiência: 0.0%, Compressão: 50.0%[0m
+[0;32mI (593147) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=8558[0m
+[0;32mI (598148) ENCHENTES_MONITOR_TESTE: 📊 Estatísticas de rede enviadas[0m
+[0;32mI (598149) ENCHENTES_MONITOR_TESTE: 📈 Stats - Enviados: 279039 bytes, Imagens: 19/19, Eficiência: 0.0%, Compressão: 50.0%[0m
+[0;32mI (598155) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=43515[0m
+[0;32mI (603170) ENCHENTES_MONITOR_TESTE: 📊 Estatísticas de rede enviadas[0m
+[0;32mI (603171) ENCHENTES_MONITOR_TESTE: 📈 Stats - Enviados: 279277 bytes, Imagens: 19/19, Eficiência: 0.0%, Compressão: 50.0%[0m
+[0;32mI (603184) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=22057[0m
+[0;32mI (606079) ENCHENTES_MONITOR_TESTE: 🔧 Sistema funcionando - Memória livre: 103016 bytes | Eficiência: 0.0%[0m
+[0;32mI (608185) ENCHENTES_MONITOR_TESTE: 📊 Estatísticas de rede enviadas[0m
+[0;32mI (608186) ENCHENTES_MONITOR_TESTE: 📈 Stats - Enviados: 279515 bytes, Imagens: 19/19, Eficiência: 0.0%, Compressão: 50.0%[0m
+[0;32mI (608196) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=18599[0m
+[0;32mI (608442) ENCHENTES_MONITOR_TESTE: Imagem simulada gerada: 18908 bytes, timestamp: 607[0m
+[0;32mI (608442) ENCHENTES_MONITOR_TESTE: 📸 Imagem simulada capturada: 18908 bytes[0m
+[0;32mI (608448) ENCHENTES_MONITOR_TESTE: 📊 Diferença calculada: 100.00%[0m
+[0;32mI (608461) ENCHENTES_MONITOR_TESTE: 📤 Dados do sensor enviados, msg_id=8030[0m
+[0;32mI (608471) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=8030[0m
+[0;32mI (608476) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=39713[0m
+[0;32mI (608625) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=709[0m
+[0;32mI (608739) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=59562[0m
+[0;32mI (608838) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=53649[0m
+[0;32mI (608943) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=30800[0m
+[0;32mI (609037) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=34592[0m
+[0;32mI (609151) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=40790[0m
+[0;32mI (609343) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=21931[0m
+[0;32mI (609413) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=40443[0m
+[0;32mI (609505) ENCHENTES_MONITOR_TESTE: ✅ Imagem simulada enviada com sucesso - 9454 bytes comprimidos (taxa: 50.0%)[0m
+[0;33mW (609511) ENCHENTES_MONITOR_TESTE: 🚨 ALERTA: Mudança significativa detectada na simulação (100.0%)[0m
+[0;32mI (609517) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=44510[0m
+[0;32mI (609593) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=40115[0m
+[0;32mI (613201) ENCHENTES_MONITOR_TESTE: 📊 Estatísticas de rede enviadas[0m
+[0;32mI (613202) ENCHENTES_MONITOR_TESTE: 📈 Stats - Enviados: 289349 bytes, Imagens: 20/20, Eficiência: 0.0%, Compressão: 50.0%[0m
+[0;32mI (613208) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=62091[0m
+[0;32mI (618223) ENCHENTES_MONITOR_TESTE: 📊 Estatísticas de rede enviadas[0m
+[0;32mI (618224) ENCHENTES_MONITOR_TESTE: 📈 Stats - Enviados: 289587 bytes, Imagens: 20/20, Eficiência: 0.0%, Compressão: 50.0%[0m
+[0;32mI (618231) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=25571[0m
+[0;32mI (623239) ENCHENTES_MONITOR_TESTE: 📊 Estatísticas de rede enviadas[0m
+[0;32mI (623240) ENCHENTES_MONITOR_TESTE: 📈 Stats - Enviados: 289825 bytes, Imagens: 20/20, Eficiência: 0.0%, Compressão: 50.0%[0m
+[0;32mI (623248) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=40695[0m
+[0;32mI (628261) ENCHENTES_MONITOR_TESTE: 📊 Estatísticas de rede enviadas[0m
+[0;32mI (628262) ENCHENTES_MONITOR_TESTE: 📈 Stats - Enviados: 290063 bytes, Imagens: 20/20, Eficiência: 0.0%, Compressão: 50.0%[0m
+[0;32mI (628271) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=49291[0m
+[0;32mI (633276) ENCHENTES_MONITOR_TESTE: 📊 Estatísticas de rede enviadas[0m
+[0;32mI (633277) ENCHENTES_MONITOR_TESTE: 📈 Stats - Enviados: 290301 bytes, Imagens: 20/20, Eficiência: 0.0%, Compressão: 50.0%[0m
+[0;32mI (633283) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=50579[0m
+[0;32mI (638292) ENCHENTES_MONITOR_TESTE: 📊 Estatísticas de rede enviadas[0m
+[0;32mI (638293) ENCHENTES_MONITOR_TESTE: 📈 Stats - Enviados: 290539 bytes, Imagens: 20/20, Eficiência: 0.0%, Compressão: 50.0%[0m
+[0;32mI (638301) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=38921[0m
+[0;32mI (639530) ENCHENTES_MONITOR_TESTE: Imagem simulada gerada: 14728 bytes, timestamp: 638[0m
+[0;32mI (639530) ENCHENTES_MONITOR_TESTE: 📸 Imagem simulada capturada: 14728 bytes[0m
+[0;32mI (639536) ENCHENTES_MONITOR_TESTE: 📊 Diferença calculada: 100.00%[0m
+[0;32mI (639550) ENCHENTES_MONITOR_TESTE: 📤 Dados do sensor enviados, msg_id=51240[0m
+[0;32mI (639562) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=51240[0m
+[0;32mI (639566) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=34293[0m
+[0;32mI (639718) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=34210[0m
+[0;32mI (639815) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=58661[0m
+[0;32mI (639928) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=845[0m
+[0;32mI (640028) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=40340[0m
+[0;32mI (640127) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=7167[0m
+[0;32mI (640273) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=47198[0m
+[0;32mI (640294) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=53863[0m
+[0;32mI (640388) ENCHENTES_MONITOR_TESTE: ✅ Imagem simulada enviada com sucesso - 7364 bytes comprimidos (taxa: 50.0%)[0m
+[0;33mW (640393) ENCHENTES_MONITOR_TESTE: 🚨 ALERTA: Mudança significativa detectada na simulação (100.0%)[0m
+[0;32mI (640407) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=54254[0m
+[0;32mI (643307) ENCHENTES_MONITOR_TESTE: 📊 Estatísticas de rede enviadas[0m
+[0;32mI (643308) ENCHENTES_MONITOR_TESTE: 📈 Stats - Enviados: 298283 bytes, Imagens: 21/21, Eficiência: 0.0%, Compressão: 50.0%[0m
+[0;32mI (643317) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=23567[0m
+[0;32mI (648329) ENCHENTES_MONITOR_TESTE: 📊 Estatísticas de rede enviadas[0m
+[0;32mI (648330) ENCHENTES_MONITOR_TESTE: 📈 Stats - Enviados: 298521 bytes, Imagens: 21/21, Eficiência: 0.0%, Compressão: 50.0%[0m
+[0;32mI (648345) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=1480[0m
+[0;32mI (653344) ENCHENTES_MONITOR_TESTE: 📊 Estatísticas de rede enviadas[0m
+[0;32mI (653345) ENCHENTES_MONITOR_TESTE: 📈 Stats - Enviados: 298759 bytes, Imagens: 21/21, Eficiência: 0.0%, Compressão: 50.0%[0m
+[0;32mI (653352) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=15673[0m
+[0;32mI (658366) ENCHENTES_MONITOR_TESTE: 📊 Estatísticas de rede enviadas[0m
+[0;32mI (658367) ENCHENTES_MONITOR_TESTE: 📈 Stats - Enviados: 298997 bytes, Imagens: 21/21, Eficiência: 0.0%, Compressão: 50.0%[0m
+[0;32mI (658373) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=14212[0m
+[0;32mI (663387) ENCHENTES_MONITOR_TESTE: 📊 Estatísticas de rede enviadas[0m
+[0;32mI (663388) ENCHENTES_MONITOR_TESTE: 📈 Stats - Enviados: 299235 bytes, Imagens: 21/21, Eficiência: 0.0%, Compressão: 50.0%[0m
+[0;32mI (663394) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=31653[0m
+[0;32mI (666080) ENCHENTES_MONITOR_TESTE: 🔧 Sistema funcionando - Memória livre: 126860 bytes | Eficiência: 0.0%[0m
+[0;32mI (668405) ENCHENTES_MONITOR_TESTE: 📊 Estatísticas de rede enviadas[0m
+[0;32mI (668406) ENCHENTES_MONITOR_TESTE: 📈 Stats - Enviados: 299473 bytes, Imagens: 21/21, Eficiência: 0.0%, Compressão: 50.0%[0m
+[0;32mI (668412) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=59817[0m
+[0;32mI (670417) ENCHENTES_MONITOR_TESTE: Imagem simulada gerada: 19500 bytes, timestamp: 669[0m
+[0;32mI (670418) ENCHENTES_MONITOR_TESTE: 📸 Imagem simulada capturada: 19500 bytes[0m
+[0;32mI (670423) ENCHENTES_MONITOR_TESTE: 📊 Diferença calculada: 100.00%[0m
+[0;32mI (670437) ENCHENTES_MONITOR_TESTE: 📤 Dados do sensor enviados, msg_id=46299[0m
+[0;32mI (670449) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=46299[0m
+[0;32mI (670456) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=16964[0m
+[0;32mI (670602) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=20481[0m
+[0;32mI (670710) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=64899[0m
+[0;32mI (670813) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=10947[0m
+[0;32mI (670907) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=25331[0m
+[0;32mI (671090) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=3065[0m
+[0;32mI (671142) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=60251[0m
+[0;32mI (671220) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=3928[0m
+[0;32mI (671338) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=33436[0m
+[0;32mI (671390) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=55759[0m
+[0;32mI (671481) ENCHENTES_MONITOR_TESTE: ✅ Imagem simulada enviada com sucesso - 9750 bytes comprimidos (taxa: 50.0%)[0m
+[0;33mW (671487) ENCHENTES_MONITOR_TESTE: 🚨 ALERTA: Mudança significativa detectada na simulação (100.0%)[0m
+[0;32mI (671496) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=52956[0m
+[0;32mI (673423) ENCHENTES_MONITOR_TESTE: 📊 Estatísticas de rede enviadas[0m
+[0;32mI (673424) ENCHENTES_MONITOR_TESTE: 📈 Stats - Enviados: 309603 bytes, Imagens: 22/22, Eficiência: 0.0%, Compressão: 50.0%[0m
+[0;32mI (673432) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=46468[0m
+[0;32mI (678441) ENCHENTES_MONITOR_TESTE: 📊 Estatísticas de rede enviadas[0m
+[0;32mI (678442) ENCHENTES_MONITOR_TESTE: 📈 Stats - Enviados: 309841 bytes, Imagens: 22/22, Eficiência: 0.0%, Compressão: 50.0%[0m
+[0;32mI (678450) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=15711[0m
+[0;32mI (683458) ENCHENTES_MONITOR_TESTE: 📊 Estatísticas de rede enviadas[0m
+[0;32mI (683459) ENCHENTES_MONITOR_TESTE: 📈 Stats - Enviados: 310079 bytes, Imagens: 22/22, Eficiência: 0.0%, Compressão: 50.0%[0m
+[0;32mI (683465) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=22500[0m
+[0;32mI (688476) ENCHENTES_MONITOR_TESTE: 📊 Estatísticas de rede enviadas[0m
+[0;32mI (688477) ENCHENTES_MONITOR_TESTE: 📈 Stats - Enviados: 310317 bytes, Imagens: 22/22, Eficiência: 0.0%, Compressão: 50.0%[0m
+[0;32mI (688484) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=397[0m
+[0;32mI (693494) ENCHENTES_MONITOR_TESTE: 📊 Estatísticas de rede enviadas[0m
+[0;32mI (693495) ENCHENTES_MONITOR_TESTE: 📈 Stats - Enviados: 310555 bytes, Imagens: 22/22, Eficiência: 0.0%, Compressão: 50.0%[0m
+[0;32mI (693511) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=18040[0m
+[0;32mI (698510) ENCHENTES_MONITOR_TESTE: 📊 Estatísticas de rede enviadas[0m
+[0;32mI (698511) ENCHENTES_MONITOR_TESTE: 📈 Stats - Enviados: 310793 bytes, Imagens: 22/22, Eficiência: 0.0%, Compressão: 50.0%[0m
+[0;32mI (698518) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=26738[0m
+[0;32mI (701504) ENCHENTES_MONITOR_TESTE: Imagem simulada gerada: 11655 bytes, timestamp: 700[0m
+[0;32mI (701504) ENCHENTES_MONITOR_TESTE: 📸 Imagem simulada capturada: 11655 bytes[0m
+[0;32mI (701510) ENCHENTES_MONITOR_TESTE: 📊 Diferença calculada: 100.00%[0m
+[0;32mI (701523) ENCHENTES_MONITOR_TESTE: 📤 Dados do sensor enviados, msg_id=39645[0m
+[0;32mI (701533) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=39645[0m
+[0;32mI (701579) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=32480[0m
+[0;32mI (701813) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=23195[0m
+[0;32mI (701848) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=59778[0m
+[0;32mI (701852) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=26936[0m
+[0;32mI (702120) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=25744[0m
+[0;32mI (702148) ENCHENTES_MONITOR_TESTE: ✅ Imagem simulada enviada com sucesso - 5827 bytes comprimidos (taxa: 50.0%)[0m
+[0;33mW (702152) ENCHENTES_MONITOR_TESTE: 🚨 ALERTA: Mudança significativa detectada na simulação (100.0%)[0m
+[0;32mI (702159) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=48543[0m
+[0;32mI (702361) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=4683[0m
+[0;32mI (703529) ENCHENTES_MONITOR_TESTE: 📊 Estatísticas de rede enviadas[0m
+[0;32mI (703530) ENCHENTES_MONITOR_TESTE: 📈 Stats - Enviados: 317000 bytes, Imagens: 23/23, Eficiência: 0.0%, Compressão: 50.0%[0m
+[0;32mI (703537) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=3322[0m
+[0;32mI (708546) ENCHENTES_MONITOR_TESTE: 📊 Estatísticas de rede enviadas[0m
+[0;32mI (708547) ENCHENTES_MONITOR_TESTE: 📈 Stats - Enviados: 317238 bytes, Imagens: 23/23, Eficiência: 0.0%, Compressão: 50.0%[0m
+[0;32mI (708568) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=8100[0m
+[0;32mI (713563) ENCHENTES_MONITOR_TESTE: 📊 Estatísticas de rede enviadas[0m
+[0;32mI (713564) ENCHENTES_MONITOR_TESTE: 📈 Stats - Enviados: 317476 bytes, Imagens: 23/23, Eficiência: 0.0%, Compressão: 50.0%[0m
+[0;32mI (713571) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=57388[0m
+[0;32mI (718582) ENCHENTES_MONITOR_TESTE: 📊 Estatísticas de rede enviadas[0m
+[0;32mI (718583) ENCHENTES_MONITOR_TESTE: 📈 Stats - Enviados: 317714 bytes, Imagens: 23/23, Eficiência: 0.0%, Compressão: 50.0%[0m
+[0;32mI (718591) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=10554[0m
+[0;32mI (723597) ENCHENTES_MONITOR_TESTE: 📊 Estatísticas de rede enviadas[0m
+[0;32mI (723598) ENCHENTES_MONITOR_TESTE: 📈 Stats - Enviados: 317952 bytes, Imagens: 23/23, Eficiência: 0.0%, Compressão: 50.0%[0m
+[0;32mI (723609) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=10963[0m
+[0;32mI (726081) ENCHENTES_MONITOR_TESTE: 🔧 Sistema funcionando - Memória livre: 129932 bytes | Eficiência: 0.0%[0m
+[0;32mI (728613) ENCHENTES_MONITOR_TESTE: 📊 Estatísticas de rede enviadas[0m
+[0;32mI (728614) ENCHENTES_MONITOR_TESTE: 📈 Stats - Enviados: 318190 bytes, Imagens: 23/23, Eficiência: 0.0%, Compressão: 50.0%[0m
+[0;32mI (728623) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=23215[0m
+[0;32mI (732194) ENCHENTES_MONITOR_TESTE: Imagem simulada gerada: 38084 bytes, timestamp: 731[0m
+[0;32mI (732195) ENCHENTES_MONITOR_TESTE: 📸 Imagem simulada capturada: 38084 bytes[0m
+[0;32mI (732200) ENCHENTES_MONITOR_TESTE: 📊 Diferença calculada: 100.00%[0m
+[0;32mI (732215) ENCHENTES_MONITOR_TESTE: 📤 Dados do sensor enviados, msg_id=45193[0m
+[0;32mI (732229) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=45193[0m
+[0;32mI (732233) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=34358[0m
+[0;32mI (732377) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=3751[0m
+[0;32mI (732486) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=46328[0m
+[0;32mI (732631) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=48488[0m
+[0;32mI (732735) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=41420[0m
+[0;32mI (732796) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=47118[0m
+[0;32mI (732902) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=23582[0m
+[0;32mI (733013) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=19156[0m
+[0;32mI (733161) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=13490[0m
+[0;32mI (733220) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=48446[0m
+[0;32mI (733327) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=57229[0m
+[0;32mI (733553) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=27431[0m
+[0;32mI (733590) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=16180[0m
+[0;32mI (733595) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=31895[0m
+[0;32mI (733626) ENCHENTES_MONITOR_TESTE: 📊 Estatísticas de rede enviadas[0m
+[0;32mI (733627) ENCHENTES_MONITOR_TESTE: 📈 Stats - Enviados: 332906 bytes, Imagens: 23/23, Eficiência: 0.0%, Compressão: 50.0%[0m
+[0;32mI (733633) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=62009[0m
+[0;32mI (733760) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=19219[0m
+[0;32mI (733844) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=62661[0m
+[0;32mI (733962) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=17340[0m
+[0;32mI (734167) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=44063[0m
+[0;32mI (734202) ENCHENTES_MONITOR_TESTE: ✅ Imagem simulada enviada com sucesso - 19042 bytes comprimidos (taxa: 50.0%)[0m
+[0;33mW (734207) ENCHENTES_MONITOR_TESTE: 🚨 ALERTA: Mudança significativa detectada na simulação (100.0%)[0m
+[0;32mI (734218) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=39556[0m
+[0;32mI (734369) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=10026[0m
+[0;32mI (738649) ENCHENTES_MONITOR_TESTE: 📊 Estatísticas de rede enviadas[0m
+[0;32mI (738650) ENCHENTES_MONITOR_TESTE: 📈 Stats - Enviados: 337850 bytes, Imagens: 24/24, Eficiência: 0.0%, Compressão: 50.0%[0m
+[0;32mI (738658) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=4008[0m
+[0;32mI (743664) ENCHENTES_MONITOR_TESTE: 📊 Estatísticas de rede enviadas[0m
+[0;32mI (743665) ENCHENTES_MONITOR_TESTE: 📈 Stats - Enviados: 338088 bytes, Imagens: 24/24, Eficiência: 0.0%, Compressão: 50.0%[0m
+[0;32mI (743672) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=8890[0m
+[0;32mI (748680) ENCHENTES_MONITOR_TESTE: 📊 Estatísticas de rede enviadas[0m
+[0;32mI (748681) ENCHENTES_MONITOR_TESTE: 📈 Stats - Enviados: 338326 bytes, Imagens: 24/24, Eficiência: 0.0%, Compressão: 50.0%[0m
+[0;32mI (748687) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=20206[0m
+[0;32mI (753702) ENCHENTES_MONITOR_TESTE: 📊 Estatísticas de rede enviadas[0m
+[0;32mI (753703) ENCHENTES_MONITOR_TESTE: 📈 Stats - Enviados: 338564 bytes, Imagens: 24/24, Eficiência: 0.0%, Compressão: 50.0%[0m
+[0;32mI (753711) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=41141[0m
+[0;32mI (758717) ENCHENTES_MONITOR_TESTE: 📊 Estatísticas de rede enviadas[0m
+[0;32mI (758718) ENCHENTES_MONITOR_TESTE: 📈 Stats - Enviados: 338802 bytes, Imagens: 24/24, Eficiência: 0.0%, Compressão: 50.0%[0m
+[0;32mI (758724) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=10340[0m
+[0;32mI (763733) ENCHENTES_MONITOR_TESTE: 📊 Estatísticas de rede enviadas[0m
+[0;32mI (763734) ENCHENTES_MONITOR_TESTE: 📈 Stats - Enviados: 339040 bytes, Imagens: 24/24, Eficiência: 0.0%, Compressão: 50.0%[0m
+[0;32mI (763740) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=28550[0m
+[0;32mI (764235) ENCHENTES_MONITOR_TESTE: Imagem simulada gerada: 23862 bytes, timestamp: 763[0m
+[0;32mI (764236) ENCHENTES_MONITOR_TESTE: 📸 Imagem simulada capturada: 23862 bytes[0m
+[0;32mI (764242) ENCHENTES_MONITOR_TESTE: 📊 Diferença calculada: 100.00%[0m
+[0;32mI (764255) ENCHENTES_MONITOR_TESTE: 📤 Dados do sensor enviados, msg_id=46529[0m
+[0;32mI (764265) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=46529[0m
+[0;32mI (764327) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=17250[0m
+[0;32mI (764481) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=24117[0m
+[0;32mI (764485) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=23929[0m
+[0;32mI (764638) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=26828[0m
+[0;32mI (764745) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=19377[0m
+[0;32mI (764890) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=63649[0m
+[0;32mI (764951) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=2256[0m
+[0;32mI (765053) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=41899[0m
+[0;32mI (765196) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=64743[0m
+[0;32mI (765297) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=48248[0m
+[0;32mI (765371) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=41847[0m
+[0;32mI (765423) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=18639[0m
+[0;32mI (765517) ENCHENTES_MONITOR_TESTE: ✅ Imagem simulada enviada com sucesso - 11931 bytes comprimidos (taxa: 50.0%)[0m
+[0;33mW (765523) ENCHENTES_MONITOR_TESTE: 🚨 ALERTA: Mudança significativa detectada na simulação (100.0%)[0m
+[0;32mI (765534) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=60356[0m
+[0;32mI (768755) ENCHENTES_MONITOR_TESTE: 📊 Estatísticas de rede enviadas[0m
+[0;32mI (768756) ENCHENTES_MONITOR_TESTE: 📈 Stats - Enviados: 351352 bytes, Imagens: 25/25, Eficiência: 0.0%, Compressão: 50.0%[0m
+[0;32mI (768765) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=6565[0m
+[0;32mI (773770) ENCHENTES_MONITOR_TESTE: 📊 Estatísticas de rede enviadas[0m
+[0;32mI (773771) ENCHENTES_MONITOR_TESTE: 📈 Stats - Enviados: 351590 bytes, Imagens: 25/25, Eficiência: 0.0%, Compressão: 50.0%[0m
+[0;32mI (773778) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=6830[0m
+[0;32mI (778786) ENCHENTES_MONITOR_TESTE: 📊 Estatísticas de rede enviadas[0m
+[0;32mI (778787) ENCHENTES_MONITOR_TESTE: 📈 Stats - Enviados: 351828 bytes, Imagens: 25/25, Eficiência: 0.0%, Compressão: 50.0%[0m
+[0;32mI (778793) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=22672[0m
+[0;32mI (783808) ENCHENTES_MONITOR_TESTE: 📊 Estatísticas de rede enviadas[0m
+[0;32mI (783809) ENCHENTES_MONITOR_TESTE: 📈 Stats - Enviados: 352066 bytes, Imagens: 25/25, Eficiência: 0.0%, Compressão: 50.0%[0m
+[0;32mI (783818) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=15633[0m
+[0;32mI (786082) ENCHENTES_MONITOR_TESTE: 🔧 Sistema funcionando - Memória livre: 117724 bytes | Eficiência: 0.0%[0m
+[0;32mI (788823) ENCHENTES_MONITOR_TESTE: 📊 Estatísticas de rede enviadas[0m
+[0;32mI (788824) ENCHENTES_MONITOR_TESTE: 📈 Stats - Enviados: 352304 bytes, Imagens: 25/25, Eficiência: 0.0%, Compressão: 50.0%[0m
+[0;32mI (788836) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=50339[0m
+[0;32mI (793838) ENCHENTES_MONITOR_TESTE: 📊 Estatísticas de rede enviadas[0m
+[0;32mI (793839) ENCHENTES_MONITOR_TESTE: 📈 Stats - Enviados: 352542 bytes, Imagens: 25/25, Eficiência: 0.0%, Compressão: 50.0%[0m
+[0;32mI (793846) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=45504[0m
+[0;32mI (795573) ENCHENTES_MONITOR_TESTE: Imagem simulada gerada: 47370 bytes, timestamp: 794[0m
+[0;32mI (795574) ENCHENTES_MONITOR_TESTE: 📸 Imagem simulada capturada: 47370 bytes[0m
+[0;32mI (795579) ENCHENTES_MONITOR_TESTE: 📊 Diferença calculada: 100.00%[0m
+[0;32mI (795594) ENCHENTES_MONITOR_TESTE: 📤 Dados do sensor enviados, msg_id=11845[0m
+[0;32mI (795610) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=11845[0m
+[0;32mI (795617) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=16753[0m
+[0;32mI (795817) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=40799[0m
+[0;32mI (795821) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=47815[0m
+[0;32mI (796017) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=36173[0m
+[0;32mI (796123) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=3846[0m
+[0;32mI (796224) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=62888[0m
+[0;32mI (796325) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=58525[0m
+[0;32mI (796428) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=3526[0m
+[0;32mI (796529) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=45271[0m
+[0;32mI (796632) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=1544[0m
+[0;32mI (796705) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=15508[0m
+[0;32mI (796836) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=41214[0m
+[0;32mI (796915) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=45198[0m
+[0;32mI (797022) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=12979[0m
+[0;32mI (797121) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=59940[0m
+[0;32mI (797233) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=25479[0m
+[0;32mI (797330) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=62711[0m
+[0;32mI (797436) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=12015[0m
+[0;32mI (797539) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=57863[0m
+[0;32mI (797653) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=5966[0m
+[0;32mI (797745) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=16627[0m
+[0;32mI (797860) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=31133[0m
+[0;32mI (797962) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=63773[0m
+[0;32mI (798019) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=38293[0m
+[0;32mI (798113) ENCHENTES_MONITOR_TESTE: ✅ Imagem simulada enviada com sucesso - 23685 bytes comprimidos (taxa: 50.0%)[0m
+[0;33mW (798119) ENCHENTES_MONITOR_TESTE: 🚨 ALERTA: Mudança significativa detectada na simulação (100.0%)[0m
+[0;32mI (798130) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=4851[0m
+[0;32mI (798860) ENCHENTES_MONITOR_TESTE: 📊 Estatísticas de rede enviadas[0m
+[0;32mI (798861) ENCHENTES_MONITOR_TESTE: 📈 Stats - Enviados: 376607 bytes, Imagens: 26/26, Eficiência: 0.0%, Compressão: 50.0%[0m
+[0;32mI (798869) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=3916[0m
+[0;32mI (803875) ENCHENTES_MONITOR_TESTE: 📊 Estatísticas de rede enviadas[0m
+[0;32mI (803876) ENCHENTES_MONITOR_TESTE: 📈 Stats - Enviados: 376844 bytes, Imagens: 26/26, Eficiência: 0.0%, Compressão: 50.0%[0m
+[0;32mI (803882) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=6517[0m
+[0;32mI (808892) ENCHENTES_MONITOR_TESTE: 📊 Estatísticas de rede enviadas[0m
+[0;32mI (808893) ENCHENTES_MONITOR_TESTE: 📈 Stats - Enviados: 377081 bytes, Imagens: 26/26, Eficiência: 0.0%, Compressão: 50.0%[0m
+[0;32mI (808907) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=33691[0m
+[0;32mI (813914) ENCHENTES_MONITOR_TESTE: 📊 Estatísticas de rede enviadas[0m
+[0;32mI (813915) ENCHENTES_MONITOR_TESTE: 📈 Stats - Enviados: 377318 bytes, Imagens: 26/26, Eficiência: 0.0%, Compressão: 50.0%[0m
+[0;32mI (813926) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=28993[0m
+[0;32mI (818935) ENCHENTES_MONITOR_TESTE: 📊 Estatísticas de rede enviadas[0m
+[0;32mI (818936) ENCHENTES_MONITOR_TESTE: 📈 Stats - Enviados: 377555 bytes, Imagens: 26/26, Eficiência: 0.0%, Compressão: 50.0%[0m
+[0;32mI (818942) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=32604[0m
+[0;32mI (823953) ENCHENTES_MONITOR_TESTE: 📊 Estatísticas de rede enviadas[0m
+[0;32mI (823954) ENCHENTES_MONITOR_TESTE: 📈 Stats - Enviados: 377792 bytes, Imagens: 26/26, Eficiência: 0.0%, Compressão: 50.0%[0m
+[0;32mI (823977) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=40195[0m
+[0;32mI (828136) ENCHENTES_MONITOR_TESTE: Imagem simulada gerada: 12581 bytes, timestamp: 827[0m
+[0;32mI (828136) ENCHENTES_MONITOR_TESTE: 📸 Imagem simulada capturada: 12581 bytes[0m
+[0;32mI (828142) ENCHENTES_MONITOR_TESTE: 📊 Diferença calculada: 100.00%[0m
+[0;32mI (828155) ENCHENTES_MONITOR_TESTE: 📤 Dados do sensor enviados, msg_id=7465[0m
+[0;32mI (828172) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=7465[0m
+[0;32mI (828177) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=3837[0m
+[0;32mI (828320) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=55733[0m
+[0;32mI (828423) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=12229[0m
+[0;32mI (828533) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=25081[0m
+[0;32mI (828642) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=31042[0m
+[0;32mI (828786) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=59516[0m
+[0;32mI (828800) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=42896[0m
+[0;32mI (828891) ENCHENTES_MONITOR_TESTE: ✅ Imagem simulada enviada com sucesso - 6290 bytes comprimidos (taxa: 50.0%)[0m
+[0;33mW (828896) ENCHENTES_MONITOR_TESTE: 🚨 ALERTA: Mudança significativa detectada na simulação (100.0%)[0m
+[0;32mI (828902) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=26575[0m
+[0;32mI (828969) ENCHENTES_MONITOR_TESTE: 📊 Estatísticas de rede enviadas[0m
+[0;32mI (828970) ENCHENTES_MONITOR_TESTE: 📈 Stats - Enviados: 384462 bytes, Imagens: 27/27, Eficiência: 0.0%, Compressão: 50.0%[0m
+[0;32mI (828987) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=27637[0m
+[0;32mI (833984) ENCHENTES_MONITOR_TESTE: 📊 Estatísticas de rede enviadas[0m
+[0;32mI (833985) ENCHENTES_MONITOR_TESTE: 📈 Stats - Enviados: 384700 bytes, Imagens: 27/27, Eficiência: 0.0%, Compressão: 50.0%[0m
+[0;32mI (833991) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=31180[0m
+[0;32mI (839006) ENCHENTES_MONITOR_TESTE: 📊 Estatísticas de rede enviadas[0m
+[0;32mI (839007) ENCHENTES_MONITOR_TESTE: 📈 Stats - Enviados: 384938 bytes, Imagens: 27/27, Eficiência: 0.0%, Compressão: 50.0%[0m
+[0;32mI (839014) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=47815[0m
+[0;32mI (844024) ENCHENTES_MONITOR_TESTE: 📊 Estatísticas de rede enviadas[0m
+[0;32mI (844025) ENCHENTES_MONITOR_TESTE: 📈 Stats - Enviados: 385176 bytes, Imagens: 27/27, Eficiência: 0.0%, Compressão: 50.0%[0m
+[0;32mI (844034) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=30976[0m
+[0;32mI (846083) ENCHENTES_MONITOR_TESTE: 🔧 Sistema funcionando - Memória livre: 129004 bytes | Eficiência: 0.0%[0m
+[0;32mI (849041) ENCHENTES_MONITOR_TESTE: 📊 Estatísticas de rede enviadas[0m
+[0;32mI (849042) ENCHENTES_MONITOR_TESTE: 📈 Stats - Enviados: 385414 bytes, Imagens: 27/27, Eficiência: 0.0%, Compressão: 50.0%[0m
+[0;32mI (849057) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=25121[0m
+[0;32mI (854056) ENCHENTES_MONITOR_TESTE: 📊 Estatísticas de rede enviadas[0m
+[0;32mI (854057) ENCHENTES_MONITOR_TESTE: 📈 Stats - Enviados: 385652 bytes, Imagens: 27/27, Eficiência: 0.0%, Compressão: 50.0%[0m
+[0;32mI (854075) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=5052[0m
+[0;32mI (858940) ENCHENTES_MONITOR_TESTE: Imagem simulada gerada: 40327 bytes, timestamp: 858[0m
+[0;32mI (858941) ENCHENTES_MONITOR_TESTE: 📸 Imagem simulada capturada: 40327 bytes[0m
+[0;32mI (858946) ENCHENTES_MONITOR_TESTE: 📊 Diferença calculada: 100.00%[0m
+[0;32mI (858961) ENCHENTES_MONITOR_TESTE: 📤 Dados do sensor enviados, msg_id=63197[0m
+[0;32mI (858971) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=63197[0m
+[0;32mI (859017) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=58079[0m
+[0;32mI (859074) ENCHENTES_MONITOR_TESTE: 📊 Estatísticas de rede enviadas[0m
+[0;32mI (859075) ENCHENTES_MONITOR_TESTE: 📈 Stats - Enviados: 388080 bytes, Imagens: 27/27, Eficiência: 0.0%, Compressão: 50.0%[0m
+[0;32mI (859081) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=18321[0m
+[0;32mI (859097) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=30551[0m
+[0;32mI (859230) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=24356[0m
+[0;32mI (859333) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=40357[0m
+[0;32mI (859441) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=30388[0m
+[0;32mI (859540) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=13754[0m
+[0;32mI (859652) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=41213[0m
+[0;32mI (859757) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=17692[0m
+[0;32mI (859865) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=49635[0m
+[0;32mI (859963) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=30946[0m
+[0;32mI (860078) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=46548[0m
+[0;32mI (860183) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=31443[0m
+[0;32mI (860279) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=2364[0m
+[0;32mI (860389) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=59592[0m
+[0;32mI (860490) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=21134[0m
+[0;32mI (860633) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=6496[0m
+[0;32mI (860697) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=30802[0m
+[0;32mI (860809) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=19543[0m
+[0;32mI (860940) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=55555[0m
+[0;32mI (860967) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=45526[0m
+[0;32mI (861061) ENCHENTES_MONITOR_TESTE: ✅ Imagem simulada enviada com sucesso - 20163 bytes comprimidos (taxa: 50.0%)[0m
+[0;33mW (861067) ENCHENTES_MONITOR_TESTE: 🚨 ALERTA: Mudança significativa detectada na simulação (100.0%)[0m
+[0;32mI (861080) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=58764[0m
+[0;32mI (864095) ENCHENTES_MONITOR_TESTE: 📊 Estatísticas de rede enviadas[0m
+[0;32mI (864096) ENCHENTES_MONITOR_TESTE: 📈 Stats - Enviados: 406433 bytes, Imagens: 28/28, Eficiência: 0.0%, Compressão: 50.0%[0m
+[0;32mI (864103) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=6082[0m
+[0;32mI (869112) ENCHENTES_MONITOR_TESTE: 📊 Estatísticas de rede enviadas[0m
+[0;32mI (869113) ENCHENTES_MONITOR_TESTE: 📈 Stats - Enviados: 406671 bytes, Imagens: 28/28, Eficiência: 0.0%, Compressão: 50.0%[0m
+[0;32mI (869119) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=16120[0m
+[0;32mI (874130) ENCHENTES_MONITOR_TESTE: 📊 Estatísticas de rede enviadas[0m
+[0;32mI (874131) ENCHENTES_MONITOR_TESTE: 📈 Stats - Enviados: 406909 bytes, Imagens: 28/28, Eficiência: 0.0%, Compressão: 50.0%[0m
+[0;32mI (874141) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=30702[0m
+[0;32mI (879153) ENCHENTES_MONITOR_TESTE: 📊 Estatísticas de rede enviadas[0m
+[0;32mI (879154) ENCHENTES_MONITOR_TESTE: 📈 Stats - Enviados: 407147 bytes, Imagens: 28/28, Eficiência: 0.0%, Compressão: 50.0%[0m
+[0;32mI (879167) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=63788[0m
+[0;32mI (884168) ENCHENTES_MONITOR_TESTE: 📊 Estatísticas de rede enviadas[0m
+[0;32mI (884169) ENCHENTES_MONITOR_TESTE: 📈 Stats - Enviados: 407385 bytes, Imagens: 28/28, Eficiência: 0.0%, Compressão: 50.0%[0m
+[0;32mI (884185) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=16263[0m
+[0;32mI (889184) ENCHENTES_MONITOR_TESTE: 📊 Estatísticas de rede enviadas[0m
+[0;32mI (889185) ENCHENTES_MONITOR_TESTE: 📈 Stats - Enviados: 407623 bytes, Imagens: 28/28, Eficiência: 0.0%, Compressão: 50.0%[0m
+[0;32mI (889202) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=5595[0m
+[0;32mI (891094) ENCHENTES_MONITOR_TESTE: Imagem simulada gerada: 23468 bytes, timestamp: 890[0m
+[0;32mI (891095) ENCHENTES_MONITOR_TESTE: 📸 Imagem simulada capturada: 23468 bytes[0m
+[0;32mI (891100) ENCHENTES_MONITOR_TESTE: 📊 Diferença calculada: 100.00%[0m
+[0;32mI (891114) ENCHENTES_MONITOR_TESTE: 📤 Dados do sensor enviados, msg_id=39874[0m
+[0;32mI (891124) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=39874[0m
+[0;32mI (891251) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=47143[0m
+[0;32mI (891334) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=7752[0m
+[0;32mI (891375) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=32938[0m
+[0;32mI (891494) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=14598[0m
+[0;32mI (891660) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=58551[0m
+[0;32mI (891753) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=37878[0m
+[0;32mI (891794) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=40465[0m
+[0;32mI (891910) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=9548[0m
+[0;32mI (892070) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=21512[0m
+[0;32mI (892150) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=42645[0m
+[0;32mI (892276) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=64576[0m
+[0;32mI (892369) ENCHENTES_MONITOR_TESTE: ✅ Imagem simulada enviada com sucesso - 11734 bytes comprimidos (taxa: 50.0%)[0m
+[0;33mW (892375) ENCHENTES_MONITOR_TESTE: 🚨 ALERTA: Mudança significativa detectada na simulação (100.0%)[0m
+[0;32mI (892381) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=10257[0m
+[0;32mI (892400) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=50891[0m
+[0;32mI (894199) ENCHENTES_MONITOR_TESTE: 📊 Estatísticas de rede enviadas[0m
+[0;32mI (894200) ENCHENTES_MONITOR_TESTE: 📈 Stats - Enviados: 419738 bytes, Imagens: 29/29, Eficiência: 0.0%, Compressão: 50.0%[0m
+[0;32mI (894209) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=17080[0m
+[0;32mI (899218) ENCHENTES_MONITOR_TESTE: 📊 Estatísticas de rede enviadas[0m
+[0;32mI (899219) ENCHENTES_MONITOR_TESTE: 📈 Stats - Enviados: 419976 bytes, Imagens: 29/29, Eficiência: 0.0%, Compressão: 50.0%[0m
+[0;32mI (899227) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=408[0m
+[0;32mI (904237) ENCHENTES_MONITOR_TESTE: 📊 Estatísticas de rede enviadas[0m
+[0;32mI (904238) ENCHENTES_MONITOR_TESTE: 📈 Stats - Enviados: 420214 bytes, Imagens: 29/29, Eficiência: 0.0%, Compressão: 50.0%[0m
+[0;32mI (904243) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=61547[0m
+[0;32mI (906084) ENCHENTES_MONITOR_TESTE: 🔧 Sistema funcionando - Memória livre: 118120 bytes | Eficiência: 0.0%[0m
+[0;32mI (909253) ENCHENTES_MONITOR_TESTE: 📊 Estatísticas de rede enviadas[0m
+[0;32mI (909254) ENCHENTES_MONITOR_TESTE: 📈 Stats - Enviados: 420452 bytes, Imagens: 29/29, Eficiência: 0.0%, Compressão: 50.0%[0m
+[0;32mI (909260) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=4424[0m
+[0;32mI (914271) ENCHENTES_MONITOR_TESTE: 📊 Estatísticas de rede enviadas[0m
+[0;32mI (914272) ENCHENTES_MONITOR_TESTE: 📈 Stats - Enviados: 420690 bytes, Imagens: 29/29, Eficiência: 0.0%, Compressão: 50.0%[0m
+[0;32mI (914324) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=41775[0m
+[0;32mI (919287) ENCHENTES_MONITOR_TESTE: 📊 Estatísticas de rede enviadas[0m
+[0;32mI (919288) ENCHENTES_MONITOR_TESTE: 📈 Stats - Enviados: 420928 bytes, Imagens: 29/29, Eficiência: 0.0%, Compressão: 50.0%[0m
+[0;32mI (919297) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=27525[0m
+[0;32mI (922406) ENCHENTES_MONITOR_TESTE: Imagem simulada gerada: 27798 bytes, timestamp: 921[0m
+[0;32mI (922407) ENCHENTES_MONITOR_TESTE: 📸 Imagem simulada capturada: 27798 bytes[0m
+[0;32mI (922413) ENCHENTES_MONITOR_TESTE: 📊 Diferença calculada: 100.00%[0m
+[0;32mI (922426) ENCHENTES_MONITOR_TESTE: 📤 Dados do sensor enviados, msg_id=41978[0m
+[0;32mI (922436) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=41978[0m
+[0;32mI (922589) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=17691[0m
+[0;32mI (922648) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=24503[0m
+[0;32mI (922688) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=60662[0m
+[0;32mI (922898) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=31235[0m
+[0;32mI (922955) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=39697[0m
+[0;32mI (923098) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=50638[0m
+[0;32mI (923161) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=61127[0m
+[0;32mI (923220) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=4056[0m
+[0;32mI (923315) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=28439[0m
+[0;32mI (923416) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=51694[0m
+[0;32mI (923521) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=34791[0m
+[0;32mI (923632) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=28861[0m
+[0;32mI (923736) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=61596[0m
+[0;32mI (923793) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=2800[0m
+[0;32mI (923886) ENCHENTES_MONITOR_TESTE: ✅ Imagem simulada enviada com sucesso - 13899 bytes comprimidos (taxa: 50.0%)[0m
+[0;33mW (923892) ENCHENTES_MONITOR_TESTE: 🚨 ALERTA: Mudança significativa detectada na simulação (100.0%)[0m
+[0;32mI (923901) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=56271[0m
+[0;32mI (924306) ENCHENTES_MONITOR_TESTE: 📊 Estatísticas de rede enviadas[0m
+[0;32mI (924307) ENCHENTES_MONITOR_TESTE: 📈 Stats - Enviados: 435208 bytes, Imagens: 30/30, Eficiência: 0.0%, Compressão: 50.0%[0m
+[0;32mI (924322) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=9459[0m
+[0;32mI (929321) ENCHENTES_MONITOR_TESTE: 📊 Estatísticas de rede enviadas[0m
+[0;32mI (929322) ENCHENTES_MONITOR_TESTE: 📈 Stats - Enviados: 435446 bytes, Imagens: 30/30, Eficiência: 0.0%, Compressão: 50.0%[0m
+[0;32mI (929332) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=4316[0m
+[0;32mI (934342) ENCHENTES_MONITOR_TESTE: 📊 Estatísticas de rede enviadas[0m
+[0;32mI (934343) ENCHENTES_MONITOR_TESTE: 📈 Stats - Enviados: 435684 bytes, Imagens: 30/30, Eficiência: 0.0%, Compressão: 50.0%[0m
+[0;32mI (934352) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=10177[0m
+[0;32mI (939357) ENCHENTES_MONITOR_TESTE: 📊 Estatísticas de rede enviadas[0m
+[0;32mI (939358) ENCHENTES_MONITOR_TESTE: 📈 Stats - Enviados: 435922 bytes, Imagens: 30/30, Eficiência: 0.0%, Compressão: 50.0%[0m
+[0;32mI (939368) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=17742[0m
+[0;32mI (944377) ENCHENTES_MONITOR_TESTE: 📊 Estatísticas de rede enviadas[0m
+[0;32mI (944378) ENCHENTES_MONITOR_TESTE: 📈 Stats - Enviados: 436160 bytes, Imagens: 30/30, Eficiência: 0.0%, Compressão: 50.0%[0m
+[0;32mI (944386) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=49962[0m
+[0;32mI (949395) ENCHENTES_MONITOR_TESTE: 📊 Estatísticas de rede enviadas[0m
+[0;32mI (949396) ENCHENTES_MONITOR_TESTE: 📈 Stats - Enviados: 436398 bytes, Imagens: 30/30, Eficiência: 0.0%, Compressão: 50.0%[0m
+[0;32mI (949402) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=16893[0m
+[0;32mI (953943) ENCHENTES_MONITOR_TESTE: Imagem simulada gerada: 46192 bytes, timestamp: 953[0m
+[0;32mI (953943) ENCHENTES_MONITOR_TESTE: 📸 Imagem simulada capturada: 46192 bytes[0m
+[0;32mI (953949) ENCHENTES_MONITOR_TESTE: 📊 Diferença calculada: 100.00%[0m
+[0;32mI (953964) ENCHENTES_MONITOR_TESTE: 📤 Dados do sensor enviados, msg_id=5257[0m
+[0;32mI (953974) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=5257[0m
+[0;32mI (953987) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=3323[0m
+[0;32mI (954235) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=12462[0m
+[0;32mI (954286) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=43321[0m
+[0;32mI (954328) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=12380[0m
+[0;32mI (954409) ENCHENTES_MONITOR_TESTE: 📊 Estatísticas de rede enviadas[0m
+[0;32mI (954410) ENCHENTES_MONITOR_TESTE: 📈 Stats - Enviados: 441898 bytes, Imagens: 30/30, Eficiência: 0.0%, Compressão: 50.0%[0m
+[0;32mI (954438) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=39311[0m
+[0;32mI (954494) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=25775[0m
+[0;32mI (954539) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=49779[0m
+[0;32mI (954744) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=53125[0m
+[0;32mI (954811) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=21846[0m
+[0;32mI (954851) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=955[0m
+[0;32mI (954964) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=33958[0m
+[0;32mI (955072) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=14416[0m
+[0;32mI (955256) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=17129[0m
+[0;32mI (955334) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=44070[0m
+[0;32mI (955375) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=54388[0m
+[0;32mI (955487) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=2358[0m
+[0;32mI (955597) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=4679[0m
+[0;32mI (955699) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=57569[0m
+[0;32mI (955805) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=54016[0m
+[0;32mI (955968) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=259[0m
+[0;32mI (956071) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=61425[0m
+[0;32mI (956113) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=32245[0m
+[0;32mI (956278) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=22515[0m
+[0;32mI (956282) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=32932[0m
+[0;32mI (956373) ENCHENTES_MONITOR_TESTE: ✅ Imagem simulada enviada com sucesso - 23096 bytes comprimidos (taxa: 50.0%)[0m
+[0;33mW (956379) ENCHENTES_MONITOR_TESTE: 🚨 ALERTA: Mudança significativa detectada na simulação (100.0%)[0m
+[0;32mI (956388) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=63654[0m
+[0;32mI (959424) ENCHENTES_MONITOR_TESTE: 📊 Estatísticas de rede enviadas[0m
+[0;32mI (959425) ENCHENTES_MONITOR_TESTE: 📈 Stats - Enviados: 460111 bytes, Imagens: 31/31, Eficiência: 0.0%, Compressão: 50.0%[0m
+[0;32mI (959437) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=60770[0m
+[0;32mI (964439) ENCHENTES_MONITOR_TESTE: 📊 Estatísticas de rede enviadas[0m
+[0;32mI (964440) ENCHENTES_MONITOR_TESTE: 📈 Stats - Enviados: 460348 bytes, Imagens: 31/31, Eficiência: 0.0%, Compressão: 50.0%[0m
+[0;32mI (964446) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=8973[0m
+[0;32mI (966085) ENCHENTES_MONITOR_TESTE: 🔧 Sistema funcionando - Memória livre: 95396 bytes | Eficiência: 0.0%[0m
+[0;32mI (969461) ENCHENTES_MONITOR_TESTE: 📊 Estatísticas de rede enviadas[0m
+[0;32mI (969462) ENCHENTES_MONITOR_TESTE: 📈 Stats - Enviados: 460585 bytes, Imagens: 31/31, Eficiência: 0.0%, Compressão: 50.0%[0m
+[0;32mI (969468) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=17928[0m
+[0;32mI (974483) ENCHENTES_MONITOR_TESTE: 📊 Estatísticas de rede enviadas[0m
+[0;32mI (974484) ENCHENTES_MONITOR_TESTE: 📈 Stats - Enviados: 460822 bytes, Imagens: 31/31, Eficiência: 0.0%, Compressão: 50.0%[0m
+[0;32mI (974495) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=59928[0m
+[0;32mI (979506) ENCHENTES_MONITOR_TESTE: 📊 Estatísticas de rede enviadas[0m
+[0;32mI (979507) ENCHENTES_MONITOR_TESTE: 📈 Stats - Enviados: 461059 bytes, Imagens: 31/31, Eficiência: 0.0%, Compressão: 50.0%[0m
+[0;32mI (979518) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=35011[0m
+[0;32mI (984528) ENCHENTES_MONITOR_TESTE: 📊 Estatísticas de rede enviadas[0m
+[0;32mI (984528) ENCHENTES_MONITOR_TESTE: 📈 Stats - Enviados: 461296 bytes, Imagens: 31/31, Eficiência: 0.0%, Compressão: 50.0%[0m
+[0;32mI (984536) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=56513[0m
+[0;32mI (986408) ENCHENTES_MONITOR_TESTE: Imagem simulada gerada: 25346 bytes, timestamp: 985[0m
+[0;32mI (986409) ENCHENTES_MONITOR_TESTE: 📸 Imagem simulada capturada: 25346 bytes[0m
+[0;32mI (986414) ENCHENTES_MONITOR_TESTE: 📊 Diferença calculada: 100.00%[0m
+[0;32mI (986428) ENCHENTES_MONITOR_TESTE: 📤 Dados do sensor enviados, msg_id=29396[0m
+[0;32mI (986441) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=29396[0m
+[0;32mI (986448) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=56123[0m
+[0;32mI (986592) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=51993[0m
+[0;32mI (986694) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=13436[0m
+[0;32mI (986805) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=13677[0m
+[0;32mI (986920) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=44064[0m
+[0;32mI (987023) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=35784[0m
+[0;32mI (987114) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=56880[0m
+[0;32mI (987224) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=24975[0m
+[0;32mI (987406) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=53516[0m
+[0;32mI (987455) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=18163[0m
+[0;32mI (987610) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=11413[0m
+[0;32mI (987667) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=51045[0m
+[0;32mI (987692) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=9419[0m
+[0;32mI (987786) ENCHENTES_MONITOR_TESTE: ✅ Imagem simulada enviada com sucesso - 12673 bytes comprimidos (taxa: 50.0%)[0m
+[0;33mW (987792) ENCHENTES_MONITOR_TESTE: 🚨 ALERTA: Mudança significativa detectada na simulação (100.0%)[0m
+[0;32mI (987803) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=8520[0m
+[0;32mI (989550) ENCHENTES_MONITOR_TESTE: 📊 Estatísticas de rede enviadas[0m
+[0;32mI (989551) ENCHENTES_MONITOR_TESTE: 📈 Stats - Enviados: 474350 bytes, Imagens: 32/32, Eficiência: 0.0%, Compressão: 50.0%[0m
+[0;32mI (989560) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=10211[0m
+[0;32mI (994572) ENCHENTES_MONITOR_TESTE: 📊 Estatísticas de rede enviadas[0m
+[0;32mI (994573) ENCHENTES_MONITOR_TESTE: 📈 Stats - Enviados: 474588 bytes, Imagens: 32/32, Eficiência: 0.0%, Compressão: 50.0%[0m
+[0;32mI (994579) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=24316[0m
+[0;32mI (999594) ENCHENTES_MONITOR_TESTE: 📊 Estatísticas de rede enviadas[0m
+[0;32mI (999595) ENCHENTES_MONITOR_TESTE: 📈 Stats - Enviados: 474826 bytes, Imagens: 32/32, Eficiência: 0.0%, Compressão: 50.0%[0m
+[0;32mI (999603) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=50294[0m
+[0;32mI (1004616) ENCHENTES_MONITOR_TESTE: 📊 Estatísticas de rede enviadas[0m
+[0;32mI (1004617) ENCHENTES_MONITOR_TESTE: 📈 Stats - Enviados: 475066 bytes, Imagens: 32/32, Eficiência: 0.0%, Compressão: 50.0%[0m
+[0;32mI (1004623) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=34914[0m
+[0;32mI (1009639) ENCHENTES_MONITOR_TESTE: 📊 Estatísticas de rede enviadas[0m
+[0;32mI (1009640) ENCHENTES_MONITOR_TESTE: 📈 Stats - Enviados: 475306 bytes, Imagens: 32/32, Eficiência: 0.0%, Compressão: 50.0%[0m
+[0;32mI (1009648) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=7072[0m
+[0;32mI (1014654) ENCHENTES_MONITOR_TESTE: 📊 Estatísticas de rede enviadas[0m
+[0;32mI (1014655) ENCHENTES_MONITOR_TESTE: 📈 Stats - Enviados: 475546 bytes, Imagens: 32/32, Eficiência: 0.0%, Compressão: 50.0%[0m
+[0;32mI (1014661) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=49750[0m
+[0;32mI (1017813) ENCHENTES_MONITOR_TESTE: Imagem simulada gerada: 15247 bytes, timestamp: 1017[0m
+[0;32mI (1017813) ENCHENTES_MONITOR_TESTE: 📸 Imagem simulada capturada: 15247 bytes[0m
+[0;32mI (1017819) ENCHENTES_MONITOR_TESTE: 📊 Diferença calculada: 100.00%[0m
+[0;32mI (1017832) ENCHENTES_MONITOR_TESTE: 📤 Dados do sensor enviados, msg_id=51865[0m
+[0;32mI (1017842) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=51865[0m
+[0;32mI (1017891) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=64396[0m
+[0;32mI (1017991) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=44632[0m
+[0;32mI (1018105) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=24552[0m
+[0;32mI (1018233) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=14575[0m
+[0;32mI (1018433) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=19414[0m
+[0;32mI (1018476) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=45803[0m
+[0;32mI (1018480) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=28536[0m
+[0;32mI (1018579) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=62899[0m
+[0;32mI (1018671) ENCHENTES_MONITOR_TESTE: ✅ Imagem simulada enviada com sucesso - 7623 bytes comprimidos (taxa: 50.0%)[0m
+[0;33mW (1018676) ENCHENTES_MONITOR_TESTE: 🚨 ALERTA: Mudança significativa detectada na simulação (100.0%)[0m
+[0;32mI (1018693) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=42579[0m
+[0;32mI (1019672) ENCHENTES_MONITOR_TESTE: 📊 Estatísticas de rede enviadas[0m
+[0;32mI (1019673) ENCHENTES_MONITOR_TESTE: 📈 Stats - Enviados: 483552 bytes, Imagens: 33/33, Eficiência: 0.0%, Compressão: 50.0%[0m
+[0;32mI (1019689) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=59594[0m
+[0;32mI (1024687) ENCHENTES_MONITOR_TESTE: 📊 Estatísticas de rede enviadas[0m
+[0;32mI (1024688) ENCHENTES_MONITOR_TESTE: 📈 Stats - Enviados: 483792 bytes, Imagens: 33/33, Eficiência: 0.0%, Compressão: 50.0%[0m
+[0;32mI (1024696) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=27674[0m
+[0;32mI (1026086) ENCHENTES_MONITOR_TESTE: 🔧 Sistema funcionando - Memória livre: 126336 bytes | Eficiência: 0.0%[0m
+[0;32mI (1029710) ENCHENTES_MONITOR_TESTE: 📊 Estatísticas de rede enviadas[0m
+[0;32mI (1029711) ENCHENTES_MONITOR_TESTE: 📈 Stats - Enviados: 484032 bytes, Imagens: 33/33, Eficiência: 0.0%, Compressão: 50.0%[0m
+[0;32mI (1029717) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=26174[0m
+[0;32mI (1034733) ENCHENTES_MONITOR_TESTE: 📊 Estatísticas de rede enviadas[0m
+[0;32mI (1034734) ENCHENTES_MONITOR_TESTE: 📈 Stats - Enviados: 484272 bytes, Imagens: 33/33, Eficiência: 0.0%, Compressão: 50.0%[0m
+[0;32mI (1034743) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=38331[0m
+[0;32mI (1039749) ENCHENTES_MONITOR_TESTE: 📊 Estatísticas de rede enviadas[0m
+[0;32mI (1039750) ENCHENTES_MONITOR_TESTE: 📈 Stats - Enviados: 484512 bytes, Imagens: 33/33, Eficiência: 0.0%, Compressão: 50.0%[0m
+[0;32mI (1039761) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=39560[0m
+[0;32mI (1044766) ENCHENTES_MONITOR_TESTE: 📊 Estatísticas de rede enviadas[0m
+[0;32mI (1044767) ENCHENTES_MONITOR_TESTE: 📈 Stats - Enviados: 484752 bytes, Imagens: 33/33, Eficiência: 0.0%, Compressão: 50.0%[0m
+[0;32mI (1044776) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=50862[0m
+[0;32mI (1048700) ENCHENTES_MONITOR_TESTE: Imagem simulada gerada: 18958 bytes, timestamp: 1048[0m
+[0;32mI (1048700) ENCHENTES_MONITOR_TESTE: 📸 Imagem simulada capturada: 18958 bytes[0m
+[0;32mI (1048706) ENCHENTES_MONITOR_TESTE: 📊 Diferença calculada: 100.00%[0m
+[0;32mI (1048720) ENCHENTES_MONITOR_TESTE: 📤 Dados do sensor enviados, msg_id=46318[0m
+[0;32mI (1048733) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=46318[0m
+[0;32mI (1048747) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=55798[0m
+[0;32mI (1048950) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=37996[0m
+[0;32mI (1049053) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=32954[0m
+[0;32mI (1049095) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=57452[0m
+[0;32mI (1049257) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=50788[0m
+[0;32mI (1049264) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=4931[0m
+[0;32mI (1049462) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=2729[0m
+[0;32mI (1049525) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=43002[0m
+[0;32mI (1049671) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=47442[0m
+[0;32mI (1049682) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=45402[0m
+[0;32mI (1049777) ENCHENTES_MONITOR_TESTE: ✅ Imagem simulada enviada com sucesso - 9479 bytes comprimidos (taxa: 50.0%)[0m
+[0;33mW (1049783) ENCHENTES_MONITOR_TESTE: 🚨 ALERTA: Mudança significativa detectada na simulação (100.0%)[0m
+[0;32mI (1049797) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=9381[0m
+[0;32mI (1049801) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=9544[0m
+[0;32mI (1049802) ENCHENTES_MONITOR_TESTE: 📊 Estatísticas de rede enviadas[0m
+[0;32mI (1049809) ENCHENTES_MONITOR_TESTE: 📈 Stats - Enviados: 494614 bytes, Imagens: 34/34, Eficiência: 0.0%, Compressão: 50.0%[0m
+[0;32mI (1054827) ENCHENTES_MONITOR_TESTE: 📊 Estatísticas de rede enviadas[0m
+[0;32mI (1054828) ENCHENTES_MONITOR_TESTE: 📈 Stats - Enviados: 494854 bytes, Imagens: 34/34, Eficiência: 0.0%, Compressão: 50.0%[0m
+[0;32mI (1054836) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=56304[0m
+[0;32mI (1059850) ENCHENTES_MONITOR_TESTE: 📊 Estatísticas de rede enviadas[0m
+[0;32mI (1059851) ENCHENTES_MONITOR_TESTE: 📈 Stats - Enviados: 495094 bytes, Imagens: 34/34, Eficiência: 0.0%, Compressão: 50.0%[0m
+[0;32mI (1059860) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=507[0m
+[0;32mI (1064872) ENCHENTES_MONITOR_TESTE: 📊 Estatísticas de rede enviadas[0m
+[0;32mI (1064873) ENCHENTES_MONITOR_TESTE: 📈 Stats - Enviados: 495334 bytes, Imagens: 34/34, Eficiência: 0.0%, Compressão: 50.0%[0m
+[0;32mI (1064883) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=50715[0m
+[0;32mI (1069894) ENCHENTES_MONITOR_TESTE: 📊 Estatísticas de rede enviadas[0m
+[0;32mI (1069895) ENCHENTES_MONITOR_TESTE: 📈 Stats - Enviados: 495574 bytes, Imagens: 34/34, Eficiência: 0.0%, Compressão: 50.0%[0m
+[0;32mI (1069907) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=15520[0m
+[0;32mI (1074909) ENCHENTES_MONITOR_TESTE: 📊 Estatísticas de rede enviadas[0m
+[0;32mI (1074910) ENCHENTES_MONITOR_TESTE: 📈 Stats - Enviados: 495814 bytes, Imagens: 34/34, Eficiência: 0.0%, Compressão: 50.0%[0m
+[0;32mI (1074918) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=21480[0m
+[0;32mI (1079805) ENCHENTES_MONITOR_TESTE: Imagem simulada gerada: 17760 bytes, timestamp: 1079[0m
+[0;32mI (1079805) ENCHENTES_MONITOR_TESTE: 📸 Imagem simulada capturada: 17760 bytes[0m
+[0;32mI (1079811) ENCHENTES_MONITOR_TESTE: 📊 Diferença calculada: 100.00%[0m
+[0;32mI (1079824) ENCHENTES_MONITOR_TESTE: 📤 Dados do sensor enviados, msg_id=50301[0m
+[0;32mI (1079835) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=50301[0m
+[0;32mI (1079887) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=55110[0m
+[0;32mI (1079922) ENCHENTES_MONITOR_TESTE: 📊 Estatísticas de rede enviadas[0m
+[0;32mI (1079923) ENCHENTES_MONITOR_TESTE: 📈 Stats - Enviados: 497221 bytes, Imagens: 34/34, Eficiência: 0.0%, Compressão: 50.0%[0m
+[0;32mI (1079931) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=43261[0m
+[0;32mI (1080002) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=17432[0m
+[0;32mI (1080103) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=8336[0m
+[0;32mI (1080207) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=48252[0m
+[0;32mI (1080321) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=47308[0m
+[0;32mI (1080493) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=24064[0m
+[0;32mI (1080579) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=47893[0m
+[0;32mI (1080620) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=14740[0m
+[0;32mI (1080681) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=34237[0m
+[0;32mI (1080774) ENCHENTES_MONITOR_TESTE: ✅ Imagem simulada enviada com sucesso - 8880 bytes comprimidos (taxa: 50.0%)[0m
+[0;33mW (1080780) ENCHENTES_MONITOR_TESTE: 🚨 ALERTA: Mudança significativa detectada na simulação (100.0%)[0m
+[0;32mI (1080792) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=7456[0m
+[0;32mI (1084949) ENCHENTES_MONITOR_TESTE: 📊 Estatísticas de rede enviadas[0m
+[0;32mI (1084950) ENCHENTES_MONITOR_TESTE: 📈 Stats - Enviados: 505317 bytes, Imagens: 35/35, Eficiência: 0.0%, Compressão: 50.0%[0m
+[0;32mI (1084958) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=10022[0m
+[0;32mI (1086087) ENCHENTES_MONITOR_TESTE: 🔧 Sistema funcionando - Memória livre: 123824 bytes | Eficiência: 0.0%[0m
+[0;32mI (1089972) ENCHENTES_MONITOR_TESTE: 📊 Estatísticas de rede enviadas[0m
+[0;32mI (1089973) ENCHENTES_MONITOR_TESTE: 📈 Stats - Enviados: 505557 bytes, Imagens: 35/35, Eficiência: 0.0%, Compressão: 50.0%[0m
+[0;32mI (1089980) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=14756[0m
+[0;32mI (1094995) ENCHENTES_MONITOR_TESTE: 📊 Estatísticas de rede enviadas[0m
+[0;32mI (1094996) ENCHENTES_MONITOR_TESTE: 📈 Stats - Enviados: 505797 bytes, Imagens: 35/35, Eficiência: 0.0%, Compressão: 50.0%[0m
+[0;32mI (1095008) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=35991[0m
+[0;32mI (1100010) ENCHENTES_MONITOR_TESTE: 📊 Estatísticas de rede enviadas[0m
+[0;32mI (1100011) ENCHENTES_MONITOR_TESTE: 📈 Stats - Enviados: 506037 bytes, Imagens: 35/35, Eficiência: 0.0%, Compressão: 50.0%[0m
+[0;32mI (1100018) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=30937[0m
+[0;32mI (1105033) ENCHENTES_MONITOR_TESTE: 📊 Estatísticas de rede enviadas[0m
+[0;32mI (1105034) ENCHENTES_MONITOR_TESTE: 📈 Stats - Enviados: 506277 bytes, Imagens: 35/35, Eficiência: 0.0%, Compressão: 50.0%[0m
+[0;32mI (1105044) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=33661[0m
+[0;32mI (1110056) ENCHENTES_MONITOR_TESTE: 📊 Estatísticas de rede enviadas[0m
+[0;32mI (1110057) ENCHENTES_MONITOR_TESTE: 📈 Stats - Enviados: 506517 bytes, Imagens: 35/35, Eficiência: 0.0%, Compressão: 50.0%[0m
+[0;32mI (1110063) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=20340[0m
+[0;32mI (1110823) ENCHENTES_MONITOR_TESTE: Imagem simulada gerada: 39245 bytes, timestamp: 1110[0m
+[0;32mI (1110824) ENCHENTES_MONITOR_TESTE: 📸 Imagem simulada capturada: 39245 bytes[0m
+[0;32mI (1110829) ENCHENTES_MONITOR_TESTE: 📊 Diferença calculada: 100.00%[0m
+[0;32mI (1110844) ENCHENTES_MONITOR_TESTE: 📤 Dados do sensor enviados, msg_id=24764[0m
+[0;32mI (1110853) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=24764[0m
+[0;32mI (1111006) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=33761[0m
+[0;32mI (1111073) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=36458[0m
+[0;32mI (1111115) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=54065[0m
+[0;32mI (1111317) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=58559[0m
+[0;32mI (1111374) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=43080[0m
+[0;32mI (1111416) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=52784[0m
+[0;32mI (1111623) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=18083[0m
+[0;32mI (1111685) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=6153[0m
+[0;32mI (1111724) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=15201[0m
+[0;32mI (1111850) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=14210[0m
+[0;32mI (1111956) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=12216[0m
+[0;32mI (1112060) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=30207[0m
+[0;32mI (1112233) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=16237[0m
+[0;32mI (1112318) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=16953[0m
+[0;32mI (1112360) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=62325[0m
+[0;32mI (1112541) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=50775[0m
+[0;32mI (1112629) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=11838[0m
+[0;32mI (1112666) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=40671[0m
+[0;32mI (1112791) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=38684[0m
+[0;32mI (1112845) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=54026[0m
+[0;32mI (1112933) ENCHENTES_MONITOR_TESTE: ✅ Imagem simulada enviada com sucesso - 19622 bytes comprimidos (taxa: 50.0%)[0m
+[0;33mW (1112942) ENCHENTES_MONITOR_TESTE: 🚨 ALERTA: Mudança significativa detectada na simulação (100.0%)[0m
+[0;32mI (1112950) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=39885[0m
+[0;32mI (1115079) ENCHENTES_MONITOR_TESTE: 📊 Estatísticas de rede enviadas[0m
+[0;32mI (1115080) ENCHENTES_MONITOR_TESTE: 📈 Stats - Enviados: 526523 bytes, Imagens: 36/36, Eficiência: 0.0%, Compressão: 50.0%[0m
+[0;32mI (1115099) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=38823[0m
+[0;32mI (1120094) ENCHENTES_MONITOR_TESTE: 📊 Estatísticas de rede enviadas[0m
+[0;32mI (1120095) ENCHENTES_MONITOR_TESTE: 📈 Stats - Enviados: 526763 bytes, Imagens: 36/36, Eficiência: 0.0%, Compressão: 50.0%[0m
+[0;32mI (1120101) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=49228[0m
+[0;32mI (1125116) ENCHENTES_MONITOR_TESTE: 📊 Estatísticas de rede enviadas[0m
+[0;32mI (1125117) ENCHENTES_MONITOR_TESTE: 📈 Stats - Enviados: 527003 bytes, Imagens: 36/36, Eficiência: 0.0%, Compressão: 50.0%[0m
+[0;32mI (1125133) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=47020[0m
+[0;32mI (1130131) ENCHENTES_MONITOR_TESTE: 📊 Estatísticas de rede enviadas[0m
+[0;32mI (1130132) ENCHENTES_MONITOR_TESTE: 📈 Stats - Enviados: 527243 bytes, Imagens: 36/36, Eficiência: 0.0%, Compressão: 50.0%[0m
+[0;32mI (1130141) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=60886[0m
+[0;32mI (1135146) ENCHENTES_MONITOR_TESTE: 📊 Estatísticas de rede enviadas[0m
+[0;32mI (1135147) ENCHENTES_MONITOR_TESTE: 📈 Stats - Enviados: 527483 bytes, Imagens: 36/36, Eficiência: 0.0%, Compressão: 50.0%[0m
+[0;32mI (1135154) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=24630[0m
+[0;32mI (1140169) ENCHENTES_MONITOR_TESTE: 📊 Estatísticas de rede enviadas[0m
+[0;32mI (1140170) ENCHENTES_MONITOR_TESTE: 📈 Stats - Enviados: 527723 bytes, Imagens: 36/36, Eficiência: 0.0%, Compressão: 50.0%[0m
+[0;32mI (1140185) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=48049[0m
+[0;31mE (1142944) ENCHENTES_MONITOR_TESTE: Falha na geração da imagem simulada[0m
+[0;32mI (1145184) ENCHENTES_MONITOR_TESTE: 📊 Estatísticas de rede enviadas[0m
+[0;32mI (1145185) ENCHENTES_MONITOR_TESTE: 📈 Stats - Enviados: 527963 bytes, Imagens: 36/36, Eficiência: 0.0%, Compressão: 50.0%[0m
+[0;32mI (1145196) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=21789[0m
+[0;32mI (1146088) ENCHENTES_MONITOR_TESTE: 🔧 Sistema funcionando - Memória livre: 102340 bytes | Eficiência: 0.0%[0m
+[0;32mI (1147966) ENCHENTES_MONITOR_TESTE: Imagem simulada gerada: 20578 bytes, timestamp: 1147[0m
+[0;32mI (1147966) ENCHENTES_MONITOR_TESTE: 📸 Imagem simulada capturada: 20578 bytes[0m
+[0;32mI (1147972) ENCHENTES_MONITOR_TESTE: 📊 Diferença calculada: 100.00%[0m
+[0;32mI (1147986) ENCHENTES_MONITOR_TESTE: 📤 Dados do sensor enviados, msg_id=50255[0m
+[0;32mI (1147995) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=50255[0m
+[0;32mI (1148043) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=37837[0m
+[0;32mI (1148149) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=46886[0m
+[0;32mI (1148280) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=11227[0m
+[0;32mI (1148382) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=40228[0m
+[0;32mI (1148467) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=43523[0m
+[0;32mI (1148575) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=7505[0m
+[0;32mI (1148688) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=388[0m
+[0;32mI (1148894) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=7583[0m
+[0;32mI (1148943) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=60694[0m
+[0;32mI (1148952) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=14374[0m
+[0;32mI (1149045) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=33002[0m
+[0;32mI (1149138) ENCHENTES_MONITOR_TESTE: ✅ Imagem simulada enviada com sucesso - 10289 bytes comprimidos (taxa: 50.0%)[0m
+[0;33mW (1149144) ENCHENTES_MONITOR_TESTE: 🚨 ALERTA: Mudança significativa detectada na simulação (100.0%)[0m
+[0;32mI (1149150) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=838[0m
+[0;32mI (1150200) ENCHENTES_MONITOR_TESTE: 📊 Estatísticas de rede enviadas[0m
+[0;32mI (1150201) ENCHENTES_MONITOR_TESTE: 📈 Stats - Enviados: 538636 bytes, Imagens: 37/37, Eficiência: 0.0%, Compressão: 50.0%[0m
+[0;32mI (1150208) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=64023[0m
+ets Jul 29 2019 12:21:46
+
+rst:0x1 (POWERON_RESET),boot:0x13 (SPI_FAST_FLASH_BOOT)
+configsip: 0, SPIWP:0xee
+clk_drv:0x00,q_drv:0x00,d_drv:0x00,cs0_drv:0x00,hd_drv:0x00,wp_drv:0x00
+mode:DIO, clock div:2
+load:0x3fff0030,len:7176
+load:0x40078000,len:15564
+ho 0 tail 12 room 4
+load:0x40080400,len:4
+load:0x40080404,len:3904
+entry 0x40080640
+[0;32mI (31) boot: ESP-IDF v5.3 2nd stage bootloader[0m
+[0;32mI (31) boot: compile time May 31 2025 02:05:00[0m
+[0;32mI (31) boot: Multicore bootloader[0m
+[0;32mI (35) boot: chip revision: v3.1[0m
+[0;32mI (39) boot.esp32: SPI Speed      : 40MHz[0m
+[0;32mI (44) boot.esp32: SPI Mode       : DIO[0m
+[0;32mI (48) boot.esp32: SPI Flash Size : 2MB[0m
+[0;32mI (53) boot: Enabling RNG early entropy source...[0m
+[0;32mI (58) boot: Partition Table:[0m
+[0;32mI (62) boot: ## Label            Usage          Type ST Offset   Length[0m
+[0;32mI (69) boot:  0 nvs              WiFi data        01 02 00009000 00006000[0m
+[0;32mI (76) boot:  1 phy_init         RF data          01 01 0000f000 00001000[0m
+[0;32mI (84) boot:  2 factory          factory app      00 00 00010000 00100000[0m
+[0;32mI (91) boot:  3 storage          Unknown data     01 82 00110000 000f0000[0m
+[0;32mI (99) boot: End of partition table[0m
+[0;32mI (103) esp_image: segment 0: paddr=00010020 vaddr=3f400020 size=24ff4h (151540) map[0m
+[0;32mI (164) esp_image: segment 1: paddr=0003501c vaddr=3ffb0000 size=03e38h ( 15928) load[0m
+[0;32mI (170) esp_image: segment 2: paddr=00038e5c vaddr=40080000 size=071bch ( 29116) load[0m
+[0;32mI (181) esp_image: segment 3: paddr=00040020 vaddr=400d0020 size=9beech (638700) map[0m
+[0;32mI (400) esp_image: segment 4: paddr=000dbf14 vaddr=400871bc size=10168h ( 65896) load[0m
+[0;32mI (438) boot: Loaded app from partition at offset 0x10000[0m
+[0;32mI (438) boot: Disabling RNG early entropy source...[0m
+[0;32mI (450) cpu_start: Multicore app[0m
+[0;32mI (459) cpu_start: Pro cpu start user code[0m
+[0;32mI (459) cpu_start: cpu freq: 160000000 Hz[0m
+[0;32mI (459) app_init: Application information:[0m
+[0;32mI (462) app_init: Project name:     wifi_sniffer[0m
+[0;32mI (467) app_init: App version:      v1.0.0-2-gae08c24-dirty[0m
+[0;32mI (473) app_init: Compile time:     May 31 2025 02:04:33[0m
+[0;32mI (479) app_init: ELF file SHA256:  ae74dc96e...[0m
+[0;32mI (484) app_init: ESP-IDF:          v5.3[0m
+[0;32mI (489) efuse_init: Min chip rev:     v0.0[0m
+[0;32mI (494) efuse_init: Max chip rev:     v3.99 [0m
+[0;32mI (499) efuse_init: Chip rev:         v3.1[0m
+[0;32mI (504) heap_init: Initializing. RAM available for dynamic allocation:[0m
+[0;32mI (511) heap_init: At 3FFAE6E0 len 00001920 (6 KiB): DRAM[0m
+[0;32mI (517) heap_init: At 3FFB8660 len 000279A0 (158 KiB): DRAM[0m
+[0;32mI (523) heap_init: At 3FFE0440 len 00003AE0 (14 KiB): D/IRAM[0m
+[0;32mI (529) heap_init: At 3FFE4350 len 0001BCB0 (111 KiB): D/IRAM[0m
+[0;32mI (536) heap_init: At 40097324 len 00008CDC (35 KiB): IRAM[0m
+[0;32mI (544) spi_flash: detected chip: generic[0m
+[0;32mI (547) spi_flash: flash io: dio[0m
+[0;33mW (551) spi_flash: Detected size(4096k) larger than the size in the binary image header(2048k). Using the size in the binary image header.[0m
+[0;32mI (565) main_task: Started on CPU0[0m
+[0;32mI (569) main_task: Calling app_main()[0m
+[0;32mI (572) ENCHENTES_MONITOR_TESTE: === Iniciando Sistema de Monitoramento de Enchentes (TESTE SEM CÂMERA) ===[0m
+[0;32mI (582) ENCHENTES_MONITOR_TESTE: Projeto IC - Gabriel Passos de Oliveira - IGCE/UNESP[0m
+[0;32mI (591) ENCHENTES_MONITOR_TESTE: Modo: Simulação para teste de rede e MQTT[0m
+[0;32mI (626) wifi:wifi driver task: 3ffc209c, prio:23, stack:6656, core=0[0m
+[0;32mI (640) wifi:wifi firmware version: 0caa81945[0m
+[0;32mI (641) wifi:wifi certification version: v7.0[0m
+[0;32mI (641) wifi:config NVS flash: enabled[0m
+[0;32mI (641) wifi:config nano formating: disabled[0m
+[0;32mI (646) wifi:Init data frame dynamic rx buffer num: 32[0m
+[0;32mI (650) wifi:Init static rx mgmt buffer num: 5[0m
+[0;32mI (654) wifi:Init management short buffer num: 32[0m
+[0;32mI (659) wifi:Init dynamic tx buffer num: 32[0m
+[0;32mI (663) wifi:Init static rx buffer size: 2212[0m
+[0;32mI (667) wifi:Init static rx buffer num: 10[0m
+[0;32mI (671) wifi:Init dynamic rx buffer num: 32[0m
+[0;32mI (676) wifi_init: rx ba win: 6[0m
+[0;32mI (678) wifi_init: accept mbox: 6[0m
+[0;32mI (682) wifi_init: tcpip mbox: 32[0m
+[0;32mI (686) wifi_init: udp mbox: 6[0m
+[0;32mI (690) wifi_init: tcp mbox: 6[0m
+[0;32mI (694) wifi_init: tcp tx win: 5760[0m
+[0;32mI (698) wifi_init: tcp rx win: 5760[0m
+[0;32mI (702) wifi_init: tcp mss: 1440[0m
+[0;32mI (706) wifi_init: WiFi IRAM OP enabled[0m
+[0;32mI (711) wifi_init: WiFi RX IRAM OP enabled[0m
+[0;32mI (718) phy_init: phy_version 4830,54550f7,Jun 20 2024,14:22:08[0m
+[0;32mI (806) wifi:mode : sta (08:a6:f7:46:ee:74)[0m
+[0;32mI (807) wifi:enable tsf[0m
+[0;32mI (809) ENCHENTES_MONITOR_TESTE: Inicialização WiFi finalizada.[0m
+[0;32mI (825) wifi:new:<7,0>, old:<1,0>, ap:<255,255>, sta:<7,0>, prof:1, snd_ch_cfg:0x0[0m
+[0;32mI (826) wifi:state: init -> auth (0xb0)[0m
+[0;32mI (830) wifi:state: auth -> assoc (0x0)[0m
+[0;32mI (840) wifi:state: assoc -> run (0x10)[0m
+[0;32mI (842) wifi:[ADDBA]RX DELBA, reason:39, delete tid:0, initiator:1(originator)[0m
+[0;32mI (842) wifi:[ADDBA]RX DELBA, reason:39, delete tid:0, initiator:0(recipient)[0m
+[0;32mI (945) wifi:connected with Steps 2.4G, aid = 16, channel 7, BW20, bssid = f8:79:28:a1:3c:b0[0m
+[0;32mI (946) wifi:security: WPA2-PSK, phy: bgn, rssi: -16[0m
+[0;32mI (951) wifi:pm start, type: 1[0m
+
+[0;32mI (951) wifi:dp: 1, bi: 102400, li: 3, scale listen interval from 307200 us to 307200 us[0m
+[0;32mI (1041) wifi:AP's beacon interval = 102400 us, DTIM period = 1[0m
+[0;32mI (3093) wifi:<ba-add>idx:0 (ifx:0, f8:79:28:a1:3c:b0), tid:0, ssn:1183, winSize:64[0m
+[0;32mI (3963) esp_netif_handlers: sta ip: 192.168.1.7, mask: 255.255.255.0, gw: 192.168.1.1[0m
+[0;32mI (3964) ENCHENTES_MONITOR_TESTE: IP obtido:192.168.1.7[0m
+[0;32mI (3968) ENCHENTES_MONITOR_TESTE: Conectado ao WiFi SSID:Steps 2.4G[0m
+[0;32mI (4002) ENCHENTES_MONITOR_TESTE: MQTT Conectado[0m
+[0;32mI (4019) ENCHENTES_MONITOR_TESTE: MQTT Subscrito, msg_id=48177[0m
+[0;32mI (5978) ENCHENTES_MONITOR_TESTE: 🔄 Iniciando simulação de captura de imagens...[0m
+[0;32mI (5996) ENCHENTES_MONITOR_TESTE: Imagem simulada gerada: 17898 bytes, timestamp: 5[0m
+[0;32mI (5996) ENCHENTES_MONITOR_TESTE: 📸 Imagem simulada capturada: 17898 bytes[0m
+[0;32mI (6007) ENCHENTES_MONITOR_TESTE: 📤 Dados do sensor enviados, msg_id=23393[0m
+[0;32mI (6015) ENCHENTES_MONITOR_TESTE: 📡 Iniciando monitoramento de rede...[0m
+[0;32mI (6018) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=23393[0m
+[0;32mI (6025) ENCHENTES_MONITOR_TESTE: 📊 Estatísticas de rede enviadas[0m
+[0;32mI (6030) ENCHENTES_MONITOR_TESTE: 📈 Stats - Enviados: 1393 bytes, Imagens: 0/0, Eficiência: 0.0%, Compressão: 50.0%[0m
+[0;32mI (6018) ENCHENTES_MONITOR_TESTE: ✅ Sistema inicializado com sucesso![0m
+[0;32mI (6049) ENCHENTES_MONITOR_TESTE: 📸 Simulação de captura de imagens a cada 30 segundos[0m
+[0;32mI (6058) ENCHENTES_MONITOR_TESTE: 🔍 Threshold de mudança: 15.0%[0m
+[0;32mI (6065) ENCHENTES_MONITOR_TESTE: 🌐 Monitoramento de rede a cada 5 segundos[0m
+[0;32mI (6073) ENCHENTES_MONITOR_TESTE: 🔧 Sistema funcionando - Memória livre: 120600 bytes | Eficiência: 0.0%[0m
+[0;32mI (6077) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=17399[0m
+[0;32mI (6123) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=4889[0m
+[0;32mI (6128) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=56181[0m
+[0;32mI (6278) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=23186[0m
+[0;32mI (6389) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=42847[0m
+[0;32mI (6489) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=22063[0m
+[0;32mI (6599) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=35370[0m
+[0;32mI (6701) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=31023[0m
+[0;32mI (6803) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=17525[0m
+[0;32mI (6864) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=24315[0m
+[0;32mI (6953) ENCHENTES_MONITOR_TESTE: ✅ Imagem simulada enviada com sucesso - 8949 bytes comprimidos (taxa: 50.0%)[0m
+[0;32mI (11047) ENCHENTES_MONITOR_TESTE: 📊 Estatísticas de rede enviadas[0m
+[0;32mI (11048) ENCHENTES_MONITOR_TESTE: 📈 Stats - Enviados: 9550 bytes, Imagens: 1/1, Eficiência: 0.0%, Compressão: 50.0%[0m
+[0;32mI (11059) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=32281[0m
+[0;32mI (16062) ENCHENTES_MONITOR_TESTE: 📊 Estatísticas de rede enviadas[0m
+[0;32mI (16063) ENCHENTES_MONITOR_TESTE: 📈 Stats - Enviados: 9782 bytes, Imagens: 1/1, Eficiência: 0.0%, Compressão: 50.0%[0m
+[0;32mI (16077) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=35772[0m
+[0;32mI (21076) ENCHENTES_MONITOR_TESTE: 📊 Estatísticas de rede enviadas[0m
+[0;32mI (21077) ENCHENTES_MONITOR_TESTE: 📈 Stats - Enviados: 10014 bytes, Imagens: 1/1, Eficiência: 0.0%, Compressão: 50.0%[0m
+[0;32mI (21085) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=7649[0m
+[0;32mI (26098) ENCHENTES_MONITOR_TESTE: 📊 Estatísticas de rede enviadas[0m
+[0;32mI (26099) ENCHENTES_MONITOR_TESTE: 📈 Stats - Enviados: 10247 bytes, Imagens: 1/1, Eficiência: 0.0%, Compressão: 50.0%[0m
+[0;32mI (26110) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=20314[0m
+[0;32mI (31112) ENCHENTES_MONITOR_TESTE: 📊 Estatísticas de rede enviadas[0m
+[0;32mI (31113) ENCHENTES_MONITOR_TESTE: 📈 Stats - Enviados: 10480 bytes, Imagens: 1/1, Eficiência: 0.0%, Compressão: 50.0%[0m
+[0;32mI (31127) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=7439[0m
+[0;32mI (36126) ENCHENTES_MONITOR_TESTE: 📊 Estatísticas de rede enviadas[0m
+[0;32mI (36127) ENCHENTES_MONITOR_TESTE: 📈 Stats - Enviados: 10713 bytes, Imagens: 1/1, Eficiência: 0.0%, Compressão: 50.0%[0m
+[0;32mI (36140) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=62949[0m
+[0;32mI (36995) ENCHENTES_MONITOR_TESTE: Imagem simulada gerada: 41159 bytes, timestamp: 36[0m
+[0;32mI (36996) ENCHENTES_MONITOR_TESTE: 📸 Imagem simulada capturada: 41159 bytes[0m
+[0;32mI (37001) ENCHENTES_MONITOR_TESTE: 📊 Diferença calculada: 100.00%[0m
+[0;32mI (37015) ENCHENTES_MONITOR_TESTE: 📤 Dados do sensor enviados, msg_id=50276[0m
+[0;32mI (37025) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=50276[0m
+[0;32mI (37030) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=4481[0m
+[0;32mI (37177) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=62366[0m
+[0;32mI (37404) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=21526[0m
+[0;32mI (37441) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=45328[0m
+[0;32mI (37446) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=49686[0m
+[0;32mI (37595) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=44248[0m
+[0;32mI (37709) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=56940[0m
+[0;32mI (37811) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=53366[0m
+[0;32mI (37911) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=42391[0m
+[0;32mI (38022) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=24736[0m
+[0;32mI (38122) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=63363[0m
+[0;32mI (38229) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=36741[0m
+[0;32mI (38327) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=48956[0m
+[0;32mI (38431) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=41419[0m
+[0;32mI (38543) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=4411[0m
+[0;32mI (38645) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=14541[0m
+[0;32mI (38753) ENCHENTES_MONITOR_TESTE: MQTT Publicado, msg_id=49141[0m
+[0;32mI (38850) ENCHENTES_M
