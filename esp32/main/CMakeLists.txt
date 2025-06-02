@@ -1,0 +1,22 @@
+idf_component_register(
+    SRCS 
+        "main.c"
+        "model/model.c"
+    INCLUDE_DIRS 
+        "."
+        "model"
+    REQUIRES 
+        nvs_flash 
+        wifi_provisioning 
+        protocomm 
+        mqtt 
+        esp_timer 
+        freertos 
+        driver
+        esp_partition
+        esp_wifi
+        esp_netif
+        esp_http_client
+    PRIV_REQUIRES
+        spiffs
+)
