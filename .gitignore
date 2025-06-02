@@ -1,0 +1,38 @@
+# Build ESP32
+esp32/build/
+esp32/sdkconfig
+esp32/managed_components/
+
+# SPIFFS
+esp32/spiffs_image/*.jpg
+esp32/spiffs_image/*.bin
+server/spiffs_image.bin
+
+# Python
+server/venv/
+server/__pycache__/
+scripts/__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Logs e dados
+server/*.log
+server/*.db
+server/*.png
+
+# Imagens processadas
+imagens/*_320x240.jpg
+imagens/diferenca.jpg
+
+# Sistema
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*~
+
+# IDE
+.vscode/
+.idea/
+*.code-workspace 
