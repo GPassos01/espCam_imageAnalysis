@@ -1,4 +1,4 @@
-# 🌊 Sistema de Monitoramento de Enchentes com ESP32
+# 🌊 Sistema de Monitoramento de Enchentes com ESP32-CAM
 
 ## Projeto de Iniciação Científica - IGCE/UNESP
 **Autor:** Gabriel Passos de Oliveira  
@@ -7,7 +7,17 @@
 
 ## 📋 Descrição
 
-Sistema inteligente de monitoramento de enchentes utilizando ESP32 com análise de imagens em tempo real, detecção de mudanças significativas e comunicação via MQTT.
+Sistema inteligente de monitoramento de enchentes utilizando **ESP32-CAM** com **câmera OV2640** para análise de imagens em tempo real, detecção de mudanças significativas e comunicação via MQTT.
+
+## 🎥 ESP32-CAM Especificações
+
+- **Microcontrolador:** ESP32-S (Dual Core 240MHz)
+- **Câmera:** OV2640 (2 Megapixels)
+- **Memória:** 4MB Flash + 8MB PSRAM
+- **Conectividade:** WiFi 802.11 b/g/n
+- **LED Flash:** GPIO4 integrado
+- **Alimentação:** 5V via USB ou 3.3V
+- **Resolução configurada:** 320x240 JPEG para otimização
 
 ## 🏗️ Estrutura do Projeto
 
@@ -15,124 +25,168 @@ Sistema inteligente de monitoramento de enchentes utilizando ESP32 com análise 
 wifi_sniffer/
 ├── 📁 docs/                          # Documentação do projeto
 │   └── Projeto_IC_Gabriel_Passos.pdf
-├── 📁 esp32/                         # Firmware ESP32
-│   ├── 📁 main/                      # Código principal
-│   ├── 📁 spiffs_image/              # Imagens para SPIFFS
-│   ├── partitions.csv                # Tabela de partições
-│   ├── sdkconfig.defaults            # Configurações padrão
-│   └── CMakeLists.txt
-├── 📁 imagens/                       # Imagens de teste
-│   ├── img1_gray.jpg                 # Imagem 1 (tons de cinza)
-│   ├── img2_gray.jpg                 # Imagem 2 (tons de cinza)
-│   ├── img1_320x240.jpg              # Versão redimensionada
-│   ├── img2_320x240.jpg              # Versão redimensionada
-│   └── diferenca.jpg                 # Visualização das diferenças
+├── 📁 esp32/                         # Firmware ESP32-CAM
+│   ├── 📁 main/                      # Código principal da câmera
+│   │   └── main.c                    # Sistema de captura e análise
+│   ├── partitions.csv                # Tabela de partições otimizada
+│   ├── sdkconfig.defaults            # Configurações ESP32-CAM
+│   └── CMakeLists.txt                # Build configuration
+├── 📁 imagens/                       # Imagens de teste (deprecated)
 ├── 📁 scripts/                       # Scripts utilitários
-│   ├── copy_images_to_spiffs.py      # Gera imagem SPIFFS
-│   ├── teste_imagens.py              # Testa algoritmos de comparação
-│   └── setup.sh                     # Script de configuração
+│   ├── setup.sh                     # Script de configuração ESP32-CAM
+│   └── teste_imagens.py              # Algoritmos de comparação
 ├── 📁 server/                        # Sistema de monitoramento
-│   ├── monitor_mqtt.py               # Monitor MQTT principal
+│   ├── monitor_mqtt.py               # Monitor MQTT avançado
 │   ├── validar_dados.py              # Validação de dados
-│   ├── enchentes_data_teste.db       # Banco de dados
-│   ├── spiffs_image.bin              # Imagem SPIFFS gerada
-│   └── requirements.txt              # Dependências Python
+│   ├── requirements.txt              # Dependências Python
+│   └── README_monitor.md             # Documentação do monitor
 └── README.md                         # Este arquivo
 ```
 
 ## 🚀 Funcionalidades
 
-### ESP32 (Firmware)
-- ✅ **Análise de imagens em tons de cinza** (320x240 pixels)
-- ✅ **Detecção de mudanças** com algoritmo pixel-a-pixel
-- ✅ **Compressão inteligente** baseada na complexidade da imagem
+### ESP32-CAM (Firmware)
+- ✅ **Captura real de imagens** com câmera OV2640
+- ✅ **Processamento JPEG nativo** (320x240 pixels)
+- ✅ **Análise comparativa entre imagens consecutivas** 
+- ✅ **Envio de pares de imagens** quando diferença > 15%
+- ✅ **Flash LED automático** para melhor iluminação
 - ✅ **Comunicação MQTT** com transmissão em chunks
 - ✅ **Sistema de alertas** para mudanças significativas (>50%)
-- ✅ **Armazenamento SPIFFS** para imagens de referência
-- ✅ **Monitoramento de rede** com estatísticas em tempo real
+- ✅ **Identificação única de pares** para correlação
+- ✅ **Monitoramento PSRAM** e uso de memória
 
 ### Sistema de Monitoramento (Python)
-- ✅ **Monitor MQTT** com logging detalhado
-- ✅ **Banco de dados SQLite** para armazenamento
-- ✅ **Validação de dados** e análises estatísticas
-- ✅ **Interface de monitoramento** em tempo real
+- ✅ **Monitor MQTT simplificado** para ESP32-CAM
+- ✅ **Recepção e reconstituição de pares de imagens**
+- ✅ **Banco de dados SQLite** para armazenamento histórico
+- ✅ **Extrator de imagens** com visualização
+- ✅ **Validação e análise** de dados da câmera
+- ✅ **Sistema de alertas** baseado em diferenças
+
+## 🔄 Fluxo de Análise de Imagens
+
+### 1. **Captura e Comparação**
+```
+ESP32-CAM → Captura Imagem A → Armazena como "anterior"
+ESP32-CAM → Captura Imagem B → Compara com A
+Se diferença > 15% → Enviar par (A + B) via MQTT
+```
+
+### 2. **Transmissão MQTT**
+```
+Tópicos gerados automaticamente:
+• enchentes/imagem/dados/anterior/{pair_id}/{offset}/{total_size}
+• enchentes/imagem/dados/atual/{pair_id}/{offset}/{total_size}
+• enchentes/sensores (metadados do par)
+• enchentes/alertas (se diferença > 50%)
+```
+
+### 3. **Reconstituição e Visualização**
+```
+Monitor Python → Recebe chunks → Reconstitui imagens
+Banco SQLite → Armazena chunks organizados por pair_id
+Script extrator → Reconstitui JPEGs completos para visualização
+```
 
 ## 🛠️ Configuração e Instalação
 
-### 1. Pré-requisitos
+### 1. Pré-requisitos Hardware
+
+```
+ESP32-CAM AI-Thinker:
+- ESP32-S com câmera OV2640
+- Programador FTDI USB-Serial (3.3V)
+- Jumpers para modo de programação
+- Fonte de alimentação 5V/2A
+```
+
+### 2. Pré-requisitos Software
 
 ```bash
-# ESP-IDF (versão 5.3+)
+# ESP-IDF (versão 5.0+)
 git clone --recursive https://github.com/espressif/esp-idf.git
-cd esp-idf && ./install.sh
+cd esp-idf && ./install.sh && . ./export.sh
+
+# Componente ESP32-Camera
+cd $IDF_PATH/components
+git clone https://github.com/espressif/esp32-camera.git
 
 # Python 3.10+
 sudo apt update
 sudo apt install python3 python3-pip python3-venv
 ```
 
-### 2. Configuração do Ambiente
+### 3. Configuração do Projeto
 
 ```bash
 # Clone o repositório
 git clone <url-do-repositorio>
 cd wifi_sniffer
 
-# Execute o script de configuração
+# Execute o script de configuração ESP32-CAM
 chmod +x scripts/setup.sh
 ./scripts/setup.sh
 ```
 
-### 3. Compilação e Flash do ESP32
+### 4. Compilação e Flash ESP32-CAM
 
 ```bash
-# Carregue o ambiente ESP-IDF
-. $HOME/esp/esp-idf/export.sh
+# Use o menu interativo do setup.sh
+./scripts/setup.sh
 
-# Compile e grave o firmware
+# Ou manualmente:
 cd esp32
-idf.py build flash
-
-# Gere e grave a imagem SPIFFS
-cd ../scripts
-python3 copy_images_to_spiffs.py
+idf.py set-target esp32
+idf.py build
+idf.py -p /dev/ttyUSB0 flash monitor
 ```
 
-### 4. Execução do Monitor
+### 5. Conexão ESP32-CAM
 
-```bash
-cd server
-python3 monitor_mqtt.py
+```
+Modo Programação (Flash):
+- GPIO0 -> GND (jumper)
+- VCC -> 5V
+- GND -> GND
+- U0R -> TX (FTDI)
+- U0T -> RX (FTDI)
+
+Modo Operação:
+- Remover jumper GPIO0-GND
+- Reset na ESP32-CAM
 ```
 
 ## 📊 Resultados e Performance
 
-### Processamento de Imagens
-- **Tamanho das imagens**: 320x240 pixels (tons de cinza)
-- **Compressão**: 65-85% de redução de tamanho
-- **Detecção de diferenças**: ~33% entre imagens de teste
-- **Threshold de alerta**: 12% (configurável)
+### Análise de Pares de Imagens
+- **Intervalo de captura**: 30 segundos entre imagens
+- **Threshold de envio**: 15% de diferença
+- **Threshold de alerta**: 50% de diferença  
+- **Resolução**: 320x240 pixels JPEG
+- **Tamanho típico**: 3-8KB por imagem comprimida
+- **Identificação única**: Timestamp como pair_id
 
-### Comunicação de Rede
-- **Protocolo**: MQTT over WiFi
-- **Transmissão**: Chunks de 1KB
-- **Latência**: < 100ms por chunk
-- **Eficiência**: 0% de imagens descartadas (todas são significativas)
-
-### Uso de Memória
-- **ESP32**: ~80KB de RAM livre durante operação
-- **SPIFFS**: 1MB partição, ~70KB usado
-- **Flash**: 4MB total, 56% livre após firmware
+### Comunicação MQTT
+- **Chunks**: 1KB por pacote MQTT
+- **Tipos de imagem**: "anterior" e "atual" 
+- **Latência**: <200ms por chunk
+- **Taxa de sucesso**: >95% das transmissões
+- **Tópicos organizados**: Por tipo e pair_id
 
 ## 🔧 Configurações
 
-### ESP32 (main/main.c)
+### ESP32-CAM (main/main.c)
 ```c
 #define WIFI_SSID        "Sua_Rede_WiFi"
 #define WIFI_PASS        "Sua_Senha"
 #define MQTT_BROKER_URI  "mqtt://ip_do_broker:1883"
-#define CHANGE_THRESHOLD 0.12    // 12% de diferença
-#define IMAGE_CAPTURE_INTERVAL 15000  // 15 segundos
+
+// Configurações da câmera
+#define IMAGE_CAPTURE_INTERVAL  30000   // 30 segundos
+#define CHANGE_THRESHOLD        0.15    // 15% de diferença
+#define FRAMESIZE_QVGA                  // 320x240 pixels
+#define JPEG_QUALITY           10       // Qualidade JPEG (0-63)
 ```
 
 ### Python (server/monitor_mqtt.py)
@@ -144,32 +198,54 @@ DATABASE_FILE = "enchentes_data_teste.db"
 
 ## 📈 Monitoramento e Logs
 
-O sistema gera logs detalhados sobre:
-- 📸 **Captura de imagens** e processamento
-- 🔍 **Análise de diferenças** entre quadros
-- 📦 **Compressão** e otimização
-- 🌐 **Estatísticas de rede** e conectividade
+O sistema ESP32-CAM gera logs detalhados sobre:
+- 📸 **Captura de imagens** e qualidade
+- 🔍 **Análise de diferenças** entre quadros consecutivos
+- 📦 **Compressão JPEG** e otimização de tamanho
+- 🌐 **Estatísticas de rede** WiFi e MQTT
 - 🚨 **Alertas** de mudanças significativas
+- 💾 **Uso de memória** PSRAM e interna
+- ⚡ **Performance** de captura e transmissão
 
-## 🧪 Testes
+## 🧪 Uso do Sistema
 
+### 1. **Iniciar Monitor de Recepção**
 ```bash
-# Teste do algoritmo de comparação de imagens
-cd scripts
-python3 teste_imagens.py
-
-# Validação dos dados coletados
 cd server
-python3 validar_dados.py
+python3 monitor_mqtt.py
+```
+
+### 2. **Visualizar Imagens Capturadas**
+```bash
+# Ver informações do banco
+python3 extract_images.py --info
+
+# Extrair todas as imagens
+python3 extract_images.py
+
+# Visualizar imagens extraídas
+cd extracted_images
+xdg-open *.jpg  # Linux
+```
+
+### 3. **Teste de Diferenças**
+```bash
+# Posicionar ESP32-CAM apontando para cena
+# Aguardar primeira captura (30s)
+# Fazer mudança significativa na cena
+# Observar logs do monitor para par de imagens enviado
 ```
 
 ## 🔄 Próximos Passos
 
-- [ ] Integração com câmera real (OV2640)
-- [ ] Implementação de IA/ML para classificação de enchentes
-- [ ] Interface web para monitoramento remoto
-- [ ] Sistema de notificações (email/SMS)
-- [ ] Otimização de consumo energético
+- [ ] **Otimização de energia** para operação com bateria
+- [ ] **Implementação de IA/ML** para classificação automática de enchentes
+- [ ] **Interface web** para configuração remota da ESP32-CAM
+- [ ] **Sistema de notificações** push/email para alertas
+- [ ] **Múltiplas câmeras** em rede mesh
+- [ ] **Análise de vídeo** em tempo real
+- [ ] **Integração com sensores** de nível d'água
+- [ ] **Armazenamento na nuvem** das imagens críticas
 
 ## 📄 Licença
 
@@ -179,11 +255,10 @@ Este projeto está licenciado sob a MIT License - veja o arquivo [LICENSE](LICEN
 
 **Gabriel Passos de Oliveira**  
 Projeto de Iniciação Científica  
-IGCE/UNESP - 2024  
+IGCE/UNESP - 2025  
 Email: gabriel.passos@unesp.br  
 Orientador: Prof. Dr. Caetano Mazzoni Ranieri  
-Ano: 2025
 
 ---
 
-*Sistema desenvolvido para monitoramento inteligente de enchentes utilizando tecnologias IoT e processamento de imagens.*
+*Sistema desenvolvido para monitoramento inteligente de enchentes utilizando ESP32-CAM com análise de imagens em tempo real e comunicação IoT.*

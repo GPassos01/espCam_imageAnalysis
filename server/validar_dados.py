@@ -29,7 +29,7 @@ class DataValidator:
             stats = json.loads(data)
             
             # Verificações obrigatórias
-            required_fields = ['timestamp', 'bytes_enviados', 'uptime', 'memoria_livre']
+            required_fields = ['timestamp', 'bytes_enviados', 'uptime', 'memoria_livre', 'taxa_compressao']
             missing_fields = [field for field in required_fields if field not in stats]
             
             if missing_fields:
@@ -58,9 +58,16 @@ class DataValidator:
                         self.log_error(f"❌ Taxa negativa: {rate:.1f} bytes/s")
                         return False
             
+            # Adicionar validação da taxa de compressão aqui
+            if not (0 <= stats.get('taxa_compressao', -1) <= 1):
+                self.log_error(f"❌ Taxa de compressão inválida: {stats.get('taxa_compressao')} (deve ser 0-1)")
+                return False
+            elif stats.get('taxa_compressao', 0) > 0.8:
+                 self.log_warning(f"⚠️ Taxa de compressão um pouco alta: {stats.get('taxa_compressao'):.2f}")
+
             self.last_stats = stats
             self.stats_history.append(stats)
-            self.log_success(f"✅ Stats válidos - {stats['bytes_enviados']} bytes, {stats['uptime']}s")
+            self.log_success(f"✅ Stats válidos - {stats['bytes_enviados']} bytes, {stats['uptime']}s, Compressão: {stats.get('taxa_compressao', 0):.1%}")
             return True
             
         except json.JSONDecodeError as e:
@@ -72,20 +79,12 @@ class DataValidator:
         try:
             sensor = json.loads(data)
             
-            required_fields = ['timestamp', 'image_size', 'compressed_size', 'difference']
+            required_fields = ['timestamp', 'current_size', 'difference', 'image_pair_id']
             missing_fields = [field for field in required_fields if field not in sensor]
             
             if missing_fields:
                 self.log_error(f"❌ Sensor - Campos ausentes: {missing_fields}")
                 return False
-            
-            # Validação de compressão
-            compression_ratio = sensor['compressed_size'] / sensor['image_size']
-            if compression_ratio > 1.0:
-                self.log_error(f"❌ Compressão inválida: {compression_ratio:.2f} (>1.0)")
-                return False
-            elif compression_ratio > 0.8:
-                self.log_warning(f"⚠️ Compressão baixa: {compression_ratio:.2f}")
             
             # Validação de diferença
             if not 0 <= sensor['difference'] <= 1:
@@ -93,7 +92,7 @@ class DataValidator:
                 return False
             
             self.sensor_data.append(sensor)
-            self.log_success(f"✅ Sensor válido - {sensor['image_size']}→{sensor['compressed_size']} bytes ({compression_ratio:.1%})")
+            self.log_success(f"✅ Sensor válido - Pair ID: {sensor.get('image_pair_id')}, Tam. Atual: {sensor['current_size']} bytes, Diff: {sensor['difference']:.1%}")
             return True
             
         except Exception as e:
@@ -121,45 +120,79 @@ class DataValidator:
         """Callback para mensagens MQTT"""
         self.total_messages += 1
         topic = msg.topic
-        payload = msg.payload.decode()
         
-        print(f"\n📨 [{datetime.now().strftime('%H:%M:%S')}] {topic} ({len(payload)} bytes)")
+        # Verificar se é um chunk de imagem (dados binários)
+        if topic.startswith("enchentes/imagem/dados"):
+            # Para chunks de imagem, trabalhar com dados binários
+            payload_size = len(msg.payload)
+            print(f"\n📨 [{datetime.now().strftime('%H:%M:%S')}] {topic} ({payload_size} bytes - binário)")
+            self.validate_image_chunk(topic, msg.payload)
+            return
         
-        # Roteamento por tópico
-        if topic == "enchentes/rede/estatisticas":
-            self.validate_network_stats(payload)
-        elif topic == "enchentes/sensores":
-            self.validate_sensor_data(payload)
-        elif topic == "enchentes/alertas":
-            self.validate_alert(payload)
-        elif topic.startswith("enchentes/imagem/dados"):
-            # Validar chunks de imagem
-            self.validate_image_chunk(topic, payload)
+        # Para outros tópicos, decodificar como texto
+        try:
+            payload = msg.payload.decode('utf-8')
+            print(f"\n📨 [{datetime.now().strftime('%H:%M:%S')}] {topic} ({len(payload)} bytes)")
+            
+            # Roteamento por tópico
+            if topic == "enchentes/rede/estatisticas":
+                self.validate_network_stats(payload)
+            elif topic == "enchentes/sensores":
+                self.validate_sensor_data(payload)
+            elif topic == "enchentes/alertas":
+                self.validate_alert(payload)
+                
+        except UnicodeDecodeError as e:
+            self.log_error(f"❌ Erro de decodificação UTF-8: {e}")
+            # Tentar com outros encodings
+            try:
+                payload = msg.payload.decode('latin-1')
+                print(f"⚠️ Decodificado com latin-1: {len(payload)} chars")
+            except Exception as e2:
+                self.log_error(f"❌ Falha em todos os encodings: {e2}")
+        except Exception as e:
+            self.log_error(f"❌ Erro geral no processamento: {e}")
     
     def validate_image_chunk(self, topic, data):
-        """Valida chunks de imagem"""
+        """Valida chunks de imagem - dados binários"""
         try:
             # Extrair offset e tamanho total do tópico
+            # Formato esperado: enchentes/imagem/dados/{tipo}/{pair_id}/{offset}/{total_size}
             parts = topic.split('/')
-            if len(parts) >= 4:
-                offset = int(parts[3])
-                if len(parts) >= 5:
-                    total_size = int(parts[4])
-                    chunk_id = f"{total_size}_{offset}"
+            if len(parts) == 7: # Espera 7 partes: enchentes, imagem, dados, tipo, pair_id, offset, total_size
+                image_type = parts[3]
+                pair_id = parts[4]
+                offset = int(parts[5]) # Corrigido de parts[3]
+                total_size = int(parts[6]) # Corrigido de parts[4]
+                
+                # Usar uma combinação mais robusta para chunk_id que inclua pair_id e tipo
+                chunk_id = f"{pair_id}_{image_type}_{total_size}"
                     
-                    if chunk_id not in self.image_chunks:
-                        self.image_chunks[chunk_id] = {
-                            'chunks': [],
-                            'total_size': total_size,
-                            'received_bytes': 0
-                        }
-                    
-                    self.image_chunks[chunk_id]['chunks'].append(len(data))
-                    self.image_chunks[chunk_id]['received_bytes'] += len(data)
-                    
-                    self.log_success(f"✅ Chunk {offset}/{total_size} - {len(data)} bytes")
+                if chunk_id not in self.image_chunks:
+                    self.image_chunks[chunk_id] = {
+                        'chunks': {}, # Armazenar chunks por offset para facilitar a verificação de lacunas
+                        'total_size': total_size,
+                        'received_bytes': 0,
+                        'pair_id': pair_id,
+                        'image_type': image_type
+                    }
+                
+                # Para dados binários, usar len(data) diretamente
+                chunk_size = len(data)
+                self.image_chunks[chunk_id]['chunks'][offset] = chunk_size # Armazena o tamanho do chunk no offset
+                self.image_chunks[chunk_id]['received_bytes'] += chunk_size
+                
+                self.log_success(f"✅ Chunk {image_type} (Pair: {pair_id}) {offset}/{total_size} - {chunk_size} bytes")
+                
+                # Verificar se recebemos todos os chunks
+                if self.image_chunks[chunk_id]['received_bytes'] >= total_size:
+                    # Adicionalmente, verificar se todos os offsets esperados foram recebidos (opcional, mais complexo)
+                    self.log_success(f"🖼️ Imagem {image_type} (Pair: {pair_id}) completa! Total: {self.image_chunks[chunk_id]['received_bytes']}/{total_size} bytes")
+            else:
+                self.log_error(f"❌ Formato de tópico de chunk inválido: {topic} (Esperado 7 partes, obteve {len(parts)})")
+                        
         except Exception as e:
-            self.log_error(f"❌ Erro chunk: {e}")
+            self.log_error(f"❌ Erro chunk: {e} (Tópico: {topic})")
     
     def log_success(self, msg):
         print(f"  {msg}")
@@ -232,19 +265,20 @@ class DataValidator:
         
         # Analisar eficiência de compressão
         compressions = []
-        for sensor in self.sensor_data[-10:]:  # Últimos 10
-            if 'compressed_size' in sensor and 'image_size' in sensor:
-                ratio = sensor['compressed_size'] / sensor['image_size']
-                compressions.append(ratio)
+        for stat_item in self.stats_history[-10:]: # Usar stats_history
+            if 'taxa_compressao' in stat_item:
+                compressions.append(stat_item['taxa_compressao'])
         
         if compressions:
             avg_compression = sum(compressions) / len(compressions)
-            print(f"📦 Compressão média: {avg_compression:.1%}")
+            print(f"📦 Compressão média (de stats): {avg_compression:.1%}")
             
             if avg_compression > 0.8:
-                print(f"⚠️ Compressão baixa detectada!")
-            elif avg_compression < 0.4:
-                print(f"✅ Ótima eficiência de compressão!")
+                print(f"⚠️ Compressão média baixa (de stats) detectada!")
+            elif avg_compression < 0.1 and avg_compression > 0: # Evitar 0 se não houver compressão
+                print(f"✅ Ótima eficiência de compressão média (de stats)!")
+            elif avg_compression == 0:
+                print(f"ℹ️ Compressão média (de stats) é zero. Isso pode ser normal se apenas a primeira imagem foi enviada ou se não houve mudanças.")
     
     def check_data_quality(self):
         """Verifica qualidade dos dados"""
@@ -269,7 +303,7 @@ class DataValidator:
         
         # Verificar variabilidade dos dados
         if len(self.sensor_data) > 5:
-            sizes = [s['image_size'] for s in self.sensor_data[-10:]]
+            sizes = [s['current_size'] for s in self.sensor_data[-10:]]
             avg_size = sum(sizes) / len(sizes)
             variance = sum([(s - avg_size)**2 for s in sizes]) / len(sizes)
             std_dev = variance**0.5
@@ -299,7 +333,7 @@ def main():
             "enchentes/rede/estatisticas",
             "enchentes/sensores", 
             "enchentes/alertas",
-            "enchentes/imagem/dados/+/+"
+            "enchentes/imagem/dados/+/+/+/+" # Corrigido de +/+
         ]
         
         for topic in topics:

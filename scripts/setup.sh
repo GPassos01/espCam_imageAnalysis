@@ -1,12 +1,14 @@
 #!/bin/bash
 
-# Script de Configuração - Sistema de Monitoramento de Enchentes ESP32
+# Script de Configuração - Sistema de Monitoramento de Enchentes ESP32-CAM
 # Projeto IC - Gabriel Passos de Oliveira - IGCE/UNESP - 2025
 
 echo "======================================================"
-echo "Sistema de Monitoramento de Enchentes - ESP32"
+echo "Sistema de Monitoramento de Enchentes - ESP32-CAM"
 echo "Projeto de Iniciação Científica - IGCE/UNESP - 2025"
 echo "Gabriel Passos de Oliveira"
+echo "======================================================"
+echo "🎥 Modo: Câmera Real ESP32-CAM com sensor OV2640"
 echo "======================================================"
 
 # Verificar se ESP-IDF está instalado e sourced
@@ -27,13 +29,49 @@ check_espidf() {
     
     local idf_version=$(idf.py --version 2>&1 | head -n1)
     echo "✅ ESP-IDF encontrado: $idf_version"
+    
+    # Verificar se é versão 5.0+
+    local version_number=$(echo "$idf_version" | grep -oP 'v\d+\.\d+' | head -n1 | tr -d 'v')
+    local major_version=$(echo "$version_number" | cut -d'.' -f1)
+    
+    if [[ $major_version -ge 5 ]]; then
+        echo "✅ Versão do ESP-IDF compatível com ESP32-CAM"
+    else
+        echo "⚠️  Versão do ESP-IDF pode não ser totalmente compatível com ESP32-CAM"
+        echo "   Recomendado: ESP-IDF v5.0 ou superior"
+    fi
+    
     return 0
 }
 
-# Função para configurar projeto
+# Verificar componente esp32-camera
+check_camera_component() {
+    echo "🎥 Verificando componente esp32-camera..."
+    
+    # Verificar se o componente esp32-camera existe
+    if [[ -d "$IDF_PATH/components/esp32-camera" ]]; then
+        echo "✅ Componente esp32-camera encontrado no ESP-IDF"
+    else
+        echo "❌ Componente esp32-camera não encontrado!"
+        echo "Instalando esp32-camera..."
+        
+        # Clonar o componente se não existir
+        cd "$IDF_PATH/components"
+        if git clone https://github.com/espressif/esp32-camera.git; then
+            echo "✅ Componente esp32-camera instalado com sucesso!"
+        else
+            echo "❌ Falha ao instalar componente esp32-camera"
+            echo "   Instale manualmente: git clone https://github.com/espressif/esp32-camera.git"
+            return 1
+        fi
+    fi
+    return 0
+}
+
+# Função para configurar projeto ESP32-CAM
 setup_project() {
     echo ""
-    echo "🔧 Configurando projeto ESP32..."
+    echo "🔧 Configurando projeto ESP32-CAM..."
     
     # Navegar para o diretório esp32
     cd ../esp32
@@ -42,11 +80,29 @@ setup_project() {
     echo "📡 Definindo target para ESP32..."
     idf.py set-target esp32
     
+    # Aplicar configurações padrão para ESP32-CAM
+    echo "⚙️  Aplicando configurações otimizadas para ESP32-CAM..."
+    if [[ -f "sdkconfig.defaults" ]]; then
+        echo "✅ Usando configurações padrão para ESP32-CAM"
+    else
+        echo "⚠️  Arquivo sdkconfig.defaults não encontrado"
+    fi
+    
+    # Verificar configurações específicas para câmera
+    echo "📷 Verificando configurações da câmera..."
+    echo "   - Sensor: OV2640"
+    echo "   - Resolução: 320x240 (QVGA)"
+    echo "   - Formato: JPEG"
+    echo "   - Flash LED: GPIO4"
+    echo "   - PSRAM: Habilitado"
+    
     # Configurar partições customizadas
     echo "📦 Verificando configurações de partições..."
     
     if [[ -f "partitions.csv" ]]; then
         echo "✅ Tabela de partições encontrada"
+        echo "   Verificando espaço para imagens e SPIFFS..."
+        cat partitions.csv | grep -E "(spiffs|app)"
     else
         echo "❌ Arquivo partitions.csv não encontrado!"
     fi
@@ -54,31 +110,59 @@ setup_project() {
     # Verificar se menuconfig é necessário
     read -p "Deseja abrir o menu de configuração avançada? (y/n): " config_menu
     if [[ $config_menu == "y" || $config_menu == "Y" ]]; then
+        echo "📋 Abrindo configuração avançada..."
+        echo "   Principais configurações para ESP32-CAM:"
+        echo "   - Component config -> Camera configuration"
+        echo "   - Component config -> ESP32-specific -> Support for external SPIRAM"
+        echo "   - Component config -> Wi-Fi -> WiFi buffer configurations"
         idf.py menuconfig
     fi
     
     # Voltar ao diretório scripts
     cd ../scripts
     
-    echo "✅ Configuração do projeto concluída!"
+    echo "✅ Configuração do projeto ESP32-CAM concluída!"
 }
 
 # Função para compilar projeto
 build_project() {
     echo ""
-    echo "🔨 Compilando projeto ESP32..."
+    echo "🔨 Compilando projeto ESP32-CAM..."
+    echo "   Este processo pode demorar alguns minutos na primeira vez..."
     
     cd ../esp32
     
+    # Limpar build anterior se existir
+    if [[ -d "build" ]]; then
+        echo "🧹 Limpando build anterior..."
+        idf.py clean
+    fi
+    
+    echo "🔧 Iniciando compilação..."
     if idf.py build; then
+        echo ""
         echo "✅ Compilação bem-sucedida!"
         echo "📊 Informações do build:"
-        echo "   - Binário principal: build/main.bin"
-        echo "   - Mapa de memória: build/main.map"
+        
+        # Mostrar informações de memória
+        echo "   💾 Uso de memória:"
+        grep -A 10 "Memory usage" build/flash_project_args || echo "   (Informações de memória não disponíveis)"
+        
+        echo ""
+        echo "   📁 Arquivos gerados:"
+        echo "   - Firmware principal: build/enchentes_esp32cam.bin"
+        echo "   - Bootloader: build/bootloader/bootloader.bin"
+        echo "   - Tabela de partições: build/partition_table/partition-table.bin"
+        
         cd ../scripts
         return 0
     else
+        echo ""
         echo "❌ Erro na compilação!"
+        echo "   Possíveis causas:"
+        echo "   - Componente esp32-camera não instalado"
+        echo "   - Configurações incompatíveis"
+        echo "   - Dependências em falta"
         cd ../scripts
         return 1
     fi
@@ -96,18 +180,18 @@ detect_esp32_port() {
     done
     
     if [[ ${#ports[@]} -eq 0 ]]; then
-        echo "❌ Nenhuma porta ESP32 detectada automaticamente"
-        read -p "Digite a porta da ESP32 manualmente (ex: /dev/ttyUSB0): " manual_port
+        echo "❌ Nenhuma porta ESP32 detectada automaticamente" >&2
+        read -p "Digite a porta da ESP32 manualmente (ex: /dev/ttyUSB0): " manual_port >&2
         echo "$manual_port"
     elif [[ ${#ports[@]} -eq 1 ]]; then
-        echo "✅ ESP32 detectada em: ${ports[0]}"
+        echo "✅ ESP32 detectada em: ${ports[0]}" >&2
         echo "${ports[0]}"
     else
-        echo "🔍 Múltiplas portas detectadas:"
+        echo "🔍 Múltiplas portas detectadas:" >&2
         for i in "${!ports[@]}"; do
-            echo "   $((i+1))) ${ports[$i]}"
+            echo "   $((i+1))) ${ports[$i]}" >&2
         done
-        read -p "Escolha a porta (1-${#ports[@]}): " choice
+        read -p "Escolha a porta (1-${#ports[@]}): " choice >&2
         if [[ $choice -ge 1 && $choice -le ${#ports[@]} ]]; then
             echo "${ports[$((choice-1))]}"
         else
@@ -253,7 +337,7 @@ check_config() {
     # Verificar arquivos do servidor Python
     echo ""
     echo "📁 Arquivos do servidor:"
-    server_files=("../server/monitor_mqtt.py" "../server/requirements.txt" "../server/validar_dados.py")
+    server_files=("../server/monitor_mqtt.py" "../server/requirements.txt" "../server/validar_dados.py" "../server/extract_images.py")
     for file in "${server_files[@]}"; do
         if [[ -f "$file" ]]; then
             echo "  ✅ $file"
@@ -264,13 +348,13 @@ check_config() {
     
     # Verificar imagens de teste
     echo ""
-    echo "🖼️  Imagens de teste:"
+    echo "��️  Imagens de teste (LEGADO - podem não ser mais usadas ativamente):"
     image_files=("../imagens/img1_gray.jpg" "../imagens/img2_gray.jpg")
     for file in "${image_files[@]}"; do
         if [[ -f "$file" ]]; then
-            echo "  ✅ $file"
+            echo "  ✅ $file (para testes legados)"
         else
-            echo "  ❌ $file não encontrado!"
+            echo "  ⚠️ $file não encontrado (pode ser normal se não usar testes legados)"
         fi
     done
     
@@ -287,154 +371,222 @@ check_config() {
         echo "  ✅ Configurações de WiFi parecem estar definidas"
     fi
     
-    if grep -q "192.168.1.2\|localhost" ../server/monitor_mqtt.py 2>/dev/null; then
-        echo "  🔧 Configure o MQTT em server/monitor_mqtt.py:"
+    if grep -q "192.168.1.2\|localhost" ../server/monitor_mqtt.py 2>/dev/null || \
+       grep -q "enchentes_data_esp32cam.db" ../server/monitor_mqtt.py 2>/dev/null; then
+        echo "  �� Configure o MQTT e DB em server/monitor_mqtt.py:"
         echo "     - MQTT_BROKER (IP do broker)"
         echo "     - MQTT_PORT"
         echo "     - Credenciais se necessário"
+        echo "     - DB_PATH (nome do arquivo do banco, ex: enchentes_data_esp32cam.db)"
     else
-        echo "  ✅ Configurações MQTT parecem estar definidas"
+        echo "  ✅ Configurações MQTT e DB em monitor_mqtt.py parecem estar definidas/customizadas"
     fi
 }
 
 # Função para executar testes
 run_tests() {
     echo ""
-    echo "🧪 Executando testes do projeto..."
-    
-    # Teste do algoritmo de imagens
-    if [[ -f "teste_imagens.py" ]]; then
-        echo "🖼️  Testando algoritmo de comparação de imagens..."
-        
-        # Verificar se ambiente virtual existe e ativar
-        if [[ -f "../server/venv/bin/activate" ]]; then
-            echo "  🐍 Ativando ambiente virtual..."
-            cd ../server
-            source venv/bin/activate
-            cd ../scripts
-            
-            python3 teste_imagens.py
-            deactivate
-        else
-            echo "  ⚠️ Ambiente virtual não encontrado. Tentando execução direta..."
-            python3 teste_imagens.py
-        fi
-    else
-        echo "❌ Script teste_imagens.py não encontrado!"
-    fi
+    echo "🧪 Executando scripts de validação/extração..."
     
     # Teste de validação de dados
     if [[ -f "../server/validar_dados.py" ]]; then
         echo ""
-        echo "📊 Para executar validação de dados em tempo real:"
+        echo "📊 Para executar validação de dados MQTT em tempo real:"
+        echo "   Ligue sua ESP32-CAM e então execute no diretório do servidor:"
         echo "   cd ../server && source venv/bin/activate && python3 validar_dados.py"
-        echo "   Ou use a opção 9 do menu principal (Monitor MQTT)"
+        echo "   (Ou use a opção de menu para iniciar o validador)"
     else
         echo "❌ Script validar_dados.py não encontrado!"
     fi
+
+    # Informação sobre extração de imagens
+    if [[ -f "../server/extract_images.py" ]]; then
+        echo ""
+        echo "🖼️  Para extrair imagens do banco de dados:"
+        echo "   Execute no diretório do servidor (use o nome correto do seu DB se não for o padrão):"
+        echo "   cd ../server && source venv/bin/activate && python3 extract_images.py --db enchentes_data_esp32cam.db"
+        echo "   (Ou use a opção de menu para extrair imagens)"
+    else
+        echo "❌ Script extract_images.py não encontrado!"
+    fi
 }
 
-# Menu principal
+# Menu principal simplificado
 main_menu() {
     while true; do
         echo ""
-        echo "======================================================"
-        echo "MENU PRINCIPAL - Sistema de Monitoramento de Enchentes"
-        echo "======================================================"
-        echo "1)  Verificar configurações"
-        echo "2)  Configurar projeto ESP32"
-        echo "3)  Compilar projeto"
-        echo "4)  Fazer flash do firmware"
-        echo "5)  Configurar e gravar SPIFFS"
-        echo "6)  Configurar ambiente Python"
-        echo "7)  Executar testes"
-        echo "8)  Processo completo (compilar + flash + SPIFFS)"
-        echo "9)  Monitor MQTT (básico)"
-        echo "10) Monitor MQTT com visualização em tempo real 🆕"
-        echo "11) Gerar dashboard avançado 🆕"
-        echo "12) Sair"
+        echo "🎯 =================================="
+        echo "📷 SETUP ESP32-CAM - MONITORAMENTO DE ENCHENTES"
+        echo "   Gabriel Passos (IGCE/UNESP 2025)"
+        echo "🎯 =================================="
         echo ""
-        read -p "Escolha uma opção (1-12): " choice
+        echo "🔧 CONFIGURAÇÃO BÁSICA:"
+        echo "   1) Verificar dependências ESP-IDF e configs"
+        echo "   2) Detectar e configurar ESP32-CAM (menuconfig)"
+        echo "   3) Informações do componente ESP32-Camera"
+        echo "   9) Configurar ambiente Python (venv e dependências)"
+        echo ""
+        echo "🏗️ BUILD E FLASH ESP32:"
+        echo "   4) Compilar firmware ESP32-CAM"
+        echo "   5) Flash firmware na ESP32-CAM"
+        echo "   6) Monitor serial (logs da ESP32)"
+        echo ""
+        echo "💻 SERVIDOR E DADOS:"
+        echo "   10) Iniciar Monitor MQTT (monitor_mqtt.py)"
+        echo "   11) Iniciar Validador de Dados MQTT (validar_dados.py)"
+        echo "   12) Extrair imagens do banco (extract_images.py)"
+        echo ""
+        echo "📚 DOCUMENTAÇÃO (Abrir no navegador):"
+        echo "   14) Ver README Principal"
+        echo "   15) Ver Guia ESP32-CAM (docs/)"
+        echo ""
+        echo "   0) Sair"
+        echo ""
+        read -p "🎯 Escolha uma opção: " choice
         
-        case $choice in
-            1)
-                check_config
-                ;;
-            2)
-                if check_espidf; then
-                    setup_project
-                fi
-                ;;
-            3)
-                if check_espidf; then
-                    build_project
-                fi
-                ;;
-            4)
-                if check_espidf; then
-                    flash_project
-                fi
-                ;;
-            5)
-                if check_espidf; then
-                    setup_spiffs
-                fi
-                ;;
-            6)
-                setup_python
-                ;;
-            7)
-                run_tests
-                ;;
-            8)
-                if check_espidf; then
-                    setup_project
-                    if build_project; then
-                        if flash_project; then
-                            setup_spiffs
-                        fi
-                    fi
-                fi
-                ;;
-            9)
-                echo "🚀 Iniciando monitor MQTT básico..."
-                echo "Certifique-se de que a ESP32 está conectada e enviando dados."
-                cd ../server
-                if [[ -d "venv" ]]; then
-                    source venv/bin/activate
-                fi
-                python3 monitor_mqtt.py
-                cd ../scripts
-                ;;
-            10)
-                echo "📊 Iniciando monitor MQTT com visualização em tempo real..."
-                echo "Certifique-se de que a ESP32 está conectada e enviando dados."
-                echo "Use Ctrl+C para parar o monitoramento."
-                cd ../server
-                if [[ -d "venv" ]]; then
-                    source venv/bin/activate
-                fi
-                python3 monitor_mqtt.py --realtime
-                cd ../scripts
-                ;;
-            11)
-                echo "📋 Gerando dashboard avançado com dados existentes..."
-                cd ../server
-                if [[ -d "venv" ]]; then
-                    source venv/bin/activate
-                fi
-                python3 monitor_mqtt.py --report
-                cd ../scripts
-                ;;
-            12)
-                echo "👋 Saindo do sistema de configuração..."
-                exit 0
-                ;;
-            *)
-                echo "❌ Opção inválida! Por favor, escolha uma opção de 1 a 12."
-                ;;
-        esac
+        process_choice $choice
     done
+}
+
+# Processar escolhas do menu
+process_choice() {
+    local choice=$1
+    
+    case $choice in
+        1) echo "🔍 Verificando dependências ESP-IDF e configs..."
+            if check_espidf; then
+                check_camera_component
+                check_config
+            fi
+            ;;
+            
+        2) echo "🔧 Detectando e configurando ESP32-CAM (menuconfig)..."
+            if check_espidf && check_camera_component; then
+                setup_project
+            fi
+            ;;
+            
+        3) echo "📷 Informações do componente ESP32-Camera..."
+            check_camera_component
+            echo ""
+            echo "ℹ️  Informações do componente ESP32-Camera:"
+            if [[ -d "$IDF_PATH/components/esp32-camera" ]]; then
+                echo "   📁 Localização: $IDF_PATH/components/esp32-camera"
+                if [[ -f "$IDF_PATH/components/esp32-camera/driver/include/esp_camera.h" ]]; then
+                    echo "   ✅ Headers encontrados"
+                fi
+                if [[ -f "$IDF_PATH/components/esp32-camera/CMakeLists.txt" ]]; then
+                    echo "   ✅ CMakeLists.txt encontrado"
+                fi
+            else
+                echo "   ❌ Componente não instalado ou ESP-IDF não carregado corretamente."
+            fi
+            ;;
+        
+        9) echo "🐍 Configurando ambiente Python..."
+           setup_python
+           ;;
+
+        4) echo "🏗️ Compilando firmware ESP32-CAM..."
+            if check_espidf && check_camera_component; then
+                build_project
+            fi
+            ;;
+            
+        5) echo "📱 Fazendo flash do firmware..."
+            if check_espidf; then
+                flash_project
+            fi
+            ;;
+            
+        6) echo "📊 Iniciando monitor serial..."
+            if check_espidf; then
+                local port=$(detect_esp32_port)
+                if [[ -n "$port" ]]; then
+                    echo "🔌 Conectando na porta $port..."
+                    cd ../esp32
+                    idf.py -p "$port" monitor
+                    cd ../scripts
+                else
+                    echo "⚠️ Nenhuma porta selecionada ou detectada para o monitor serial."
+                fi
+            fi
+            ;;
+            
+        10) echo "📡 Iniciando Monitor MQTT (monitor_mqtt.py)..."
+            cd ../server
+            if [[ -f "venv/bin/activate" ]]; then
+                source venv/bin/activate
+                echo "🐍 Ambiente virtual ativado."
+            fi
+            if [[ -f "monitor_mqtt.py" ]]; then
+                python3 monitor_mqtt.py
+            else
+                echo "❌ Script monitor_mqtt.py não encontrado em server/"
+            fi
+            cd ../scripts
+            ;;
+
+        11) echo "📡 Iniciando Validador de Dados MQTT (validar_dados.py)..."
+            cd ../server
+            if [[ -f "venv/bin/activate" ]]; then
+                source venv/bin/activate
+                echo "🐍 Ambiente virtual ativado."
+            fi
+            if [[ -f "validar_dados.py" ]]; then
+                python3 validar_dados.py
+            else
+                echo "❌ Script validar_dados.py não encontrado em server/"
+            fi
+            cd ../scripts
+            ;;
+
+        12) echo "🖼️  Extraindo imagens do banco (extract_images.py)..."
+            cd ../server
+            if [[ -f "venv/bin/activate" ]]; then
+                source venv/bin/activate
+                echo "🐍 Ambiente virtual ativado."
+            fi
+            if [[ -f "extract_images.py" ]]; then
+                read -p "Digite o nome do arquivo do banco de dados (padrão: enchentes_data_esp32cam.db): " db_name
+                db_name=${db_name:-enchentes_data_esp32cam.db}
+                read -p "Digite o nome do diretório de saída (padrão: extracted_images): " output_dir
+                output_dir=${output_dir:-extracted_images}
+
+                python3 extract_images.py --db "$db_name" --output "$output_dir"
+            else
+                echo "❌ Script extract_images.py não encontrado em server/"
+            fi
+            cd ../scripts
+            ;;
+            
+        14) echo "📚 Abrindo README Principal..."
+            if command -v xdg-open &> /dev/null; then
+                xdg-open ../README.md
+            elif command -v open &> /dev/null; then
+                open ../README.md
+            else
+                echo "Não foi possível abrir o README automaticamente. Abra ../README.md manualmente."
+            fi
+            ;;
+
+        15) echo "📚 Abrindo Guia ESP32-CAM (docs/)..."
+            if command -v xdg-open &> /dev/null; then
+                xdg-open ../docs/ESP32-CAM_README.md
+            elif command -v open &> /dev/null; then
+                open ../docs/ESP32-CAM_README.md
+            else
+                echo "Não foi possível abrir o guia automaticamente. Abra ../docs/ESP32-CAM_README.md manualmente."
+            fi
+            ;;
+
+        0) echo "👋 Saindo..."
+            exit 0
+            ;;
+            
+        *) echo "❌ Opção inválida!"
+            ;;
+    esac
 }
 
 # Verificar se estamos no diretório correto
@@ -448,10 +600,21 @@ if [[ ! -f "../esp32/main/main.c" ]] || [[ ! -f "../server/monitor_mqtt.py" ]]; 
     exit 1
 fi
 
-# Mostrar informações iniciais
+# Mostrar informações iniciais sobre ESP32-CAM
 echo ""
-echo "🔍 Verificando ambiente..."
+echo "🎥 Informações sobre ESP32-CAM:"
+echo "   - Microcontrolador: ESP32"
+echo "   - Câmera: OV2640 (2MP)"
+echo "   - Memória: 4MB Flash + 8MB PSRAM"
+echo "   - WiFi: 802.11 b/g/n"
+echo "   - GPIO Flash LED: 4"
+echo "   - Resolução suportada: até 1600x1200"
+echo "   - Projeto configurado para: 320x240 JPEG"
+echo ""
+
+echo "🔍 Verificando ambiente ESP32-CAM..."
 check_espidf >/dev/null 2>&1
+check_camera_component >/dev/null 2>&1
 
 # Verificar configurações iniciais
 check_config
