@@ -16,7 +16,7 @@ scripts/__pycache__/
 *.pyo
 *.pyd
 
-# Logs e dados
+# Logs e dados da IC
 server/*.log
 server/*.db
 server/*.png

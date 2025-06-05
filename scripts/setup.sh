@@ -1,14 +1,15 @@
 #!/bin/bash
 
-# Script de Configuração - Sistema de Monitoramento de Enchentes ESP32-CAM
+# Script de Configuração - Sistema de Monitoramento de Nível d'Água ESP32-CAM
 # Projeto IC - Gabriel Passos de Oliveira - IGCE/UNESP - 2025
 
 echo "======================================================"
-echo "Sistema de Monitoramento de Enchentes - ESP32-CAM"
+echo "Sistema de Monitoramento de Nível d'Água - ESP32-CAM"
 echo "Projeto de Iniciação Científica - IGCE/UNESP - 2025"
 echo "Gabriel Passos de Oliveira"
 echo "======================================================"
 echo "🎥 Modo: Câmera Real ESP32-CAM com sensor OV2640"
+echo "🔬 Foco: Processamento embarcado + HC-SR04"
 echo "======================================================"
 
 # Verificar se ESP-IDF está instalado e sourced
@@ -89,20 +90,22 @@ setup_project() {
     fi
     
     # Verificar configurações específicas para câmera
-    echo "📷 Verificando configurações da câmera..."
+    echo "📷 Verificações da IC:"
     echo "   - Sensor: OV2640"
     echo "   - Resolução: 320x240 (QVGA)"
     echo "   - Formato: JPEG"
     echo "   - Flash LED: GPIO4"
     echo "   - PSRAM: Habilitado"
+    echo "   - HC-SR04: GPIO12/13"
+    echo "   - Processamento embarcado: Ativo"
     
     # Configurar partições customizadas
     echo "📦 Verificando configurações de partições..."
     
     if [[ -f "partitions.csv" ]]; then
         echo "✅ Tabela de partições encontrada"
-        echo "   Verificando espaço para imagens e SPIFFS..."
-        cat partitions.csv | grep -E "(spiffs|app)"
+        echo "   Verificando espaço para aplicação..."
+        cat partitions.csv | grep -E "(app)"
     else
         echo "❌ Arquivo partitions.csv não encontrado!"
     fi
@@ -228,52 +231,10 @@ flash_project() {
     fi
 }
 
-# Função para gerar e gravar imagem SPIFFS
-setup_spiffs() {
-    echo ""
-    echo "💾 Configurando sistema de arquivos SPIFFS..."
-    
-    # Verificar se o script Python existe
-    if [[ ! -f "copy_images_to_spiffs.py" ]]; then
-        echo "❌ Script copy_images_to_spiffs.py não encontrado!"
-        return 1
-    fi
-    
-    # Verificar se as imagens existem
-    if [[ ! -d "../imagens" ]]; then
-        echo "❌ Diretório de imagens não encontrado!"
-        return 1
-    fi
-    
-    echo "🖼️  Gerando imagem SPIFFS com as imagens de teste..."
-    if python3 copy_images_to_spiffs.py; then
-        echo "✅ Imagem SPIFFS gerada com sucesso!"
-        
-        # Detectar porta para flash SPIFFS
-        local port=$(detect_esp32_port)
-        
-        echo "💾 Gravando SPIFFS na ESP32..."
-        cd ../esp32
-        
-        if python3 $IDF_PATH/components/spiffs/spiffsgen.py 1048576 ../spiffs_image build/spiffs.bin && \
-           idf.py -p "$port" partition_table-flash && \
-           esptool.py -p "$port" write_flash 0x110000 build/spiffs.bin; then
-            echo "✅ SPIFFS gravado com sucesso!"
-        else
-            echo "❌ Erro ao gravar SPIFFS!"
-        fi
-        
-        cd ../scripts
-    else
-        echo "❌ Erro ao gerar imagem SPIFFS!"
-        return 1
-    fi
-}
-
 # Função para configurar ambiente Python
 setup_python() {
     echo ""
-    echo "🐍 Configurando ambiente Python para monitor MQTT..."
+    echo "🐍 Configurando ambiente Python para monitor IC..."
     
     # Verificar se Python está instalado
     if ! command -v python3 &> /dev/null; then
@@ -297,16 +258,16 @@ setup_python() {
     echo "🔄 Ativando ambiente virtual..."
     source venv/bin/activate
     
-    # Verificar se requirements.txt existe
-    if [[ -f "requirements.txt" ]]; then
-        echo "📥 Instalando dependências Python..."
+    # Verificar se requirements_ic.txt existe
+    if [[ -f "requirements_ic.txt" ]]; then
+        echo "📥 Instalando dependências Python para IC..."
         pip install --upgrade pip
-        pip install -r requirements.txt
+        pip install -r requirements_ic.txt
         echo "✅ Dependências instaladas com sucesso!"
     else
-        echo "⚠️  Arquivo requirements.txt não encontrado"
+        echo "⚠️  Arquivo requirements_ic.txt não encontrado"
         echo "Instalando dependências básicas..."
-        pip install paho-mqtt sqlite3 matplotlib numpy pillow
+        pip install paho-mqtt
     fi
     
     # Voltar ao diretório scripts
@@ -320,12 +281,12 @@ setup_python() {
 # Função para verificar configurações
 check_config() {
     echo ""
-    echo "🔍 Verificando configurações do projeto..."
+    echo "🔍 Verificando configurações do projeto IC..."
     
     # Verificar arquivos essenciais do ESP32
     echo ""
     echo "📁 Arquivos do ESP32:"
-    files=("../esp32/main/main.c" "../esp32/CMakeLists.txt" "../esp32/sdkconfig.defaults" "../esp32/partitions.csv")
+    files=("../esp32/main/main.c" "../esp32/main/config.h" "../esp32/CMakeLists.txt" "../esp32/sdkconfig.defaults" "../esp32/partitions.csv")
     for file in "${files[@]}"; do
         if [[ -f "$file" ]]; then
             echo "  ✅ $file"
@@ -334,10 +295,22 @@ check_config() {
         fi
     done
     
+    # Verificar módulos da IC
+    echo ""
+    echo "📁 Módulos da IC:"
+    modules=("../esp32/main/model/image_processing.c" "../esp32/main/model/sensor.c" "../esp32/main/model/mqtt_send.c" "../esp32/main/model/init_hw.c" "../esp32/main/model/init_net.c")
+    for module in "${modules[@]}"; do
+        if [[ -f "$module" ]]; then
+            echo "  ✅ $module"
+        else
+            echo "  ❌ $module não encontrado!"
+        fi
+    done
+    
     # Verificar arquivos do servidor Python
     echo ""
-    echo "📁 Arquivos do servidor:"
-    server_files=("../server/monitor_mqtt.py" "../server/requirements.txt" "../server/validar_dados.py" "../server/extract_images.py")
+    echo "📁 Monitor IC:"
+    server_files=("../server/ic_monitor.py" "../server/requirements_ic.txt")
     for file in "${server_files[@]}"; do
         if [[ -f "$file" ]]; then
             echo "  ✅ $file"
@@ -346,24 +319,12 @@ check_config() {
         fi
     done
     
-    # Verificar imagens de teste
-    echo ""
-    echo "��️  Imagens de teste (LEGADO - podem não ser mais usadas ativamente):"
-    image_files=("../imagens/img1_gray.jpg" "../imagens/img2_gray.jpg")
-    for file in "${image_files[@]}"; do
-        if [[ -f "$file" ]]; then
-            echo "  ✅ $file (para testes legados)"
-        else
-            echo "  ⚠️ $file não encontrado (pode ser normal se não usar testes legados)"
-        fi
-    done
-    
     # Verificar configurações que precisam ser alteradas
     echo ""
     echo "⚠️  Configurações a verificar:"
     
-    if grep -q "Sua_Rede_WiFi\|SEU_WIFI_SSID" ../esp32/main/main.c 2>/dev/null; then
-        echo "  🔧 Configure o WiFi em esp32/main/main.c:"
+    if grep -q "Sua_Rede_WiFi\|SEU_WIFI_SSID" ../esp32/main/config.h 2>/dev/null; then
+        echo "  🔧 Configure o WiFi em esp32/main/config.h:"
         echo "     - WIFI_SSID"
         echo "     - WIFI_PASS"
         echo "     - MQTT_BROKER_URI"
@@ -371,52 +332,22 @@ check_config() {
         echo "  ✅ Configurações de WiFi parecem estar definidas"
     fi
     
-    if grep -q "192.168.1.2\|localhost" ../server/monitor_mqtt.py 2>/dev/null || \
-       grep -q "enchentes_data_esp32cam.db" ../server/monitor_mqtt.py 2>/dev/null; then
-        echo "  �� Configure o MQTT e DB em server/monitor_mqtt.py:"
+    if grep -q "192.168.1.2\|localhost" ../server/ic_monitor.py 2>/dev/null; then
+        echo "  🔧 Configure o MQTT em server/ic_monitor.py:"
         echo "     - MQTT_BROKER (IP do broker)"
         echo "     - MQTT_PORT"
         echo "     - Credenciais se necessário"
-        echo "     - DB_PATH (nome do arquivo do banco, ex: enchentes_data_esp32cam.db)"
     else
-        echo "  ✅ Configurações MQTT e DB em monitor_mqtt.py parecem estar definidas/customizadas"
+        echo "  ✅ Configurações MQTT em ic_monitor.py parecem estar definidas"
     fi
 }
 
-# Função para executar testes
-run_tests() {
-    echo ""
-    echo "🧪 Executando scripts de validação/extração..."
-    
-    # Teste de validação de dados
-    if [[ -f "../server/validar_dados.py" ]]; then
-        echo ""
-        echo "📊 Para executar validação de dados MQTT em tempo real:"
-        echo "   Ligue sua ESP32-CAM e então execute no diretório do servidor:"
-        echo "   cd ../server && source venv/bin/activate && python3 validar_dados.py"
-        echo "   (Ou use a opção de menu para iniciar o validador)"
-    else
-        echo "❌ Script validar_dados.py não encontrado!"
-    fi
-
-    # Informação sobre extração de imagens
-    if [[ -f "../server/extract_images.py" ]]; then
-        echo ""
-        echo "🖼️  Para extrair imagens do banco de dados:"
-        echo "   Execute no diretório do servidor (use o nome correto do seu DB se não for o padrão):"
-        echo "   cd ../server && source venv/bin/activate && python3 extract_images.py --db enchentes_data_esp32cam.db"
-        echo "   (Ou use a opção de menu para extrair imagens)"
-    else
-        echo "❌ Script extract_images.py não encontrado!"
-    fi
-}
-
-# Menu principal simplificado
+# Menu principal simplificado para IC
 main_menu() {
     while true; do
         echo ""
         echo "🎯 =================================="
-        echo "📷 SETUP ESP32-CAM - MONITORAMENTO DE ENCHENTES"
+        echo "🔬 SETUP ESP32-CAM - PROJETO IC"
         echo "   Gabriel Passos (IGCE/UNESP 2025)"
         echo "🎯 =================================="
         echo ""
@@ -431,12 +362,10 @@ main_menu() {
         echo "   5) Flash firmware na ESP32-CAM"
         echo "   6) Monitor serial (logs da ESP32)"
         echo ""
-        echo "💻 SERVIDOR E DADOS:"
-        echo "   10) Iniciar Monitor MQTT (monitor_mqtt.py)"
-        echo "   11) Iniciar Validador de Dados MQTT (validar_dados.py)"
-        echo "   12) Extrair imagens do banco (extract_images.py)"
+        echo "💻 MONITOR IC:"
+        echo "   10) Iniciar Monitor IC (ic_monitor.py)"
         echo ""
-        echo "📚 DOCUMENTAÇÃO (Abrir no navegador):"
+        echo "📚 DOCUMENTAÇÃO:"
         echo "   14) Ver README Principal"
         echo "   15) Ver Guia ESP32-CAM (docs/)"
         echo ""
@@ -513,49 +442,16 @@ process_choice() {
             fi
             ;;
             
-        10) echo "📡 Iniciando Monitor MQTT (monitor_mqtt.py)..."
+        10) echo "📡 Iniciando Monitor IC (ic_monitor.py)..."
             cd ../server
             if [[ -f "venv/bin/activate" ]]; then
                 source venv/bin/activate
                 echo "🐍 Ambiente virtual ativado."
             fi
-            if [[ -f "monitor_mqtt.py" ]]; then
-                python3 monitor_mqtt.py
+            if [[ -f "ic_monitor.py" ]]; then
+                python3 ic_monitor.py
             else
-                echo "❌ Script monitor_mqtt.py não encontrado em server/"
-            fi
-            cd ../scripts
-            ;;
-
-        11) echo "📡 Iniciando Validador de Dados MQTT (validar_dados.py)..."
-            cd ../server
-            if [[ -f "venv/bin/activate" ]]; then
-                source venv/bin/activate
-                echo "🐍 Ambiente virtual ativado."
-            fi
-            if [[ -f "validar_dados.py" ]]; then
-                python3 validar_dados.py
-            else
-                echo "❌ Script validar_dados.py não encontrado em server/"
-            fi
-            cd ../scripts
-            ;;
-
-        12) echo "🖼️  Extraindo imagens do banco (extract_images.py)..."
-            cd ../server
-            if [[ -f "venv/bin/activate" ]]; then
-                source venv/bin/activate
-                echo "🐍 Ambiente virtual ativado."
-            fi
-            if [[ -f "extract_images.py" ]]; then
-                read -p "Digite o nome do arquivo do banco de dados (padrão: enchentes_data_esp32cam.db): " db_name
-                db_name=${db_name:-enchentes_data_esp32cam.db}
-                read -p "Digite o nome do diretório de saída (padrão: extracted_images): " output_dir
-                output_dir=${output_dir:-extracted_images}
-
-                python3 extract_images.py --db "$db_name" --output "$output_dir"
-            else
-                echo "❌ Script extract_images.py não encontrado em server/"
+                echo "❌ Script ic_monitor.py não encontrado em server/"
             fi
             cd ../scripts
             ;;
@@ -590,12 +486,12 @@ process_choice() {
 }
 
 # Verificar se estamos no diretório correto
-if [[ ! -f "../esp32/main/main.c" ]] || [[ ! -f "../server/monitor_mqtt.py" ]]; then
+if [[ ! -f "../esp32/main/main.c" ]] || [[ ! -f "../server/ic_monitor.py" ]]; then
     echo "❌ Execute este script a partir do diretório scripts do projeto!"
     echo "Estrutura esperada:"
     echo "  wifi_sniffer/"
     echo "  ├── esp32/main/main.c"
-    echo "  ├── server/monitor_mqtt.py"
+    echo "  ├── server/ic_monitor.py"
     echo "  └── scripts/setup.sh"
     exit 1
 fi
@@ -610,6 +506,8 @@ echo "   - WiFi: 802.11 b/g/n"
 echo "   - GPIO Flash LED: 4"
 echo "   - Resolução suportada: até 1600x1200"
 echo "   - Projeto configurado para: 320x240 JPEG"
+echo "   - HC-SR04: GPIO12/13"
+echo "   - Processamento embarcado: Ativo"
 echo ""
 
 echo "🔍 Verificando ambiente ESP32-CAM..."
