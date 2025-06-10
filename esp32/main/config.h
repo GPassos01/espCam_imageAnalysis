@@ -1,56 +1,65 @@
+/**
+ * Configurações Centralizadas - Sistema ESP32-CAM
+ * 
+ * Todas as configurações do sistema em um local único:
+ * - Rede WiFi e MQTT
+ * - Pinout ESP32-CAM AI-Thinker
+ * - Parâmetros de captura e processamento
+ * - Thresholds de detecção de mudanças
+ * 
+ * @author Gabriel Passos - UNESP 2025
+ */
 #ifndef CONFIG_H
 #define CONFIG_H
 
-// ===== CONFIGURAÇÕES DE REDE =====
-#define WIFI_SSID        "Steps 2.4G"
-#define WIFI_PASS        "h%8Ka4D&"
-#define WIFI_MAXIMUM_RETRY  5
-#define MQTT_BROKER_URI  "mqtt://192.168.1.2:1883"
-#define MQTT_USERNAME    ""
-#define MQTT_PASSWORD    ""
-
-// ===== CONFIGURAÇÕES DA ESP32-CAM =====
-#define CAM_PIN_PWDN    32
-#define CAM_PIN_RESET   -1
-#define CAM_PIN_XCLK    0
-#define CAM_PIN_SIOD    26
-#define CAM_PIN_SIOC    27
-#define CAM_PIN_D7      35
-#define CAM_PIN_D6      34
-#define CAM_PIN_D5      39
-#define CAM_PIN_D4      36
-#define CAM_PIN_D3      21
-#define CAM_PIN_D2      19
-#define CAM_PIN_D1      18
-#define CAM_PIN_D0      5
-#define CAM_PIN_VSYNC   25
-#define CAM_PIN_HREF    23
-#define CAM_PIN_PCLK    22
-#define CAM_PIN_FLASH   4
+// ===== REDE WiFi E MQTT =====
+#define WIFI_SSID        "Steps 2.4G"      // Nome da rede WiFi 2.4GHz
+#define WIFI_PASS        "h%8Ka4D&"        // Senha da rede
+#define WIFI_MAXIMUM_RETRY  5               // Tentativas de reconexão WiFi
+#define MQTT_BROKER_URI  "mqtt://192.168.1.29:1883"  // Broker MQTT local
+#define MQTT_USERNAME    "gabriel"          // Usuário MQTT
+#define MQTT_PASSWORD    "gabriel123"       // Senha MQTT
 
 // ===== CONFIGURAÇÕES DE DISPOSITIVO =====
-#define DEVICE_ID        "ESP32_IC_001"
-#define TANK_HEIGHT_CM   100.0f    // Altura do tanque em cm (configurar conforme setup)
+#define DEVICE_ID        "esp32_cam_001"
 
-// ===== CONFIGURAÇÕES DE SENSORES =====
-#define HC_SR04_TRIG_PIN    GPIO_NUM_12  // GPIO disponível para TRIG
-#define HC_SR04_ECHO_PIN    GPIO_NUM_13  // GPIO disponível para ECHO
+// ===== PINOUT ESP32-CAM AI-THINKER (NÃO ALTERAR) =====
+#define CAM_PIN_PWDN    32    // Power Down da câmera
+#define CAM_PIN_RESET   -1    // Reset (não conectado)
+#define CAM_PIN_XCLK    0     // Clock master da câmera
+#define CAM_PIN_SIOD    26    // I2C SDA (dados)
+#define CAM_PIN_SIOC    27    // I2C SCL (clock)
+#define CAM_PIN_D7      35    // Data bit 7
+#define CAM_PIN_D6      34    // Data bit 6  
+#define CAM_PIN_D5      39    // Data bit 5
+#define CAM_PIN_D4      36    // Data bit 4
+#define CAM_PIN_D3      21    // Data bit 3
+#define CAM_PIN_D2      19    // Data bit 2
+#define CAM_PIN_D1      18    // Data bit 1
+#define CAM_PIN_D0      5     // Data bit 0
+#define CAM_PIN_VSYNC   25    // Vertical sync
+#define CAM_PIN_HREF    23    // Horizontal reference
+#define CAM_PIN_PCLK    22    // Pixel clock
+#define CAM_PIN_FLASH   4     // LED flash integrado (DESABILITADO)
 
-// ===== CONFIGURAÇÕES DE CAPTURA =====
-#define CAPTURE_INTERVAL_MS     60000    // 1 minuto (reduzido para processamento local)
-#define STATUS_INTERVAL_MS      300000   // 5 minutos para status
-#define IMAGE_WIDTH            320
-#define IMAGE_HEIGHT           240
-#define JPEG_QUALITY           12        // Qualidade balanceada
+// ===== PARÂMETROS DE CAPTURA =====
+#define CAPTURE_INTERVAL_MS     15000    // Intervalo entre capturas (15 segundos)
+#define STATUS_INTERVAL_MS      300000   // Intervalo para estatísticas (5 minutos)
+#define IMAGE_WIDTH            320       // Largura QVGA
+#define IMAGE_HEIGHT           240       // Altura QVGA
+#define JPEG_QUALITY           10        // Qualidade JPEG 0-63 (menor=melhor)
 
-// ===== CONFIGURAÇÕES DE PROCESSAMENTO =====
-#define CONFIDENCE_THRESHOLD   0.7f      // Confiança mínima para envio
-#define LEVEL_CHANGE_THRESHOLD 5.0f      // Mudança mínima % para trigger
-#define ALERT_HIGH_LEVEL       80.0f     // Nível alto para alerta
-#define ALERT_LOW_LEVEL        10.0f     // Nível baixo para alerta
+// ===== ALGORITMO DE DETECÇÃO =====
+#define CHANGE_THRESHOLD       0.10f     // 10% diferença mínima para mudança
+#define ALERT_THRESHOLD        0.30f     // 30% diferença para alerta crítico
 
-// ===== CONFIGURAÇÕES DE COMUNICAÇÃO =====
-#define SEND_IMAGE_ON_ALERT    true      // Enviar imagem quando houver alerta
+// ===== CONFIGURAÇÕES DE MQTT =====
+#define SEND_IMAGE_ON_ALERT    true      // Enviar imagem completa em alertas
 #define MAX_RETRY_ATTEMPTS     3         // Tentativas de reenvio MQTT
+
+// ===== CONFIGURAÇÕES DO WIFI SNIFFER =====
+#define SNIFFER_ENABLED        true      // Habilitar monitoramento de tráfego
+#define SNIFFER_CHANNEL        8         // Canal WiFi para sniffing (8 = Steps 2.4G)
+#define SNIFFER_STATS_INTERVAL 60       // Intervalo para estatísticas do sniffer (segundos)
 
 #endif // CONFIG_H 

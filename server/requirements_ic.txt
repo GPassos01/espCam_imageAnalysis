@@ -4,6 +4,9 @@
 # MQTT para comunicação com ESP32-CAM
 paho-mqtt==1.6.1
 
+# Geração de relatórios em PDF
+fpdf2==2.7.8
+
 # Database local (built-in no Python)
 # sqlite3 já incluído no Python padrão
 

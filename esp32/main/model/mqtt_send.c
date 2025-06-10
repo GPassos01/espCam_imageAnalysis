@@ -1,6 +1,7 @@
 #include "mqtt_send.h"
 #include "esp_log.h"
 #include "esp_timer.h"
+#include "mqtt_client.h"
 #include <stdio.h>
 #include <string.h>
 
@@ -8,47 +9,48 @@ static const char *TAG = "MQTT_SEND";
 
 extern esp_mqtt_client_handle_t mqtt_client;
 
-esp_err_t mqtt_send_water_level_data(float image_level, float sensor_level, 
-                                   float confidence, const char* device_id) {
+esp_err_t mqtt_send_monitoring_data(float difference, uint32_t image_size, 
+                                   uint16_t width, uint16_t height, 
+                                   uint8_t format, const char* device_id) {
     if (!mqtt_client) {
         ESP_LOGE(TAG, "Cliente MQTT não inicializado");
         return ESP_ERR_INVALID_STATE;
     }
     
-    // Payload otimizado para dados da IC
     char payload[300];
     uint64_t timestamp = esp_timer_get_time() / 1000000LL;
     
     int ret = snprintf(payload, sizeof(payload),
         "{"
         "\"timestamp\":%llu,"
-        "\"device_id\":\"%s\","
-        "\"image_level\":%.2f,"
-        "\"sensor_level\":%.2f,"
-        "\"confidence\":%.2f,"
-        "\"mode\":\"embedded_processing\""
+        "\"device\":\"%s\","
+        "\"difference\":%.3f,"
+        "\"image_size\":%lu,"
+        "\"width\":%u,"
+        "\"height\":%u,"
+        "\"format\":%u,"
+        "\"location\":\"monitoring_esp32cam\","
+        "\"mode\":\"image_comparison\""
         "}",
-        timestamp, device_id, image_level, sensor_level, confidence);
+        timestamp, device_id, difference, image_size, width, height, format);
     
     if (ret < 0 || ret >= sizeof(payload)) {
         ESP_LOGE(TAG, "Erro ao formatar payload");
         return ESP_ERR_INVALID_SIZE;
     }
     
-    int msg_id = esp_mqtt_client_publish(mqtt_client, TOPIC_WATER_LEVEL, 
+    int msg_id = esp_mqtt_client_publish(mqtt_client, "monitoring/data", 
                                        payload, 0, 1, 0);
     
     if (msg_id < 0) {
-        ESP_LOGE(TAG, "Falha ao enviar dados de nível");
+        ESP_LOGE(TAG, "Falha ao enviar dados de monitoramento");
         return ESP_FAIL;
     }
     
-    ESP_LOGI(TAG, "Dados enviados: IMG=%.1f%% SENS=%.1fcm CONF=%.2f", 
-             image_level, sensor_level, confidence);
     return ESP_OK;
 }
 
-esp_err_t mqtt_send_alert(float level, const char* alert_type, const char* device_id) {
+esp_err_t mqtt_send_alert(float difference, const char* alert_type, const char* device_id) {
     if (!mqtt_client) {
         ESP_LOGE(TAG, "Cliente MQTT não inicializado");
         return ESP_ERR_INVALID_STATE;
@@ -60,19 +62,20 @@ esp_err_t mqtt_send_alert(float level, const char* alert_type, const char* devic
     int ret = snprintf(payload, sizeof(payload),
         "{"
         "\"timestamp\":%llu,"
-        "\"device_id\":\"%s\","
-        "\"alert_type\":\"%s\","
-        "\"level\":%.2f,"
-        "\"severity\":\"high\""
+        "\"device\":\"%s\","
+        "\"alert\":\"%s\","
+        "\"difference\":%.3f,"
+        "\"location\":\"monitoring_esp32cam\","
+        "\"mode\":\"image_comparison\""
         "}",
-        timestamp, device_id, alert_type, level);
+        timestamp, device_id, alert_type, difference);
     
     if (ret < 0 || ret >= sizeof(payload)) {
         ESP_LOGE(TAG, "Erro ao formatar alerta");
         return ESP_ERR_INVALID_SIZE;
     }
     
-    int msg_id = esp_mqtt_client_publish(mqtt_client, TOPIC_ALERTS, 
+    int msg_id = esp_mqtt_client_publish(mqtt_client, "monitoring/alert", 
                                        payload, 0, 1, 0);
     
     if (msg_id < 0) {
@@ -80,46 +83,6 @@ esp_err_t mqtt_send_alert(float level, const char* alert_type, const char* devic
         return ESP_FAIL;
     }
     
-    ESP_LOGW(TAG, "🚨 ALERTA enviado: %s - Nível: %.1f%%", alert_type, level);
-    return ESP_OK;
-}
-
-esp_err_t mqtt_send_system_status(uint32_t uptime, size_t free_heap, 
-                                size_t free_psram, const char* device_id) {
-    if (!mqtt_client) {
-        ESP_LOGE(TAG, "Cliente MQTT não inicializado");
-        return ESP_ERR_INVALID_STATE;
-    }
-    
-    char payload[400];
-    uint64_t timestamp = esp_timer_get_time() / 1000000LL;
-    
-    int ret = snprintf(payload, sizeof(payload),
-        "{"
-        "\"timestamp\":%llu,"
-        "\"device_id\":\"%s\","
-        "\"uptime\":%lu,"
-        "\"free_heap\":%zu,"
-        "\"free_psram\":%zu,"
-        "\"status\":\"operational\","
-        "\"firmware_version\":\"IC_v1.0\""
-        "}",
-        timestamp, device_id, uptime, free_heap, free_psram);
-    
-    if (ret < 0 || ret >= sizeof(payload)) {
-        ESP_LOGE(TAG, "Erro ao formatar status");
-        return ESP_ERR_INVALID_SIZE;
-    }
-    
-    int msg_id = esp_mqtt_client_publish(mqtt_client, TOPIC_SYSTEM_STATUS, 
-                                       payload, 0, 0, 0); // QoS 0 para status
-    
-    if (msg_id < 0) {
-        ESP_LOGE(TAG, "Falha ao enviar status");
-        return ESP_FAIL;
-    }
-    
-    ESP_LOGI(TAG, "Status do sistema enviado");
     return ESP_OK;
 }
 
@@ -136,9 +99,9 @@ esp_err_t mqtt_send_image_fallback(camera_fb_t *fb, const char* reason, const ch
     int ret = snprintf(metadata, sizeof(metadata),
         "{"
         "\"timestamp\":%llu,"
-        "\"device_id\":\"%s\","
+        "\"device\":\"%s\","
         "\"reason\":\"%s\","
-        "\"image_size\":%zu,"
+        "\"size\":%zu,"
         "\"width\":%zu,"
         "\"height\":%zu,"
         "\"format\":%d"
@@ -152,7 +115,7 @@ esp_err_t mqtt_send_image_fallback(camera_fb_t *fb, const char* reason, const ch
     }
     
     // Enviar metadados
-    int msg_id = esp_mqtt_client_publish(mqtt_client, TOPIC_IMAGE_METADATA, 
+    int msg_id = esp_mqtt_client_publish(mqtt_client, "monitoring/image/metadata", 
                                        metadata, 0, 1, 0);
     
     if (msg_id < 0) {
@@ -160,7 +123,7 @@ esp_err_t mqtt_send_image_fallback(camera_fb_t *fb, const char* reason, const ch
         return ESP_FAIL;
     }
     
-    // Enviar imagem em chunks (apenas para fallback/debug)
+    // Enviar imagem em chunks
     const size_t chunk_size = 1024;
     size_t chunks_sent = 0;
     
@@ -169,8 +132,8 @@ esp_err_t mqtt_send_image_fallback(camera_fb_t *fb, const char* reason, const ch
                               (fb->len - offset) : chunk_size;
         
         char topic[128];
-        snprintf(topic, sizeof(topic), "%s/%llu/%zu/%zu", 
-                TOPIC_IMAGE_DATA, timestamp, offset, fb->len);
+        snprintf(topic, sizeof(topic), "monitoring/image/data/%llu/%zu", 
+                timestamp, offset);
         
         msg_id = esp_mqtt_client_publish(mqtt_client, topic,
                                        (char*)(fb->buf + offset), current_chunk, 0, 0);
@@ -178,10 +141,10 @@ esp_err_t mqtt_send_image_fallback(camera_fb_t *fb, const char* reason, const ch
             chunks_sent++;
         }
         
-        vTaskDelay(pdMS_TO_TICKS(100)); // Delay para não sobrecarregar
+        vTaskDelay(pdMS_TO_TICKS(50)); // Delay para não sobrecarregar
     }
     
-    ESP_LOGW(TAG, "Imagem de fallback enviada: %zu chunks (%zu bytes) - Razão: %s", 
+    ESP_LOGI(TAG, "Imagem enviada: %zu chunks (%zu bytes) - Razão: %s", 
              chunks_sent, fb->len, reason);
     
     return ESP_OK;

@@ -1,83 +1,104 @@
 #!/usr/bin/env python3
 """
-Monitor MQTT para Projeto de Iniciação Científica
-Sistema de Monitoramento de Nível d'Água - ESP32-CAM + HC-SR04
+Monitor de Comparação de Imagens - Sistema IC
 
-Foco: Recepção e análise de dados processados embarcadamente
-Autor: Gabriel Passos de Oliveira - IGCE/UNESP 2025
+Funcionalidades principais:
+- Recebe dados de monitoramento via MQTT do ESP32-CAM
+- Processa 4 tipos de mensagens: dados, alertas, metadados, chunks
+- Reconstitui imagens a partir de chunks ordenados (max 1KB cada)
+- Armazena tudo em SQLite (3 tabelas: readings, alerts, images)
+- Estatísticas em tempo real a cada 60 segundos
+- Reconnect automático MQTT com tratamento de erros
+
+Tópicos MQTT:
+- monitoring/data: Dados principais (timestamp, diferença, tamanho)
+- monitoring/alert: Alertas de mudanças significativas (>30%)
+- monitoring/image/metadata: Informações da imagem antes dos chunks
+- monitoring/image/data/{timestamp}/{offset}: Chunks binários da imagem
+
+@author Gabriel Passos - IGCE/UNESP 2025
 """
 
 import json
 import sqlite3
-import paho.mqtt.client as mqtt
-import threading
 import time
-from datetime import datetime
-from typing import Dict, Optional
-import logging
 import signal
 import sys
+import threading
+import os
+from datetime import datetime
+from typing import Dict, Any
+import paho.mqtt.client as mqtt
 
 # Configurações
-MQTT_BROKER = "192.168.1.2"
+MQTT_BROKER = "192.168.1.29"
 MQTT_PORT = 1883
-DB_FILE = "ic_water_monitoring.db"
+MQTT_USERNAME = "gabriel"
+MQTT_PASSWORD = "gabriel123"
 
-# Tópicos MQTT da IC
-TOPICS = {
-    "water_level": "ic/water_level/data",
-    "alerts": "ic/alerts", 
-    "system_status": "ic/system/status",
-    "image_metadata": "ic/image/metadata"
-}
+# Tópicos MQTT para monitoramento
+TOPICS = [
+    ("monitoring/data", 0),           # Dados de monitoramento
+    ("monitoring/alert", 0),          # Alertas de mudanças
+    ("monitoring/image/metadata", 0), # Metadados de imagem
+    ("monitoring/image/data/+/+", 0), # Chunks de imagem
+    ("monitoring/sniffer/stats", 0),  # Estatísticas do WiFi sniffer
+]
 
-# Setup logging
-logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(levelname)s - %(message)s',
-    handlers=[
-        logging.FileHandler('ic_monitor.log'),
-        logging.StreamHandler()
-    ]
-)
-logger = logging.getLogger(__name__)
+DATABASE_FILE = "monitoring_data.db"
+IMAGES_DIR = "received_images"
 
-class ICWaterMonitor:
-    """Monitor otimizado para dados da IC"""
+class ICImageMonitor:
+    """
+    Monitor principal para sistema de comparação de imagens
+    
+    Gerencia:
+    - Conexão MQTT com reconnect automático
+    - Banco SQLite com 3 tabelas thread-safe
+    - Buffer de imagens para reconstituição via chunks
+    - Estatísticas em tempo real com thread dedicada
+    - Tratamento de erros e cleanup automático
+    """
     
     def __init__(self):
-        self.db_path = DB_FILE
-        self.mqtt_client = None
         self.running = False
-        
-        # Estatísticas
+        self.mqtt_client = None
+        self.db_connection = None
+        self.image_buffers = {}  # Buffer para reconstituir imagens
         self.stats = {
-            "water_level_readings": 0,
-            "alerts_received": 0,
-            "system_status_updates": 0,
-            "images_received": 0,
-            "last_reading_time": None,
-            "devices_seen": set()
+            'readings_count': 0,
+            'alerts_count': 0,
+            'images_received': 0,
+            'sniffer_stats_count': 0,
+            'last_difference': 0.0,
+            'last_mqtt_throughput': 0.0,
+            'start_time': time.time()
         }
+        self.lock = threading.Lock()
         
-        self.setup_database()
-        self.setup_mqtt()
-    
+        # Criar diretório para imagens
+        if not os.path.exists(IMAGES_DIR):
+            os.makedirs(IMAGES_DIR)
+            print(f"📁 Diretório criado: {IMAGES_DIR}")
+
     def setup_database(self):
-        """Criar tabelas otimizadas para dados da IC"""
+        """Configurar banco de dados SQLite para dados de monitoramento"""
         try:
-            conn = sqlite3.connect(self.db_path)
-            cursor = conn.cursor()
+            self.db_connection = sqlite3.connect(DATABASE_FILE, check_same_thread=False)
+            cursor = self.db_connection.cursor()
             
-            # Tabela principal: leituras de nível d'água
+            # Tabela de leituras de monitoramento
             cursor.execute('''
-                CREATE TABLE IF NOT EXISTS water_readings (
+                CREATE TABLE IF NOT EXISTS monitoring_readings (
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
                     timestamp INTEGER NOT NULL,
-                    device_id TEXT NOT NULL,
-                    image_level REAL,
-                    sensor_level REAL,
-                    confidence REAL,
+                    image_size INTEGER,
+                    difference REAL DEFAULT 0.0,
+                    width INTEGER,
+                    height INTEGER,
+                    format INTEGER,
+                    location TEXT,
+                    mode TEXT,
                     created_at DATETIME DEFAULT CURRENT_TIMESTAMP
                 )
             ''')
@@ -87,247 +108,410 @@ class ICWaterMonitor:
                 CREATE TABLE IF NOT EXISTS alerts (
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
                     timestamp INTEGER NOT NULL,
-                    device_id TEXT NOT NULL,
                     alert_type TEXT NOT NULL,
-                    level REAL,
-                    severity TEXT,
+                    difference REAL,
+                    image_size INTEGER,
+                    location TEXT,
+                    mode TEXT,
                     created_at DATETIME DEFAULT CURRENT_TIMESTAMP
                 )
             ''')
             
-            # Tabela de status do sistema
+            # Tabela de imagens recebidas
             cursor.execute('''
-                CREATE TABLE IF NOT EXISTS system_status (
+                CREATE TABLE IF NOT EXISTS received_images (
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
                     timestamp INTEGER NOT NULL,
-                    device_id TEXT NOT NULL,
+                    filename TEXT NOT NULL,
+                    file_size INTEGER,
+                    width INTEGER,
+                    height INTEGER,
+                    format INTEGER,
+                    reason TEXT,
+                    device TEXT,
+                    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+                )
+            ''')
+            
+            # Tabela de estatísticas do WiFi sniffer
+            cursor.execute('''
+                CREATE TABLE IF NOT EXISTS sniffer_stats (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    timestamp INTEGER NOT NULL,
+                    total_packets INTEGER,
+                    mqtt_packets INTEGER,
+                    total_bytes INTEGER,
+                    mqtt_bytes INTEGER,
+                    image_packets INTEGER,
+                    image_bytes INTEGER,
                     uptime INTEGER,
-                    free_heap INTEGER,
-                    free_psram INTEGER,
-                    status TEXT,
-                    firmware_version TEXT,
+                    channel INTEGER,
+                    device TEXT,
                     created_at DATETIME DEFAULT CURRENT_TIMESTAMP
                 )
             ''')
             
             # Índices para performance
-            cursor.execute('CREATE INDEX IF NOT EXISTS idx_readings_timestamp ON water_readings(timestamp)')
-            cursor.execute('CREATE INDEX IF NOT EXISTS idx_readings_device ON water_readings(device_id)')
+            cursor.execute('CREATE INDEX IF NOT EXISTS idx_readings_timestamp ON monitoring_readings(timestamp)')
             cursor.execute('CREATE INDEX IF NOT EXISTS idx_alerts_timestamp ON alerts(timestamp)')
+            cursor.execute('CREATE INDEX IF NOT EXISTS idx_images_timestamp ON received_images(timestamp)')
+            cursor.execute('CREATE INDEX IF NOT EXISTS idx_sniffer_timestamp ON sniffer_stats(timestamp)')
             
-            conn.commit()
-            conn.close()
-            logger.info("✅ Database inicializada com sucesso")
+            self.db_connection.commit()
+            print("📊 Banco de dados configurado com sucesso")
             
         except Exception as e:
-            logger.error(f"❌ Erro ao configurar database: {e}")
-    
+            print(f"❌ Erro ao configurar banco: {e}")
+            sys.exit(1)
+
     def setup_mqtt(self):
         """Configurar cliente MQTT"""
         self.mqtt_client = mqtt.Client()
+        self.mqtt_client.username_pw_set(MQTT_USERNAME, MQTT_PASSWORD)
         self.mqtt_client.on_connect = self.on_connect
-        self.mqtt_client.on_message = self.on_message
         self.mqtt_client.on_disconnect = self.on_disconnect
-    
+        self.mqtt_client.on_message = self.on_message
+
     def on_connect(self, client, userdata, flags, rc):
+        """Callback de conexão MQTT"""
         if rc == 0:
-            logger.info("✅ Conectado ao broker MQTT")
-            # Subscrever aos tópicos da IC
-            for topic_name, topic in TOPICS.items():
-                client.subscribe(topic)
-                logger.info(f"📡 Subscrito ao tópico: {topic}")
+            print("🌐 Conectado ao broker MQTT")
+            # Inscrever em todos os tópicos
+            for topic, qos in TOPICS:
+                client.subscribe(topic, qos)
+                print(f"📡 Inscrito em: {topic}")
         else:
-            logger.error(f"❌ Falha na conexão MQTT: {rc}")
-    
+            print(f"❌ Falha na conexão MQTT: {rc}")
+
     def on_disconnect(self, client, userdata, rc):
-        logger.warning("⚠️ Desconectado do broker MQTT")
-    
+        print("📡 Desconectado do broker MQTT")
+
     def on_message(self, client, userdata, msg):
         """Processar mensagens MQTT recebidas"""
         try:
             topic = msg.topic
-            payload = msg.payload.decode()
             
-            if topic == TOPICS["water_level"]:
-                self.process_water_level_data(payload)
-            elif topic == TOPICS["alerts"]:
-                self.process_alert(payload)
-            elif topic == TOPICS["system_status"]:
-                self.process_system_status(payload)
-            elif topic == TOPICS["image_metadata"]:
-                self.process_image_metadata(payload)
-            else:
-                logger.debug(f"Tópico não reconhecido: {topic}")
+            if topic == "monitoring/data":
+                self.process_monitoring_data(msg.payload.decode())
+                
+            elif topic == "monitoring/alert":
+                self.process_alert(msg.payload.decode())
+                
+            elif topic == "monitoring/image/metadata":
+                self.process_image_metadata(msg.payload.decode())
+                
+            elif topic.startswith("monitoring/image/data/"):
+                self.process_image_chunk(topic, msg.payload)
+                
+            elif topic == "monitoring/sniffer/stats":
+                self.process_sniffer_stats(msg.payload.decode())
                 
         except Exception as e:
-            logger.error(f"❌ Erro ao processar mensagem: {e}")
-    
-    def process_water_level_data(self, payload: str):
-        """Processar dados de nível d'água"""
+            print(f"❌ Erro ao processar mensagem: {e}")
+
+    def process_monitoring_data(self, payload: str):
+        """Processar dados de monitoramento"""
         try:
             data = json.loads(payload)
-            
-            # Validar dados essenciais
-            required_fields = ["timestamp", "device_id"]
-            if not all(field in data for field in required_fields):
-                logger.error("❌ Dados de nível d'água incompletos")
-                return
             
             # Extrair dados
-            timestamp = data["timestamp"]
-            device_id = data["device_id"]
-            image_level = data.get("image_level", None)
-            sensor_level = data.get("sensor_level", None)
-            confidence = data.get("confidence", 0.0)
+            timestamp = data.get('timestamp', int(time.time()))
+            image_size = data.get('image_size', 0)
+            difference = data.get('difference', 0.0)
+            width = data.get('width', 0)
+            height = data.get('height', 0)
+            format_val = data.get('format', 0)
+            location = data.get('location', 'unknown')
+            mode = data.get('mode', 'image_comparison')
             
-            # Armazenar no banco
-            conn = sqlite3.connect(self.db_path)
-            cursor = conn.cursor()
+            # Salvar no banco
+            with self.lock:
+                cursor = self.db_connection.cursor()
+                cursor.execute('''
+                    INSERT INTO monitoring_readings 
+                    (timestamp, image_size, difference, width, height, format, location, mode)
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+                ''', (timestamp, image_size, difference, width, height, format_val, location, mode))
+                
+                self.db_connection.commit()
+                
+                # Atualizar estatísticas
+                self.stats['readings_count'] += 1
+                self.stats['last_difference'] = difference
             
-            cursor.execute('''
-                INSERT INTO water_readings 
-                (timestamp, device_id, image_level, sensor_level, confidence)
-                VALUES (?, ?, ?, ?, ?)
-            ''', (timestamp, device_id, image_level, sensor_level, confidence))
-            
-            conn.commit()
-            conn.close()
-            
-            # Atualizar estatísticas
-            self.stats["water_level_readings"] += 1
-            self.stats["last_reading_time"] = datetime.now()
-            self.stats["devices_seen"].add(device_id)
-            
-            # Log informativo
-            img_str = f"IMG={image_level:.1f}%" if image_level is not None else "IMG=N/A"
-            sens_str = f"SENS={sensor_level:.1f}%" if sensor_level is not None else "SENS=N/A"
-            
-            logger.info(f"📊 [{device_id}] {img_str} {sens_str} CONF={confidence:.2f}")
-            
-        except json.JSONDecodeError:
-            logger.error("❌ Erro ao decodificar JSON dos dados de nível")
+            # Log da leitura
+            dt = datetime.fromtimestamp(timestamp)
+            if difference > 0:
+                print(f"📊 {dt.strftime('%H:%M:%S')} - Diferença: {difference:.1%} "
+                      f"({image_size:,} bytes) {width}x{height}")
+            else:
+                print(f"📷 {dt.strftime('%H:%M:%S')} - Primeira captura "
+                      f"({image_size:,} bytes) {width}x{height}")
+                
         except Exception as e:
-            logger.error(f"❌ Erro ao processar dados de nível: {e}")
-    
+            print(f"❌ Erro ao processar dados de monitoramento: {e}")
+
     def process_alert(self, payload: str):
-        """Processar alertas"""
+        """Processar alertas de mudanças significativas"""
         try:
             data = json.loads(payload)
             
-            timestamp = data["timestamp"]
-            device_id = data["device_id"]
-            alert_type = data["alert_type"]
-            level = data.get("level", 0.0)
-            severity = data.get("severity", "unknown")
+            # Extrair dados do alerta
+            timestamp = data.get('timestamp', int(time.time()))
+            alert_type = data.get('alert', 'unknown')
+            difference = data.get('difference', 0.0)
+            image_size = data.get('image_size', 0)
+            location = data.get('location', 'unknown')
+            mode = data.get('mode', 'image_comparison')
             
-            # Armazenar no banco
-            conn = sqlite3.connect(self.db_path)
-            cursor = conn.cursor()
+            # Salvar no banco
+            with self.lock:
+                cursor = self.db_connection.cursor()
+                cursor.execute('''
+                    INSERT INTO alerts 
+                    (timestamp, alert_type, difference, image_size, location, mode)
+                    VALUES (?, ?, ?, ?, ?, ?)
+                ''', (timestamp, alert_type, difference, image_size, location, mode))
+                
+                self.db_connection.commit()
+                
+                # Atualizar estatísticas
+                self.stats['alerts_count'] += 1
             
-            cursor.execute('''
-                INSERT INTO alerts 
-                (timestamp, device_id, alert_type, level, severity)
-                VALUES (?, ?, ?, ?, ?)
-            ''', (timestamp, device_id, alert_type, level, severity))
-            
-            conn.commit()
-            conn.close()
-            
-            # Atualizar estatísticas
-            self.stats["alerts_received"] += 1
-            
-            logger.warning(f"🚨 ALERTA [{device_id}] {alert_type}: {level:.1f}% - {severity}")
-            
+            # Log do alerta
+            dt = datetime.fromtimestamp(timestamp)
+            print(f"🚨 ALERTA {dt.strftime('%H:%M:%S')} - {alert_type}: "
+                  f"Diferença {difference:.1%} ({image_size:,} bytes)")
+                
         except Exception as e:
-            logger.error(f"❌ Erro ao processar alerta: {e}")
-    
-    def process_system_status(self, payload: str):
-        """Processar status do sistema"""
-        try:
-            data = json.loads(payload)
-            
-            timestamp = data["timestamp"]
-            device_id = data["device_id"]
-            uptime = data.get("uptime", 0)
-            free_heap = data.get("free_heap", 0)
-            free_psram = data.get("free_psram", 0)
-            status = data.get("status", "unknown")
-            firmware_version = data.get("firmware_version", "unknown")
-            
-            # Armazenar no banco
-            conn = sqlite3.connect(self.db_path)
-            cursor = conn.cursor()
-            
-            cursor.execute('''
-                INSERT INTO system_status 
-                (timestamp, device_id, uptime, free_heap, free_psram, status, firmware_version)
-                VALUES (?, ?, ?, ?, ?, ?, ?)
-            ''', (timestamp, device_id, uptime, free_heap, free_psram, status, firmware_version))
-            
-            conn.commit()
-            conn.close()
-            
-            # Atualizar estatísticas
-            self.stats["system_status_updates"] += 1
-            
-            logger.info(f"📊 Status [{device_id}] Uptime={uptime}s Heap={free_heap//1024}KB PSRAM={free_psram//1024}KB")
-            
-        except Exception as e:
-            logger.error(f"❌ Erro ao processar status: {e}")
-    
+            print(f"❌ Erro ao processar alerta: {e}")
+
     def process_image_metadata(self, payload: str):
-        """Processar metadados de imagem (fallback)"""
+        """Processar metadados de imagem"""
         try:
             data = json.loads(payload)
-            device_id = data.get("device_id", "unknown")
-            reason = data.get("reason", "unknown")
-            image_size = data.get("image_size", 0)
+            timestamp = data.get('timestamp')
             
-            self.stats["images_received"] += 1
-            
-            logger.info(f"📷 Imagem fallback [{device_id}] {image_size} bytes - Razão: {reason}")
-            
+            if timestamp:
+                # Inicializar buffer para esta imagem
+                self.image_buffers[timestamp] = {
+                    'metadata': data,
+                    'chunks': {},
+                    'total_size': data.get('size', 0),
+                    'received_size': 0
+                }
+                
+                reason = data.get('reason', 'unknown')
+                size = data.get('size', 0)
+                dt = datetime.fromtimestamp(timestamp)
+                print(f"📸 {dt.strftime('%H:%M:%S')} - Recebendo imagem: "
+                      f"{size:,} bytes (motivo: {reason})")
+                
         except Exception as e:
-            logger.error(f"❌ Erro ao processar metadados de imagem: {e}")
-    
+            print(f"❌ Erro ao processar metadados: {e}")
+
+    def process_image_chunk(self, topic: str, chunk_data: bytes):
+        """Processar chunk de dados de imagem"""
+        try:
+            # Extrair timestamp e offset do tópico
+            # Formato: monitoring/image/data/{timestamp}/{offset}
+            parts = topic.split('/')
+            if len(parts) >= 5:
+                timestamp = int(parts[3])
+                offset = int(parts[4])
+                
+                if timestamp in self.image_buffers:
+                    buffer_info = self.image_buffers[timestamp]
+                    buffer_info['chunks'][offset] = chunk_data
+                    buffer_info['received_size'] += len(chunk_data)
+                    
+                    # Verificar se recebemos todos os chunks
+                    if buffer_info['received_size'] >= buffer_info['total_size']:
+                        self.save_image(buffer_info)
+                        del self.image_buffers[timestamp]
+                else:
+                    # Buffer não existe - chunk órfão
+                    print(f"⚠️ Chunk órfão recebido para timestamp {timestamp}")
+                        
+        except ValueError as e:
+            print(f"❌ Erro ao processar timestamp/offset: {e}")
+        except Exception as e:
+            print(f"❌ Erro ao processar chunk: {e}")
+
+    def save_image(self, image_info: Dict):
+        """Salvar imagem reconstituída"""
+        try:
+            metadata = image_info['metadata']
+            timestamp = metadata['timestamp']
+            device = metadata.get('device', 'unknown')
+            reason = metadata.get('reason', 'unknown')
+            
+            # Ordenar chunks por offset e montar imagem
+            sorted_chunks = sorted(image_info['chunks'].items())
+            image_data = b''.join([chunk for offset, chunk in sorted_chunks])
+            
+            # Verificar integridade da imagem
+            expected_size = metadata.get('size', 0)
+            if len(image_data) != expected_size:
+                print(f"⚠️ Tamanho inconsistente: esperado {expected_size}, "
+                      f"recebido {len(image_data)} bytes")
+            
+            # Nome do arquivo
+            dt = datetime.fromtimestamp(timestamp)
+            filename = f"{timestamp}_{device}_{reason}.jpg"
+            filepath = os.path.join(IMAGES_DIR, filename)
+            
+            # Salvar arquivo
+            with open(filepath, 'wb') as f:
+                f.write(image_data)
+            
+            # Verificar se arquivo foi salvo corretamente
+            if not os.path.exists(filepath):
+                raise Exception(f"Arquivo não foi salvo: {filepath}")
+            
+            file_size = os.path.getsize(filepath)
+            if file_size != len(image_data):
+                raise Exception(f"Tamanho do arquivo inconsistente")
+            
+            # Salvar no banco
+            with self.lock:
+                cursor = self.db_connection.cursor()
+                cursor.execute('''
+                    INSERT INTO received_images 
+                    (timestamp, filename, file_size, width, height, format, reason, device)
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+                ''', (timestamp, filename, len(image_data), 
+                      metadata.get('width', 0), metadata.get('height', 0),
+                      metadata.get('format', 0), reason, device))
+                
+                self.db_connection.commit()
+                self.stats['images_received'] += 1
+            
+            print(f"✅ {dt.strftime('%H:%M:%S')} - Imagem salva: {filename} "
+                  f"({len(image_data):,} bytes)")
+                
+        except Exception as e:
+            print(f"❌ Erro ao salvar imagem: {e}")
+            # Tentar limpeza em caso de erro
+            if 'filepath' in locals() and os.path.exists(filepath):
+                try:
+                    os.remove(filepath)
+                except:
+                    pass
+
+    def process_sniffer_stats(self, payload: str):
+        """Processar estatísticas do WiFi sniffer"""
+        try:
+            data = json.loads(payload)
+            
+            # Extrair dados das estatísticas
+            timestamp = data.get('timestamp', int(time.time()))
+            total_packets = data.get('total_packets', 0)
+            mqtt_packets = data.get('mqtt_packets', 0)
+            total_bytes = data.get('total_bytes', 0)
+            mqtt_bytes = data.get('mqtt_bytes', 0)
+            image_packets = data.get('image_packets', 0)
+            image_bytes = data.get('image_bytes', 0)
+            uptime = data.get('uptime', 0)
+            channel = data.get('channel', 0)
+            device = data.get('device', 'unknown')
+            
+            # Salvar no banco
+            with self.lock:
+                cursor = self.db_connection.cursor()
+                cursor.execute('''
+                    INSERT INTO sniffer_stats 
+                    (timestamp, total_packets, mqtt_packets, total_bytes, mqtt_bytes,
+                     image_packets, image_bytes, uptime, channel, device)
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                ''', (timestamp, total_packets, mqtt_packets, total_bytes, mqtt_bytes,
+                      image_packets, image_bytes, uptime, channel, device))
+                
+                self.db_connection.commit()
+                
+                # Atualizar estatísticas
+                self.stats['sniffer_stats_count'] += 1
+                if uptime > 0 and mqtt_bytes > 0:
+                    self.stats['last_mqtt_throughput'] = mqtt_bytes / uptime
+            
+            # Log das estatísticas
+            dt = datetime.fromtimestamp(timestamp)
+            print(f"📡 {dt.strftime('%H:%M:%S')} - Sniffer Stats: "
+                  f"{mqtt_packets:,} pkts MQTT, {mqtt_bytes//1024:.1f} KB, "
+                  f"Canal {channel}")
+            
+            if uptime > 0 and mqtt_bytes > 0:
+                throughput_kbps = (mqtt_bytes / 1024.0) / uptime
+                print(f"   📈 Throughput MQTT: {throughput_kbps:.2f} KB/s")
+                
+        except Exception as e:
+            print(f"❌ Erro ao processar estatísticas do sniffer: {e}")
+
     def print_statistics(self):
         """Imprimir estatísticas do sistema"""
+        uptime = time.time() - self.stats['start_time']
+        hours, remainder = divmod(uptime, 3600)
+        minutes, seconds = divmod(remainder, 60)
+        
         print("\n" + "="*60)
-        print("📊 ESTATÍSTICAS DO MONITOR IC - NÍVEL D'ÁGUA")
+        print("📊 ESTATÍSTICAS DE MONITORAMENTO")
         print("="*60)
-        print(f"📈 Leituras recebidas: {self.stats['water_level_readings']}")
-        print(f"🚨 Alertas recebidos: {self.stats['alerts_received']}")
-        print(f"📊 Updates de status: {self.stats['system_status_updates']}")
-        print(f"📷 Imagens de fallback: {self.stats['images_received']}")
-        print(f"📱 Dispositivos ativos: {len(self.stats['devices_seen'])}")
-        if self.stats["last_reading_time"]:
-            print(f"⏰ Última leitura: {self.stats['last_reading_time'].strftime('%H:%M:%S')}")
+        print(f"⏱️  Tempo ativo: {int(hours):02d}h {int(minutes):02d}m {int(seconds):02d}s")
+        print(f"📖 Leituras processadas: {self.stats['readings_count']:,}")
+        print(f"🚨 Alertas emitidos: {self.stats['alerts_count']:,}")
+        print(f"📸 Imagens recebidas: {self.stats['images_received']:,}")
+        print(f"📡 Stats do sniffer: {self.stats['sniffer_stats_count']:,}")
+        print(f"🔍 Última diferença: {self.stats['last_difference']:.1%}")
+        print(f"🚀 Último throughput MQTT: {self.stats['last_mqtt_throughput']:.1f} bytes/s")
+        print(f"💾 Buffers ativos: {len(self.image_buffers)}")
+        
+        # Estatísticas do banco
+        try:
+            cursor = self.db_connection.cursor()
+            cursor.execute("SELECT COUNT(*) FROM monitoring_readings")
+            total_readings = cursor.fetchone()[0]
+            
+            cursor.execute("SELECT COUNT(*) FROM alerts")
+            total_alerts = cursor.fetchone()[0]
+            
+            cursor.execute("SELECT COUNT(*) FROM received_images")
+            total_images = cursor.fetchone()[0]
+            
+            cursor.execute("SELECT COUNT(*) FROM sniffer_stats")
+            total_sniffer = cursor.fetchone()[0]
+            
+            print(f"🗄️  Total no banco: {total_readings:,} leituras, "
+                  f"{total_alerts:,} alertas, {total_images:,} imagens, "
+                  f"{total_sniffer:,} stats sniffer")
+        except:
+            pass
+            
         print("="*60)
-    
+
     def get_latest_readings(self, limit: int = 10) -> list:
         """Obter últimas leituras do banco"""
         try:
-            conn = sqlite3.connect(self.db_path)
-            cursor = conn.cursor()
-            
+            cursor = self.db_connection.cursor()
             cursor.execute('''
-                SELECT timestamp, device_id, image_level, sensor_level, confidence
-                FROM water_readings 
+                SELECT timestamp, difference, image_size, location, created_at
+                FROM monitoring_readings 
                 ORDER BY timestamp DESC 
                 LIMIT ?
             ''', (limit,))
             
-            readings = cursor.fetchall()
-            conn.close()
-            
-            return readings
-            
+            return cursor.fetchall()
         except Exception as e:
-            logger.error(f"❌ Erro ao buscar leituras: {e}")
+            print(f"❌ Erro ao obter leituras: {e}")
             return []
-    
+
     def start_monitoring(self):
         """Iniciar monitoramento"""
+        print("🚀 Iniciando Sistema de Monitoramento de Imagens")
+        print("="*60)
+        
+        self.setup_database()
+        self.setup_mqtt()
+        
         try:
             self.mqtt_client.connect(MQTT_BROKER, MQTT_PORT, 60)
             self.running = True
@@ -336,49 +520,47 @@ class ICWaterMonitor:
             stats_thread = threading.Thread(target=self.statistics_loop, daemon=True)
             stats_thread.start()
             
-            logger.info("🚀 Monitor IC iniciado - processamento de dados embarcados")
+            print("📡 Aguardando dados via MQTT...")
             self.mqtt_client.loop_forever()
             
         except Exception as e:
-            logger.error(f"❌ Erro ao iniciar monitor: {e}")
-    
+            print(f"❌ Erro na conexão: {e}")
+            sys.exit(1)
+
     def statistics_loop(self):
-        """Loop para imprimir estatísticas periódicas"""
+        """Loop para imprimir estatísticas periodicamente"""
         while self.running:
-            time.sleep(30)  # A cada 30 segundos
-            self.print_statistics()
-    
+            time.sleep(300)  # A cada 5 minutos
+            if self.running:
+                self.print_statistics()
+
     def stop_monitoring(self):
         """Parar monitoramento"""
+        print("\n🛑 Parando monitoramento...")
         self.running = False
         if self.mqtt_client:
             self.mqtt_client.disconnect()
-        logger.info("🛑 Monitor IC parado")
+        if self.db_connection:
+            self.db_connection.close()
+        print("✅ Sistema parado com sucesso")
 
 def signal_handler(sig, frame):
-    """Handler para encerramento gracioso"""
-    print("\n🛑 Encerrando monitor IC...")
+    """Handler para sinais do sistema"""
+    global monitor
     if 'monitor' in globals():
         monitor.stop_monitoring()
     sys.exit(0)
 
 def main():
-    """Função principal"""
-    # Configurar handler para Ctrl+C
-    signal.signal(signal.SIGINT, signal_handler)
-    
-    print("🌊 Monitor IC - Sistema de Nível d'Água")
-    print("🎓 Projeto de Iniciação Científica - Gabriel Passos")
-    print("🏛️ IGCE/UNESP - 2025")
-    print("-" * 50)
-    
     global monitor
-    monitor = ICWaterMonitor()
     
-    try:
-        monitor.start_monitoring()
-    except KeyboardInterrupt:
-        signal_handler(None, None)
+    # Configurar handler de sinais
+    signal.signal(signal.SIGINT, signal_handler)
+    signal.signal(signal.SIGTERM, signal_handler)
+    
+    # Iniciar monitor
+    monitor = ICImageMonitor()
+    monitor.start_monitoring()
 
 if __name__ == "__main__":
     main() 

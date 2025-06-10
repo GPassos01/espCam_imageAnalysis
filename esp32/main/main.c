@@ -1,15 +1,24 @@
-/*
- * Sistema de Monitoramento de Nível d'Água - ESP32-CAM + HC-SR04
- * Projeto de Iniciação Científica - Gabriel Passos de Oliveira
- * IGCE/UNESP - 2025
+/**
+ * Sistema de Monitoramento ESP32-CAM
  * 
- * Foco: Processamento de imagem embarcado para detecção de nível d'água
- * Sensoriamento complementar com HC-SR04
- * Comunicação MQTT otimizada com dados processados
+ * Funcionalidades principais:
+ * - Captura fotos a cada 15 segundos (QVGA 320x240)
+ * - Compara imagens usando algoritmo de 30 pontos
+ * - Detecta mudanças (10%) e alertas (30%)
+ * - Envia dados via MQTT com reconexão automática
+ * - Gerencia memória PSRAM para imagens grandes
+ * - Monitoramento de sistema em tempo real
+ * 
+ * Thresholds configuráveis:
+ * - CHANGE_THRESHOLD: 10% para detectar mudança
+ * - ALERT_THRESHOLD: 30% para alerta crítico
+ * 
+ * @author Gabriel Passos - UNESP 2025
  */
 
 #include <stdio.h>
 #include <string.h>
+#include <math.h>
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 #include "esp_system.h"
@@ -18,30 +27,45 @@
 #include "esp_netif.h"
 #include "esp_event.h"
 #include "esp_timer.h"
+#include "esp_wifi.h"
+#include "esp_camera.h"
+#include "mqtt_client.h"
+#include "esp_heap_caps.h"
+// #include "driver/gpio.h"  // Não necessário para flash desabilitado
 
-// Módulos do projeto modularizado
-#include "config.h"
-#include "model/init_hw.h"
-#include "model/init_net.h"
-#include "model/sensor.h"
-#include "model/image_processing.h"
+// Módulos do projeto
+#include "model/compare.h"
 #include "model/mqtt_send.h"
+#include "model/init_net.h"
+#include "model/wifi_sniffer.h"
+#include "config.h"
 
-static const char *TAG = "WATER_MONITOR_IC";
+// Configurações de análise
+#define CHANGE_THRESHOLD 0.10f    // 10% de diferença para detectar mudança (mais sensível)
+#define ALERT_THRESHOLD 0.30f     // 30% para alerta de mudança significativa (mais sensível)
 
-// Estado global do sistema
-typedef struct {
-    float last_image_level;
-    float last_sensor_level;
-    float last_confidence;
-    uint32_t readings_count;
-    uint32_t alerts_sent;
-    bool system_initialized;
-} system_state_t;
+// Pinos da câmera ESP32-CAM
+#define CAM_PIN_PWDN    32
+#define CAM_PIN_RESET   -1
+#define CAM_PIN_XCLK    0
+#define CAM_PIN_SIOD    26
+#define CAM_PIN_SIOC    27
+#define CAM_PIN_D7      35
+#define CAM_PIN_D6      34
+#define CAM_PIN_D5      39
+#define CAM_PIN_D4      36
+#define CAM_PIN_D3      21
+#define CAM_PIN_D2      19
+#define CAM_PIN_D1      18
+#define CAM_PIN_D0      5
+#define CAM_PIN_VSYNC   25
+#define CAM_PIN_HREF    23
+#define CAM_PIN_PCLK    22
+#define CAM_PIN_FLASH   4
 
-static system_state_t g_state = {0};
+static const char *TAG = "IMG_MONITOR";
 
-// Configuração da câmera para IC
+// Configuração da câmera
 static camera_config_t camera_config = {
     .pin_pwdn = CAM_PIN_PWDN,
     .pin_reset = CAM_PIN_RESET,
@@ -63,193 +87,360 @@ static camera_config_t camera_config = {
     .ledc_timer = LEDC_TIMER_0,
     .ledc_channel = LEDC_CHANNEL_0,
     .pixel_format = PIXFORMAT_JPEG,
-    .frame_size = FRAMESIZE_QVGA,        // 320x240 otimizado para processamento
-    .jpeg_quality = JPEG_QUALITY,
-    .fb_count = 2,
+    .frame_size = FRAMESIZE_QVGA,        // 320x240
+    .jpeg_quality = JPEG_QUALITY,        // Usar definição do config.h
+    .fb_count = 2,                       // Double buffering
     .fb_location = CAMERA_FB_IN_PSRAM,
-    .grab_mode = CAMERA_GRAB_LATEST
+    .grab_mode = CAMERA_GRAB_WHEN_EMPTY
 };
 
-static camera_fb_t* capture_image_with_validation(void) {
-    if (xSemaphoreTake(camera_mutex, pdMS_TO_TICKS(3000)) != pdTRUE) {
-        ESP_LOGE(TAG, "Timeout ao obter mutex da câmera");
-        return NULL;
+// Variáveis globais
+extern esp_mqtt_client_handle_t mqtt_client;  // Declarado em init_net.c
+static bool mqtt_connected = false;
+static uint32_t total_bytes_sent = 0;
+static uint32_t total_photos_sent = 0;
+static camera_frame_t *previous_frame = NULL;
+
+/**
+ * Handler de eventos MQTT
+ * Gerencia conexão/desconexão e erros do cliente MQTT
+ * Atualiza flag global mqtt_connected para controle de envios
+ */
+static void mqtt_event_handler(void *handler_args, esp_event_base_t base, 
+                              int32_t event_id, void *event_data)
+{
+    esp_mqtt_event_handle_t event = event_data;
+    
+    switch (event->event_id) {
+        case MQTT_EVENT_CONNECTED:
+            ESP_LOGI(TAG, "MQTT Conectado");
+            mqtt_connected = true;
+            break;
+        case MQTT_EVENT_DISCONNECTED:
+            ESP_LOGI(TAG, "MQTT Desconectado");
+            mqtt_connected = false;
+            break;
+        case MQTT_EVENT_ERROR:
+            ESP_LOGE(TAG, "MQTT Erro");
+            break;
+        default:
+            break;
     }
-    
-    // Flash LED para melhor qualidade
-    gpio_set_level(CAM_PIN_FLASH, 1);
-    vTaskDelay(pdMS_TO_TICKS(50));
-    
-    camera_fb_t *fb = esp_camera_fb_get();
-    
-    gpio_set_level(CAM_PIN_FLASH, 0);
-    xSemaphoreGive(camera_mutex);
-    
-    if (!fb) {
-        ESP_LOGE(TAG, "Falha na captura da câmera");
-        return NULL;
-    }
-    
-    // Validação básica
-    if (fb->len < 2048 || fb->len > 102400) { // 2KB - 100KB
-        ESP_LOGW(TAG, "Tamanho de imagem suspeito: %zu bytes", fb->len);
-        esp_camera_fb_return(fb);
-        return NULL;
-    }
-    
-    return fb;
 }
 
-static void process_and_send_data(void) {
-    ESP_LOGI(TAG, "🔄 Iniciando ciclo de leitura e processamento...");
+/**
+ * Inicializar câmera ESP32-CAM OV2640
+ * Configuração: QVGA (320x240), JPEG qualidade 10, double buffering
+ * Requer PSRAM habilitado para funcionamento adequado
+ * 
+ * @return ESP_OK se inicializada com sucesso
+ */
+static esp_err_t init_camera(void)
+{
+    esp_err_t err = esp_camera_init(&camera_config);
+    if (err != ESP_OK) {
+        ESP_LOGE(TAG, "Falha na inicialização da câmera: 0x%x", err);
+    } else {
+        ESP_LOGI(TAG, "Câmera inicializada com sucesso");
+    }
+    return err;
+}
+
+// Criar frame a partir do framebuffer da câmera
+static camera_frame_t* create_camera_frame(camera_fb_t *fb)
+{
+    if (!fb) return NULL;
     
-    // 1. Capturar imagem
-    camera_fb_t *fb = capture_image_with_validation();
+    camera_frame_t *frame = heap_caps_malloc(sizeof(camera_frame_t), MALLOC_CAP_SPIRAM);
+    if (!frame) {
+        ESP_LOGE(TAG, "Falha ao alocar frame");
+        return NULL;
+    }
+    
+    // Alocar buffer para cópia da imagem
+    frame->buf = heap_caps_malloc(fb->len, MALLOC_CAP_SPIRAM);
+    if (!frame->buf) {
+        ESP_LOGE(TAG, "Falha ao alocar buffer de imagem");
+        free(frame);
+        return NULL;
+    }
+    
+    // Copiar dados
+    memcpy(frame->buf, fb->buf, fb->len);
+    frame->len = fb->len;
+    frame->width = fb->width;
+    frame->height = fb->height;
+    frame->format = fb->format;
+    frame->timestamp = (uint32_t)(esp_timer_get_time() / 1000000LL);
+    
+    return frame;
+}
+
+// Liberar frame
+static void free_camera_frame(camera_frame_t *frame)
+{
+    if (frame) {
+        if (frame->buf) {
+            free(frame->buf);
+        }
+        free(frame);
+    }
+}
+
+// Enviar dados via MQTT
+static void send_monitoring_data(float difference, camera_fb_t *fb, bool is_alert)
+{
+    if (!mqtt_connected) return;
+    
+    // Enviar dados de monitoramento
+    char json[256];
+    snprintf(json, sizeof(json),
+             "{\"timestamp\":%lu,\"image_size\":%zu,\"difference\":%.3f,"
+             "\"width\":%zu,\"height\":%zu,\"format\":%d,"
+             "\"location\":\"monitoring_esp32cam\",\"mode\":\"image_comparison\"}",
+             (uint32_t)(esp_timer_get_time() / 1000000LL),
+             fb->len, difference, fb->width, fb->height, fb->format);
+    
+    esp_mqtt_client_publish(mqtt_client, "monitoring/data", json, 0, 1, 0);
+    
+    // Se for alerta, enviar notificação especial
+    if (is_alert) {
+        char alert[200];
+        snprintf(alert, sizeof(alert),
+                 "{\"alert\":\"significant_change\",\"difference\":%.3f,"
+                 "\"timestamp\":%lu,\"image_size\":%zu,"
+                 "\"location\":\"monitoring_esp32cam\",\"mode\":\"image_comparison\"}",
+                 difference, (uint32_t)(esp_timer_get_time() / 1000000LL), fb->len);
+        
+        esp_mqtt_client_publish(mqtt_client, "monitoring/alert", alert, 0, 1, 0);
+        ESP_LOGW(TAG, "🚨 ALERTA: Mudança significativa detectada (%.1f%%)", difference * 100);
+    }
+}
+
+// Enviar imagem via MQTT
+static void send_image_via_mqtt(camera_fb_t *fb, const char* reason)
+{
+    if (!mqtt_connected || !fb) return;
+    
+    // Marcar início da transmissão de imagem para o sniffer
+    if (SNIFFER_ENABLED && wifi_sniffer_is_active()) {
+        wifi_sniffer_mark_image_start();
+    }
+    
+    const size_t chunk_size = 1024;
+    uint32_t timestamp = (uint32_t)(esp_timer_get_time() / 1000000LL);
+    uint32_t bytes_sent = 0;
+    
+    // Enviar metadados
+    char metadata[300];
+    snprintf(metadata, sizeof(metadata), 
+             "{\"timestamp\":%lu,\"size\":%zu,\"device\":\"%s\",\"reason\":\"%s\","
+             "\"width\":%zu,\"height\":%zu,\"format\":%d}",
+             timestamp, fb->len, DEVICE_ID, reason, fb->width, fb->height, fb->format);
+    
+    int msg_id = esp_mqtt_client_publish(mqtt_client, "monitoring/image/metadata", 
+                                        metadata, 0, 1, 0);
+    if (msg_id >= 0) {
+        bytes_sent += strlen(metadata);
+    }
+
+    // Enviar dados da imagem em chunks
+    size_t chunks_sent = 0;
+    for (size_t offset = 0; offset < fb->len; offset += chunk_size) {
+        size_t current_chunk = (offset + chunk_size > fb->len) ? 
+                              (fb->len - offset) : chunk_size;
+        
+        char topic[80];
+        snprintf(topic, sizeof(topic), "monitoring/image/data/%lu/%zu", timestamp, offset);
+        
+        msg_id = esp_mqtt_client_publish(mqtt_client, topic,
+                                       (char*)(fb->buf + offset), 
+                                       current_chunk, 0, 0);
+        if (msg_id >= 0) {
+            chunks_sent++;
+            bytes_sent += current_chunk;
+        }
+        
+        vTaskDelay(pdMS_TO_TICKS(20)); // Pequena pausa entre chunks
+    }
+    
+    total_bytes_sent += bytes_sent;
+    total_photos_sent++;
+    
+    // Marcar fim da transmissão de imagem para o sniffer
+    if (SNIFFER_ENABLED && wifi_sniffer_is_active()) {
+        wifi_sniffer_mark_image_end();
+    }
+    
+    ESP_LOGI(TAG, "📸 Imagem enviada: %zu chunks (%lu bytes) - Motivo: %s", 
+             chunks_sent, bytes_sent, reason);
+}
+
+// Capturar e analisar foto
+static void capture_and_analyze_photo(void)
+{
+    if (!mqtt_connected) {
+        ESP_LOGW(TAG, "MQTT desconectado, pulando captura");
+        return;
+    }
+
+    ESP_LOGI(TAG, "📸 Capturando foto...");
+    
+    // Capturar imagem sem flash
+    camera_fb_t *fb = esp_camera_fb_get();
+    
     if (!fb) {
-        ESP_LOGE(TAG, "❌ Falha na captura - pulando ciclo");
+        ESP_LOGE(TAG, "Falha na captura");
+        return;
+    }
+
+    ESP_LOGI(TAG, "📷 Foto capturada: %zu bytes (%zux%zu)", 
+             fb->len, fb->width, fb->height);
+
+    // Criar frame atual
+    camera_frame_t *current_frame = create_camera_frame(fb);
+    if (!current_frame) {
+        ESP_LOGE(TAG, "Falha ao criar frame");
+        esp_camera_fb_return(fb);
         return;
     }
     
-    // 2. Processar imagem para detectar nível d'água
-    water_analysis_result_t analysis = analyze_water_level_advanced(fb, g_state.last_image_level);
+    float difference = 0.0f;
+    bool is_alert = false;
+    bool send_image = false;
+    const char* reason = "periodic";
     
-    // 3. Ler sensor HC-SR04
-    float sensor_distance = hc_sr04_read_distance();
-    float sensor_level = hc_sr04_calculate_water_level(sensor_distance, TANK_HEIGHT_CM);
-    
-    ESP_LOGI(TAG, "📊 Análise: IMG=%.1f%% (conf=%.2f) SENS=%.1f%% (%.1fcm)", 
-             analysis.image_level, analysis.confidence, sensor_level, sensor_distance);
-    
-    // 4. Validar dados antes de enviar
-    bool should_send_data = false;
-    bool should_send_alert = false;
-    bool should_send_image = false;
-    
-    if (analysis.is_valid && analysis.confidence >= CONFIDENCE_THRESHOLD) {
-        // Verificar se houve mudança significativa
-        float level_change = fabs(analysis.image_level - g_state.last_image_level);
+    if (previous_frame) {
+        // Calcular diferença entre imagens
+        difference = calculate_image_difference(previous_frame, current_frame);
         
-        if (g_state.readings_count == 0 || level_change >= LEVEL_CHANGE_THRESHOLD) {
-            should_send_data = true;
+        ESP_LOGI(TAG, "🔍 Diferença calculada: %.1f%%", difference * 100);
+        
+        // Verificar se houve mudança significativa
+        if (difference >= CHANGE_THRESHOLD) {
+            ESP_LOGI(TAG, "📊 Mudança detectada: %.1f%%", difference * 100);
+            send_image = true;
+            reason = "change_detected";
             
-            // Verificar condições de alerta
-            if (analysis.level_status == LEVEL_HIGH || analysis.level_status == LEVEL_LOW) {
-                should_send_alert = true;
-                if (SEND_IMAGE_ON_ALERT) {
-                    should_send_image = true;
-                }
+            if (difference >= ALERT_THRESHOLD) {
+                is_alert = true;
+                reason = "significant_change";
             }
         }
-        
-        // Atualizar estado
-        g_state.last_image_level = analysis.image_level;
-        g_state.last_confidence = analysis.confidence;
     } else {
-        ESP_LOGW(TAG, "⚠️ Análise de imagem com baixa confiança - usando apenas sensor");
-        
-        // Se análise de imagem falhar, usar apenas sensor como fallback
-        if (sensor_level >= 0) {
-            should_send_data = true;
-            analysis.image_level = -1; // Indicar falha na análise de imagem
-        }
+        // Primeira imagem - sempre enviar
+        ESP_LOGI(TAG, "📷 Primeira captura - enviando imagem de referência");
+        send_image = true;
+        reason = "first_capture";
     }
     
-    // Atualizar sensor sempre que válido
-    if (sensor_level >= 0) {
-        g_state.last_sensor_level = sensor_level;
+    // Enviar dados de monitoramento sempre
+    send_monitoring_data(difference, fb, is_alert);
+    
+    // Enviar imagem conforme necessário (ANTES de atualizar o frame anterior)
+    if (send_image) {
+        send_image_via_mqtt(fb, reason);
     }
     
-    // 5. Enviar dados via MQTT
-    if (should_send_data) {
-        esp_err_t ret = mqtt_send_water_level_data(
-            analysis.image_level, 
-            g_state.last_sensor_level, 
-            analysis.confidence, 
-            DEVICE_ID
-        );
-        
-        if (ret == ESP_OK) {
-            g_state.readings_count++;
-            ESP_LOGI(TAG, "✅ Dados enviados com sucesso (leitura #%lu)", g_state.readings_count);
-        } else {
-            ESP_LOGE(TAG, "❌ Falha no envio de dados");
-        }
+    // Liberar frame anterior e atualizar com atual
+    if (previous_frame) {
+        free_camera_frame(previous_frame);
     }
+    previous_frame = current_frame;
     
-    // 6. Enviar alertas se necessário
-    if (should_send_alert) {
-        const char* alert_type = (analysis.level_status == LEVEL_HIGH) ? 
-                                "high_water_level" : "low_water_level";
-        
-        esp_err_t ret = mqtt_send_alert(analysis.image_level, alert_type, DEVICE_ID);
-        if (ret == ESP_OK) {
-            g_state.alerts_sent++;
-            ESP_LOGW(TAG, "🚨 Alerta enviado: %s (alerta #%lu)", alert_type, g_state.alerts_sent);
-        }
-    }
-    
-    // 7. Enviar imagem como fallback se necessário
-    if (should_send_image || (!analysis.is_valid && should_send_data)) {
-        const char* reason = should_send_image ? "alert_triggered" : "analysis_failed";
-        mqtt_send_image_fallback(fb, reason, DEVICE_ID);
-    }
-    
-    // Liberar buffer da câmera
     esp_camera_fb_return(fb);
-    
-    ESP_LOGI(TAG, "✅ Ciclo completo - próximo em %d segundos", CAPTURE_INTERVAL_MS / 1000);
 }
 
-static void send_system_status(void) {
-    uint32_t uptime = esp_timer_get_time() / 1000000LL;
+// Imprimir estatísticas
+static void print_statistics(void)
+{
+    ESP_LOGI(TAG, "📈 === ESTATÍSTICAS DE MONITORAMENTO ===");
+    ESP_LOGI(TAG, "📷 Fotos processadas: %lu", total_photos_sent);
+    ESP_LOGI(TAG, "📡 Bytes transmitidos: %lu (%.2f KB)", 
+             total_bytes_sent, (float)total_bytes_sent / 1024.0);
+    if (total_photos_sent > 0) {
+        ESP_LOGI(TAG, "📊 Média por foto: %lu bytes", 
+                 total_bytes_sent / total_photos_sent);
+    }
+    
+    // Informações de memória
     size_t free_heap = esp_get_free_heap_size();
     size_t free_psram = heap_caps_get_free_size(MALLOC_CAP_SPIRAM);
+    size_t min_free_heap = esp_get_minimum_free_heap_size();
     
-    esp_err_t ret = mqtt_send_system_status(uptime, free_heap, free_psram, DEVICE_ID);
+    ESP_LOGI(TAG, "💾 Heap livre: %zu KB (mínimo: %zu KB)", 
+             free_heap / 1024, min_free_heap / 1024);
+    ESP_LOGI(TAG, "💾 PSRAM livre: %zu KB", free_psram / 1024);
     
-    if (ret == ESP_OK) {
-        ESP_LOGI(TAG, "📊 Status do sistema: Uptime=%lus, Heap=%zuKB, PSRAM=%zuKB", 
-                 uptime, free_heap/1024, free_psram/1024);
+    // Alerta de memória baixa
+    if (free_heap < 50000) {  // Menos que 50KB
+        ESP_LOGW(TAG, "⚠️  MEMÓRIA HEAP BAIXA!");
+    }
+    if (free_psram < 1000000) {  // Menos que 1MB
+        ESP_LOGW(TAG, "⚠️  MEMÓRIA PSRAM BAIXA!");
+    }
+    
+    ESP_LOGI(TAG, "=======================================");
+    
+    // Imprimir estatísticas do sniffer se habilitado
+    if (SNIFFER_ENABLED && wifi_sniffer_is_active()) {
+        wifi_sniffer_print_stats();
     }
 }
 
-// Task principal unificada - foco da IC
-static void water_monitoring_task(void *pvParameters) {
-    ESP_LOGI(TAG, "🚀 Iniciando monitoramento de nível d'água - IC");
+// Task principal de monitoramento
+static void monitoring_task(void *pvParameter)
+{
+    ESP_LOGI(TAG, "🚀 Iniciando monitoramento de imagens (15s de intervalo)");
     
     TickType_t last_capture = 0;
-    TickType_t last_status = 0;
+    TickType_t last_stats = 0;
+    TickType_t last_sniffer_stats = 0;
     
     while (1) {
         TickType_t now = xTaskGetTickCount();
         
-        // Verificar se é hora de fazer leitura e processamento
-        if ((now - last_capture) >= pdMS_TO_TICKS(CAPTURE_INTERVAL_MS)) {
-            process_and_send_data();
+        // Capturar e analisar a cada 15 segundos
+        if ((now - last_capture) >= pdMS_TO_TICKS(15000)) {
+            capture_and_analyze_photo();
             last_capture = now;
         }
         
-        // Verificar se é hora de enviar status do sistema
-        if ((now - last_status) >= pdMS_TO_TICKS(STATUS_INTERVAL_MS)) {
-            send_system_status();
-            last_status = now;
+        // Imprimir estatísticas a cada 5 minutos
+        if ((now - last_stats) >= pdMS_TO_TICKS(300000)) {
+            print_statistics();
+            last_stats = now;
         }
         
-        // Sleep por 1 segundo para não sobrecarregar CPU
-        vTaskDelay(pdMS_TO_TICKS(1000));
+        // Estatísticas do sniffer mais frequentes (se habilitado)
+        if (SNIFFER_ENABLED && wifi_sniffer_is_active() && 
+            (now - last_sniffer_stats) >= pdMS_TO_TICKS(SNIFFER_STATS_INTERVAL * 1000)) {
+            wifi_sniffer_print_stats();
+            
+            // Enviar estatísticas via MQTT se conectado
+            if (mqtt_connected) {
+                esp_err_t ret = wifi_sniffer_send_mqtt_stats(mqtt_client, DEVICE_ID);
+                if (ret != ESP_OK) {
+                    ESP_LOGW(TAG, "Falha ao enviar stats do sniffer via MQTT");
+                }
+            }
+            
+            last_sniffer_stats = now;
+        }
+        
+        vTaskDelay(pdMS_TO_TICKS(1000)); // Check a cada segundo
     }
-    
-    vTaskDelete(NULL);
 }
 
-void app_main(void) {
+void app_main(void)
+{
     ESP_LOGI(TAG, "========================================");
-    ESP_LOGI(TAG, "Sistema de Monitoramento de Nível d'Água");
-    ESP_LOGI(TAG, "Projeto IC - Gabriel Passos - IGCE/UNESP");
-    ESP_LOGI(TAG, "Processamento Embarcado + HC-SR04");
+    ESP_LOGI(TAG, "🔍 Sistema de Monitoramento por Imagens");
+    ESP_LOGI(TAG, "📊 Detecção de Mudanças Visuais");
+    ESP_LOGI(TAG, "Gabriel Passos - UNESP 2025");
     ESP_LOGI(TAG, "========================================");
     
-    // Inicialização do sistema
+    // Inicializar NVS
     esp_err_t ret = nvs_flash_init();
     if (ret == ESP_ERR_NVS_NO_FREE_PAGES || ret == ESP_ERR_NVS_NEW_VERSION_FOUND) {
         ESP_ERROR_CHECK(nvs_flash_erase());
@@ -257,52 +448,55 @@ void app_main(void) {
     }
     ESP_ERROR_CHECK(ret);
     
-    // Inicializar rede
+    // Inicializar networking
     ESP_ERROR_CHECK(esp_netif_init());
     ESP_ERROR_CHECK(esp_event_loop_create_default());
     esp_netif_create_default_wifi_sta();
     
-    // Inicializar hardware usando módulos
-    ESP_LOGI(TAG, "📷 Inicializando hardware...");
-    
-    create_camera_mutex();
-    
-    if (init_camera(&camera_config) != ESP_OK) {
-        ESP_LOGE(TAG, "❌ Falha na inicialização da câmera");
-        return;
-    }
-    ESP_LOGI(TAG, "✅ Câmera ESP32-CAM inicializada");
-    
-    if (hc_sr04_init(HC_SR04_TRIG_PIN, HC_SR04_ECHO_PIN) != ESP_OK) {
-        ESP_LOGE(TAG, "❌ Falha na inicialização do HC-SR04");
-        return;
-    }
-    ESP_LOGI(TAG, "✅ Sensor HC-SR04 inicializado");
-    
-    // Inicializar rede usando módulos
-    ESP_LOGI(TAG, "🌐 Conectando à rede...");
+    // Flash LED desabilitado para economia de energia
+
+    // Inicializar componentes
+    ESP_LOGI(TAG, "📷 Inicializando câmera...");
+    ESP_ERROR_CHECK(init_camera());
+
+    ESP_LOGI(TAG, "🌐 Conectando WiFi...");
     wifi_init_sta(WIFI_SSID, WIFI_PASS);
-    ESP_LOGI(TAG, "✅ WiFi conectado");
     
+    ESP_LOGI(TAG, "📡 Conectando MQTT...");
     mqtt_init(MQTT_BROKER_URI, MQTT_USERNAME, MQTT_PASSWORD);
-    ESP_LOGI(TAG, "✅ MQTT conectado");
     
-    // Aguardar estabilização
+    // Registrar handler de eventos MQTT
+    esp_mqtt_client_register_event(mqtt_client, ESP_EVENT_ANY_ID, mqtt_event_handler, NULL);
+    
+    // Aguardar conexão MQTT
     vTaskDelay(pdMS_TO_TICKS(3000));
     
-    // Marcar sistema como inicializado
-    g_state.system_initialized = true;
+    ESP_LOGI(TAG, "🔍 Configuração de detecção:");
+    ESP_LOGI(TAG, "   - Mudança mínima: %.1f%%", CHANGE_THRESHOLD * 100);
+    ESP_LOGI(TAG, "   - Alerta em: %.1f%%", ALERT_THRESHOLD * 100);
+    ESP_LOGI(TAG, "   - Intervalo: 15 segundos");
+
+    // Inicializar e iniciar WiFi sniffer se habilitado
+    if (SNIFFER_ENABLED) {
+        ESP_LOGI(TAG, "📡 Inicializando WiFi Sniffer...");
+        esp_err_t sniffer_ret = wifi_sniffer_init(SNIFFER_CHANNEL);
+        if (sniffer_ret == ESP_OK) {
+            sniffer_ret = wifi_sniffer_start();
+            if (sniffer_ret == ESP_OK) {
+                ESP_LOGI(TAG, "✅ WiFi Sniffer ativo no canal %d", SNIFFER_CHANNEL);
+                ESP_LOGI(TAG, "📊 Monitoramento de tráfego habilitado");
+            } else {
+                ESP_LOGW(TAG, "⚠️ Falha ao iniciar WiFi Sniffer: %s", esp_err_to_name(sniffer_ret));
+            }
+        } else {
+            ESP_LOGW(TAG, "⚠️ Falha ao inicializar WiFi Sniffer: %s", esp_err_to_name(sniffer_ret));
+        }
+    } else {
+        ESP_LOGI(TAG, "📡 WiFi Sniffer desabilitado");
+    }
+
+    // Iniciar task de monitoramento
+    xTaskCreate(monitoring_task, "monitoring", 8192, NULL, 5, NULL);
     
-    ESP_LOGI(TAG, "🎯 Configurações da IC:");
-    ESP_LOGI(TAG, "   📏 Altura do tanque: %.1f cm", TANK_HEIGHT_CM);
-    ESP_LOGI(TAG, "   ⏱️  Intervalo de captura: %d segundos", CAPTURE_INTERVAL_MS / 1000);
-    ESP_LOGI(TAG, "   🎚️  Threshold de confiança: %.1f", CONFIDENCE_THRESHOLD);
-    ESP_LOGI(TAG, "   📊 Threshold de mudança: %.1f%%", LEVEL_CHANGE_THRESHOLD);
-    ESP_LOGI(TAG, "   📷 Resolução: %dx%d JPEG Q%d", IMAGE_WIDTH, IMAGE_HEIGHT, JPEG_QUALITY);
-    
-    // Iniciar task principal unificada
-    xTaskCreate(water_monitoring_task, "water_monitoring", 16384, NULL, 5, NULL);
-    
-    ESP_LOGI(TAG, "🚀 Sistema de monitoramento iniciado com sucesso!");
-    ESP_LOGI(TAG, "🔬 Projeto de IC focado em processamento embarcado");
+    ESP_LOGI(TAG, "✅ Sistema de monitoramento iniciado!");
 }
