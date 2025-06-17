@@ -62,6 +62,21 @@ esp_err_t mqtt_send_alert(float difference_percent, camera_fb_t* frame);
 esp_err_t mqtt_send_sniffer_stats(uint32_t total_packets, uint32_t total_bytes,
                                  uint32_t mqtt_packets, uint32_t mqtt_bytes);
 
+/**
+ * @brief Envia dados detalhados de monitoramento de imagem.
+ * 
+ * @param difference Diferença percentual entre imagens.
+ * @param image_size Tamanho da imagem em bytes.
+ * @param width Largura da imagem.
+ * @param height Altura da imagem.
+ * @param format Formato da imagem.
+ * @param device_id ID do dispositivo.
+ * @return esp_err_t 
+ */
+esp_err_t mqtt_send_monitoring_data(float difference, uint32_t image_size, 
+                                   uint16_t width, uint16_t height, 
+                                   uint8_t format, const char* device_id);
+
 #ifdef __cplusplus
 }
 #endif

@@ -194,6 +194,10 @@ static void capture_and_analyze_photo(void)
         reason = "first_capture";
     }
     
+    // Enviar dados de monitoramento detalhados incluindo image_size
+    mqtt_send_monitoring_data(difference, fb->len, fb->width, fb->height, fb->format, DEVICE_ID);
+    
+    // Enviar status básico do sistema
     mqtt_send_monitoring(esp_get_free_heap_size(), heap_caps_get_free_size(MALLOC_CAP_SPIRAM), esp_timer_get_time() / 1000000);
     
     if (is_alert) {
@@ -274,10 +278,7 @@ static void monitoring_task(void *pvParameter)
         if (SNIFFER_ENABLED && wifi_sniffer_is_active() && (now - last_sniffer_stats) >= pdMS_TO_TICKS(SNIFFER_STATS_INTERVAL * 1000)) {
             wifi_sniffer_print_stats();
             if (mqtt_is_connected()) {
-                wifi_traffic_stats_t stats;
-                wifi_sniffer_get_stats(&stats);
-                
-                if (mqtt_send_sniffer_stats(stats.total_packets, stats.total_bytes, stats.mqtt_packets, stats.mqtt_bytes) != ESP_OK) {
+                if (wifi_sniffer_send_mqtt_stats(mqtt_client, DEVICE_ID) != ESP_OK) {
                     ESP_LOGW(TAG, "Falha ao enviar stats do sniffer via MQTT");
                 }
             }
