@@ -99,31 +99,7 @@ static esp_err_t init_camera(void)
     return err;
 }
 
-// Enviar dados via MQTT
-static void send_monitoring_data(float difference, camera_fb_t *fb, bool is_alert)
-{
-    char json[256];
-    snprintf(json, sizeof(json),
-             "{\"timestamp\":%lu,\"image_size\":%zu,\"difference\":%.3f,"
-             "\"width\":%zu,\"height\":%zu,\"format\":%d,"
-             "\"location\":\"monitoring_esp32cam\",\"mode\":\"image_comparison\"}",
-             (uint32_t)(esp_timer_get_time() / 1000000LL),
-             fb->len, difference, fb->width, fb->height, fb->format);
-    
-    esp_mqtt_client_publish(mqtt_client, "monitoring/data", json, 0, 1, 0);
-    
-    if (is_alert) {
-        char alert[200];
-        snprintf(alert, sizeof(alert),
-                 "{\"alert\":\"significant_change\",\"difference\":%.3f,"
-                 "\"timestamp\":%lu,\"image_size\":%zu,"
-                 "\"location\":\"monitoring_esp32cam\",\"mode\":\"image_comparison\"}",
-                 difference, (uint32_t)(esp_timer_get_time() / 1000000LL), fb->len);
-        
-        esp_mqtt_client_publish(mqtt_client, "monitoring/alert", alert, 0, 1, 0);
-        ESP_LOGW(TAG, "\n\n🚨 ALERTA: Mudança significativa detectada (%.1f%%)\n\n", difference);
-    }
-}
+
 
 // Enviar imagem via MQTT
 static void send_image_via_mqtt(camera_fb_t *fb, const char* reason)

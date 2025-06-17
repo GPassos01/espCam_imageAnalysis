@@ -18,9 +18,6 @@
 
 static const char *TAG = "MQTT_SEND";
 
-// Buffer para mensagens MQTT
-static char mqtt_buffer[1024];
-
 esp_err_t mqtt_send_image(camera_fb_t* frame, const char* topic) {
     if (!frame || !topic) {
         ESP_LOGE(TAG, "Parâmetros inválidos");
@@ -88,6 +85,11 @@ esp_err_t mqtt_send_monitoring(uint32_t free_heap, uint32_t free_psram, uint32_t
     }
 
     cJSON *root = cJSON_CreateObject();
+    if (!root) {
+        ESP_LOGE(TAG, "Falha ao criar objeto JSON");
+        return ESP_ERR_NO_MEM;
+    }
+    
     cJSON_AddStringToObject(root, "device_id", DEVICE_ID);
     cJSON_AddNumberToObject(root, "free_heap", free_heap);
     cJSON_AddNumberToObject(root, "free_psram", free_psram);
@@ -95,12 +97,22 @@ esp_err_t mqtt_send_monitoring(uint32_t free_heap, uint32_t free_psram, uint32_t
     
     char *payload = cJSON_PrintUnformatted(root);
     cJSON_Delete(root);
+    
+    if (!payload) {
+        ESP_LOGE(TAG, "Falha ao serializar JSON");
+        return ESP_ERR_NO_MEM;
+    }
 
     char topic[64];
     snprintf(topic, sizeof(topic), "%s/%s", MQTT_TOPIC_BASE, MQTT_TOPIC_STATUS);
     
-    esp_mqtt_client_publish(mqtt_client, topic, payload, strlen(payload), 1, 0);
+    int msg_id = esp_mqtt_client_publish(mqtt_client, topic, payload, strlen(payload), 1, 0);
     free(payload);
+    
+    if (msg_id < 0) {
+        ESP_LOGE(TAG, "Falha ao publicar status via MQTT");
+        return ESP_FAIL;
+    }
 
     return ESP_OK;
 }
@@ -169,6 +181,15 @@ esp_err_t mqtt_send_monitoring_data(float difference, uint32_t image_size,
     if (!mqtt_client) {
         ESP_LOGE(TAG, "Cliente MQTT não inicializado");
         return ESP_ERR_INVALID_STATE;
+    }
+    
+    if (!device_id || strlen(device_id) == 0) {
+        ESP_LOGE(TAG, "Device ID inválido");
+        return ESP_ERR_INVALID_ARG;
+    }
+    
+    if (difference < 0.0f || difference > 100.0f) {
+        ESP_LOGW(TAG, "Diferença fora do range esperado: %.3f%%", difference);
     }
     
     char payload[300];

@@ -50,13 +50,13 @@
 #define STATUS_INTERVAL_MS      300000   // Intervalo para estatísticas (5 minutos)
 #define IMAGE_WIDTH            320       // Largura QVGA
 #define IMAGE_HEIGHT           240       // Altura QVGA
-#define JPEG_QUALITY           10        // Qualidade JPEG 0-63 (menor=melhor)
+#define JPEG_QUALITY           12        // Qualidade JPEG 0-63 (menor=melhor, otimizado para performance)
 #define FRAMESIZE             FRAMESIZE_QVGA  // Tamanho do frame
 #define PIXEL_FORMAT          PIXFORMAT_JPEG  // Formato do pixel
 
 // ===== ALGORITMO DE DETECÇÃO =====
-#define CHANGE_THRESHOLD       0.5f      // 0.5% diferença mínima para mudança
-#define ALERT_THRESHOLD        5.0f      // 5% diferença para alerta crítico
+#define CHANGE_THRESHOLD       1.0f      // 1.0% diferença mínima para mudança (otimizado para reduzir ruído)
+#define ALERT_THRESHOLD        8.0f      // 8.0% diferença para alerta crítico (otimizado para eventos reais)
 #define MOTION_DETECTION_ENABLED true     // Habilitar detecção de movimento
 
 // ===== CONFIGURAÇÕES DE MQTT =====

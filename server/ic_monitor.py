@@ -19,15 +19,18 @@ Tópicos MQTT:
 @author Gabriel Passos - IGCE/UNESP 2025
 """
 
+#!/usr/bin/env python3
+
 import json
-import sqlite3
-import time
+import os
 import signal
+import sqlite3
 import sys
 import threading
-import os
+import time
 from datetime import datetime
-from typing import Dict, Any
+from typing import Dict, Any, Optional
+
 import paho.mqtt.client as mqtt
 
 # Configurações
@@ -47,8 +50,18 @@ TOPICS = [
     ("monitoring/image/metadata", 0),  # Metadados de imagens
 ]
 
+# Configurações de arquivo e diretório
 DATABASE_FILE = "monitoring_data.db"
 IMAGES_DIR = "received_images"
+
+# Configurações de performance
+STATISTICS_INTERVAL = 300  # 5 minutos
+STATUS_LOG_FREQUENCY = 20  # A cada 20 leituras
+MAX_RECONNECT_ATTEMPTS = 5
+
+# Configurações de banco de dados
+DB_TIMEOUT = 30.0
+DB_CHECK_SAME_THREAD = False
 
 class ICImageMonitor:
     """
@@ -86,7 +99,17 @@ class ICImageMonitor:
     def setup_database(self):
         """Configurar banco de dados SQLite para dados de monitoramento"""
         try:
-            self.db_connection = sqlite3.connect(DATABASE_FILE, check_same_thread=False)
+            self.db_connection = sqlite3.connect(
+                DATABASE_FILE, 
+                check_same_thread=DB_CHECK_SAME_THREAD,
+                timeout=DB_TIMEOUT
+            )
+            # Otimizações SQLite
+            self.db_connection.execute("PRAGMA journal_mode=WAL")
+            self.db_connection.execute("PRAGMA synchronous=NORMAL") 
+            self.db_connection.execute("PRAGMA cache_size=10000")
+            self.db_connection.execute("PRAGMA temp_store=MEMORY")
+            
             cursor = self.db_connection.cursor()
             
             # Tabela de leituras de monitoramento
@@ -192,12 +215,6 @@ class ICImageMonitor:
         """Processar mensagens MQTT recebidas"""
         try:
             topic = msg.topic
-            # Debug: mostrar tópicos desconhecidos
-            if topic not in ["esp32cam/status", "esp32cam/alert", "esp32cam/image", 
-                           "esp32cam/stats", "monitoring/sniffer/stats", "monitoring/data",
-                           "monitoring/image/metadata"]:
-                print(f"🔍 DEBUG: Tópico desconhecido: {topic}")
-                
             if topic == "esp32cam/status":
                 self.process_system_status(msg.payload.decode())
             elif topic == "esp32cam/alert":
@@ -279,8 +296,8 @@ class ICImageMonitor:
             free_psram = data.get('free_psram', 0) 
             uptime = data.get('uptime', 0)
             
-            # Log do status (apenas a cada 5 minutos para não poluir)
-            if self.stats['readings_count'] % 20 == 0:  # A cada ~20 leituras
+            # Log do status (apenas periodicamente para não poluir)
+            if self.stats['readings_count'] % STATUS_LOG_FREQUENCY == 0:
                 dt = datetime.fromtimestamp(timestamp)
                 heap_mb = free_heap / (1024 * 1024)
                 psram_mb = free_psram / (1024 * 1024)
