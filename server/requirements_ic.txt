@@ -1,0 +1,29 @@
+# Dependências para Monitor IC - Sistema de Nível d'Água
+# Projeto de Iniciação Científica - Gabriel Passos - IGCE/UNESP 2025
+
+# MQTT para comunicação com ESP32-CAM
+paho-mqtt==1.6.1
+
+# Geração de relatórios em PDF
+fpdf2==2.7.8
+
+# Database local (built-in no Python)
+# sqlite3 já incluído no Python padrão
+
+# Logging e utilitários (built-in no Python)
+# logging, json, threading, time, datetime já incluídos
+
+# Typing hints (built-in Python 3.5+)
+# typing já incluído
+
+# === Dependências opcionais para análise avançada ===
+# Descomente se precisar de análise de dados mais avançada:
+
+# pandas==2.0.3          # Para análise de dados históricos
+# matplotlib==3.7.2      # Para gráficos e visualizações  
+# numpy==1.24.3          # Para cálculos numéricos
+# scipy==1.11.1          # Para análise estatística
+
+# === Para interface web opcional ===
+# flask==2.3.3           # Web server simples
+# jinja2==3.1.2          # Templates HTML 
