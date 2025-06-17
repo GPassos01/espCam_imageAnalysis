@@ -11,10 +11,10 @@ Funcionalidades principais:
 - Reconnect automático MQTT com tratamento de erros
 
 Tópicos MQTT:
-- monitoring/data: Dados principais (timestamp, diferença, tamanho)
-- monitoring/alert: Alertas de mudanças significativas (>30%)
-- monitoring/image/metadata: Informações da imagem antes dos chunks
-- monitoring/image/data/{timestamp}/{offset}: Chunks binários da imagem
+- esp32cam/status: Dados de monitoramento
+- esp32cam/alert: Alertas
+- esp32cam/image: Imagem + metadados
+- esp32cam/stats: Estatísticas/sniffer
 
 @author Gabriel Passos - IGCE/UNESP 2025
 """
@@ -31,18 +31,17 @@ from typing import Dict, Any
 import paho.mqtt.client as mqtt
 
 # Configurações
-MQTT_BROKER = "192.168.1.29"
+MQTT_BROKER = "192.168.1.48"
 MQTT_PORT = 1883
-MQTT_USERNAME = "gabriel"
-MQTT_PASSWORD = "gabriel123"
+MQTT_USERNAME = ""
+MQTT_PASSWORD = ""
 
-# Tópicos MQTT para monitoramento
+# NOVOS TÓPICOS MQTT para o novo firmware ESP32
 TOPICS = [
-    ("monitoring/data", 0),           # Dados de monitoramento
-    ("monitoring/alert", 0),          # Alertas de mudanças
-    ("monitoring/image/metadata", 0), # Metadados de imagem
-    ("monitoring/image/data/+/+", 0), # Chunks de imagem
-    ("monitoring/sniffer/stats", 0),  # Estatísticas do WiFi sniffer
+    ("esp32cam/status", 0),    # Dados de monitoramento
+    ("esp32cam/alert", 0),     # Alertas
+    ("esp32cam/image", 0),     # Imagem + metadados
+    ("esp32cam/stats", 0),     # Estatísticas/sniffer
 ]
 
 DATABASE_FILE = "monitoring_data.db"
@@ -64,7 +63,6 @@ class ICImageMonitor:
         self.running = False
         self.mqtt_client = None
         self.db_connection = None
-        self.image_buffers = {}  # Buffer para reconstituir imagens
         self.stats = {
             'readings_count': 0,
             'alerts_count': 0,
@@ -75,8 +73,6 @@ class ICImageMonitor:
             'start_time': time.time()
         }
         self.lock = threading.Lock()
-        
-        # Criar diretório para imagens
         if not os.path.exists(IMAGES_DIR):
             os.makedirs(IMAGES_DIR)
             print(f"📁 Diretório criado: {IMAGES_DIR}")
@@ -190,22 +186,14 @@ class ICImageMonitor:
         """Processar mensagens MQTT recebidas"""
         try:
             topic = msg.topic
-            
-            if topic == "monitoring/data":
+            if topic == "esp32cam/status":
                 self.process_monitoring_data(msg.payload.decode())
-                
-            elif topic == "monitoring/alert":
+            elif topic == "esp32cam/alert":
                 self.process_alert(msg.payload.decode())
-                
-            elif topic == "monitoring/image/metadata":
-                self.process_image_metadata(msg.payload.decode())
-                
-            elif topic.startswith("monitoring/image/data/"):
-                self.process_image_chunk(topic, msg.payload)
-                
-            elif topic == "monitoring/sniffer/stats":
+            elif topic == "esp32cam/image":
+                self.process_image_payload(msg.payload)
+            elif topic == "esp32cam/stats":
                 self.process_sniffer_stats(msg.payload.decode())
-                
         except Exception as e:
             print(f"❌ Erro ao processar mensagem: {e}")
 
@@ -242,7 +230,7 @@ class ICImageMonitor:
             # Log da leitura
             dt = datetime.fromtimestamp(timestamp)
             if difference > 0:
-                print(f"📊 {dt.strftime('%H:%M:%S')} - Diferença: {difference:.1%} "
+                print(f"📊 {dt.strftime('%H:%M:%S')} - Diferença: {difference:.1f}% "
                       f"({image_size:,} bytes) {width}x{height}")
             else:
                 print(f"📷 {dt.strftime('%H:%M:%S')} - Primeira captura "
@@ -281,98 +269,30 @@ class ICImageMonitor:
             # Log do alerta
             dt = datetime.fromtimestamp(timestamp)
             print(f"🚨 ALERTA {dt.strftime('%H:%M:%S')} - {alert_type}: "
-                  f"Diferença {difference:.1%} ({image_size:,} bytes)")
+                  f"Diferença {difference:.1f}% ({image_size:,} bytes)")
                 
         except Exception as e:
             print(f"❌ Erro ao processar alerta: {e}")
 
-    def process_image_metadata(self, payload: str):
-        """Processar metadados de imagem"""
+    def process_image_payload(self, payload: bytes):
         try:
-            data = json.loads(payload)
-            timestamp = data.get('timestamp')
-            
-            if timestamp:
-                # Inicializar buffer para esta imagem
-                self.image_buffers[timestamp] = {
-                    'metadata': data,
-                    'chunks': {},
-                    'total_size': data.get('size', 0),
-                    'received_size': 0
-                }
-                
-                reason = data.get('reason', 'unknown')
-                size = data.get('size', 0)
-                dt = datetime.fromtimestamp(timestamp)
-                print(f"📸 {dt.strftime('%H:%M:%S')} - Recebendo imagem: "
-                      f"{size:,} bytes (motivo: {reason})")
-                
-        except Exception as e:
-            print(f"❌ Erro ao processar metadados: {e}")
-
-    def process_image_chunk(self, topic: str, chunk_data: bytes):
-        """Processar chunk de dados de imagem"""
-        try:
-            # Extrair timestamp e offset do tópico
-            # Formato: monitoring/image/data/{timestamp}/{offset}
-            parts = topic.split('/')
-            if len(parts) >= 5:
-                timestamp = int(parts[3])
-                offset = int(parts[4])
-                
-                if timestamp in self.image_buffers:
-                    buffer_info = self.image_buffers[timestamp]
-                    buffer_info['chunks'][offset] = chunk_data
-                    buffer_info['received_size'] += len(chunk_data)
-                    
-                    # Verificar se recebemos todos os chunks
-                    if buffer_info['received_size'] >= buffer_info['total_size']:
-                        self.save_image(buffer_info)
-                        del self.image_buffers[timestamp]
-                else:
-                    # Buffer não existe - chunk órfão
-                    print(f"⚠️ Chunk órfão recebido para timestamp {timestamp}")
-                        
-        except ValueError as e:
-            print(f"❌ Erro ao processar timestamp/offset: {e}")
-        except Exception as e:
-            print(f"❌ Erro ao processar chunk: {e}")
-
-    def save_image(self, image_info: Dict):
-        """Salvar imagem reconstituída"""
-        try:
-            metadata = image_info['metadata']
-            timestamp = metadata['timestamp']
-            device = metadata.get('device', 'unknown')
-            reason = metadata.get('reason', 'unknown')
-            
-            # Ordenar chunks por offset e montar imagem
-            sorted_chunks = sorted(image_info['chunks'].items())
-            image_data = b''.join([chunk for offset, chunk in sorted_chunks])
-            
-            # Verificar integridade da imagem
-            expected_size = metadata.get('size', 0)
-            if len(image_data) != expected_size:
-                print(f"⚠️ Tamanho inconsistente: esperado {expected_size}, "
-                      f"recebido {len(image_data)} bytes")
-            
-            # Nome do arquivo
+            # Espera-se um JSON com metadados e campo 'image' em base64
+            data = json.loads(payload.decode())
+            timestamp = data.get('timestamp', int(time.time()))
+            device = data.get('device_id', 'esp32cam')
+            reason = data.get('reason', 'unknown')
+            image_b64 = data.get('image')
+            if not image_b64:
+                print("❌ Payload de imagem sem campo 'image'")
+                return
+            import base64
+            image_data = base64.b64decode(image_b64)
             dt = datetime.fromtimestamp(timestamp)
             filename = f"{timestamp}_{device}_{reason}.jpg"
             filepath = os.path.join(IMAGES_DIR, filename)
-            
-            # Salvar arquivo
             with open(filepath, 'wb') as f:
                 f.write(image_data)
-            
-            # Verificar se arquivo foi salvo corretamente
-            if not os.path.exists(filepath):
-                raise Exception(f"Arquivo não foi salvo: {filepath}")
-            
             file_size = os.path.getsize(filepath)
-            if file_size != len(image_data):
-                raise Exception(f"Tamanho do arquivo inconsistente")
-            
             # Salvar no banco
             with self.lock:
                 cursor = self.db_connection.cursor()
@@ -380,24 +300,14 @@ class ICImageMonitor:
                     INSERT INTO received_images 
                     (timestamp, filename, file_size, width, height, format, reason, device)
                     VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-                ''', (timestamp, filename, len(image_data), 
-                      metadata.get('width', 0), metadata.get('height', 0),
-                      metadata.get('format', 0), reason, device))
-                
+                ''', (timestamp, filename, file_size, 
+                      data.get('width', 0), data.get('height', 0),
+                      data.get('format', 0), reason, device))
                 self.db_connection.commit()
                 self.stats['images_received'] += 1
-            
-            print(f"✅ {dt.strftime('%H:%M:%S')} - Imagem salva: {filename} "
-                  f"({len(image_data):,} bytes)")
-                
+            print(f"✅ {dt.strftime('%H:%M:%S')} - Imagem salva: {filename} ({file_size:,} bytes)")
         except Exception as e:
-            print(f"❌ Erro ao salvar imagem: {e}")
-            # Tentar limpeza em caso de erro
-            if 'filepath' in locals() and os.path.exists(filepath):
-                try:
-                    os.remove(filepath)
-                except:
-                    pass
+            print(f"❌ Erro ao processar imagem: {e}")
 
     def process_sniffer_stats(self, payload: str):
         """Processar estatísticas do WiFi sniffer"""
@@ -461,9 +371,8 @@ class ICImageMonitor:
         print(f"🚨 Alertas emitidos: {self.stats['alerts_count']:,}")
         print(f"📸 Imagens recebidas: {self.stats['images_received']:,}")
         print(f"📡 Stats do sniffer: {self.stats['sniffer_stats_count']:,}")
-        print(f"🔍 Última diferença: {self.stats['last_difference']:.1%}")
+        print(f"🔍 Última diferença: {self.stats['last_difference']:.1f}%")
         print(f"🚀 Último throughput MQTT: {self.stats['last_mqtt_throughput']:.1f} bytes/s")
-        print(f"💾 Buffers ativos: {len(self.image_buffers)}")
         
         # Estatísticas do banco
         try:

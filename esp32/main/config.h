@@ -16,12 +16,15 @@
 #define WIFI_SSID        "Steps 2.4G"      // Nome da rede WiFi 2.4GHz
 #define WIFI_PASS        "h%8Ka4D&"        // Senha da rede
 #define WIFI_MAXIMUM_RETRY  5               // Tentativas de reconexão WiFi
-#define MQTT_BROKER_URI  "mqtt://192.168.1.29:1883"  // Broker MQTT local
-#define MQTT_USERNAME    "gabriel"          // Usuário MQTT
-#define MQTT_PASSWORD    "gabriel123"       // Senha MQTT
+#define MQTT_BROKER_URI  "mqtt://192.168.1.48:1883"  // Broker MQTT local
+#define MQTT_USERNAME    ""                 // Usuário MQTT
+#define MQTT_PASSWORD    ""                 // Senha MQTT
+#define MQTT_KEEPALIVE   60                 // Keepalive MQTT em segundos
+#define MQTT_RECONNECT_DELAY_MS 5000        // Delay entre tentativas de reconexão
 
 // ===== CONFIGURAÇÕES DE DISPOSITIVO =====
 #define DEVICE_ID        "esp32_cam_001"
+#define DEVICE_NAME      "ESP32-CAM Monitor"
 
 // ===== PINOUT ESP32-CAM AI-THINKER (NÃO ALTERAR) =====
 #define CAM_PIN_PWDN    32    // Power Down da câmera
@@ -48,18 +51,33 @@
 #define IMAGE_WIDTH            320       // Largura QVGA
 #define IMAGE_HEIGHT           240       // Altura QVGA
 #define JPEG_QUALITY           10        // Qualidade JPEG 0-63 (menor=melhor)
+#define FRAMESIZE             FRAMESIZE_QVGA  // Tamanho do frame
+#define PIXEL_FORMAT          PIXFORMAT_JPEG  // Formato do pixel
 
 // ===== ALGORITMO DE DETECÇÃO =====
-#define CHANGE_THRESHOLD       0.10f     // 10% diferença mínima para mudança
-#define ALERT_THRESHOLD        0.30f     // 30% diferença para alerta crítico
+#define CHANGE_THRESHOLD       0.5f      // 0.5% diferença mínima para mudança
+#define ALERT_THRESHOLD        5.0f      // 5% diferença para alerta crítico
+#define MOTION_DETECTION_ENABLED true     // Habilitar detecção de movimento
 
 // ===== CONFIGURAÇÕES DE MQTT =====
 #define SEND_IMAGE_ON_ALERT    true      // Enviar imagem completa em alertas
 #define MAX_RETRY_ATTEMPTS     3         // Tentativas de reenvio MQTT
+#define MQTT_TOPIC_BASE        "esp32cam" // Tópico base MQTT
+#define MQTT_TOPIC_ALERT       "alert"    // Tópico para alertas
+#define MQTT_TOPIC_STATUS      "status"   // Tópico para status
+#define MQTT_TOPIC_IMAGE       "image"    // Tópico para imagens
+#define MQTT_TOPIC_STATS       "stats"    // Tópico para estatísticas
 
 // ===== CONFIGURAÇÕES DO WIFI SNIFFER =====
 #define SNIFFER_ENABLED        true      // Habilitar monitoramento de tráfego
 #define SNIFFER_CHANNEL        8         // Canal WiFi para sniffing (8 = Steps 2.4G)
-#define SNIFFER_STATS_INTERVAL 60       // Intervalo para estatísticas do sniffer (segundos)
+#define SNIFFER_STATS_INTERVAL 60        // Intervalo para estatísticas do sniffer (segundos)
+#define SNIFFER_MAX_PACKETS    1000      // Máximo de pacotes para análise
+#define SNIFFER_BUFFER_SIZE    4096      // Tamanho do buffer do sniffer
+
+// ===== CONFIGURAÇÕES DE MEMÓRIA =====
+#define PSRAM_ENABLED         true       // Habilitar uso de PSRAM
+#define JPEG_BUFFER_SIZE      (IMAGE_WIDTH * IMAGE_HEIGHT / 8)  // Buffer para JPEG
+#define MAX_IMAGE_SIZE        32768      // Tamanho máximo da imagem em bytes
 
 #endif // CONFIG_H 

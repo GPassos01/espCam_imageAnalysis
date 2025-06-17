@@ -21,4 +21,5 @@ idf_component_register(
         esp_psram
         esp_timer
         spiffs
+    PRIV_REQUIRES json
 )
