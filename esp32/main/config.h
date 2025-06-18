@@ -1,14 +1,17 @@
 /**
- * Configurações Centralizadas - Sistema ESP32-CAM
+ * @file config.h
+ * @brief Configurações Centralizadas - Sistema de Monitoramento de Enchentes ESP32-CAM
  * 
- * Todas as configurações do sistema em um local único:
- * - Rede WiFi e MQTT
- * - Pinout ESP32-CAM AI-Thinker
- * - Parâmetros de captura e processamento
- * - Thresholds de detecção de mudanças
+ * Este arquivo centraliza todas as configurações do sistema de monitoramento
+ * de enchentes baseado em análise de imagens com ESP32-CAM.
  * 
- * @author Gabriel Passos - UNESP 2025
+ * @version 1.0
+ * @date 2025
+ * @author Gabriel Passos de Oliveira - IGCE/UNESP
+ * 
+ * @copyright MIT License
  */
+
 #ifndef CONFIG_H
 #define CONFIG_H
 

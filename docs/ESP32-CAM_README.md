@@ -1,465 +1,283 @@
-# 📷 Guia Completo ESP32-CAM - Sistema de Monitoramento de Enchentes
+# 📷 Manual ESP32-CAM - Hardware e Especificações
 
-## Projeto de Iniciação Científica - Gabriel Passos - IGCE/UNESP 2025
+**Projeto de Iniciação Científica**  
+**Gabriel Passos de Oliveira - IGCE/UNESP**  
+**Versão 1.0 - Janeiro 2025**
 
 ---
 
-## 🎯 Introdução
+## 1. Visão Geral
 
-Este guia documenta a migração do sistema de monitoramento de enchentes de simulação para **ESP32-CAM real** com câmera **OV2640**. O sistema agora captura imagens reais, processa em tempo real e detecta mudanças significativas para monitoramento de enchentes.
+Manual técnico do módulo ESP32-CAM AI-Thinker utilizado no sistema de monitoramento de enchentes. Este documento foca nas especificações de hardware, pinout e características específicas da placa.
 
-## 🔧 Hardware ESP32-CAM
+## 2. Especificações do Hardware
 
-### Especificações Técnicas
-- **Chip Principal:** ESP32-S (Dual Core Xtensa 32-bit 240MHz)
-- **Câmera:** OV2640 CMOS 2MP (1600x1200 máximo)
-- **Memória Flash:** 4MB
-- **PSRAM:** 8MB (crucial para processamento de imagens)
-- **WiFi:** 802.11 b/g/n (2.4GHz)
-- **Bluetooth:** v4.2 BR/EDR e BLE
-- **GPIO Disponíveis:** Limitados devido aos pinos da câmera
-- **LED Flash:** GPIO4 (integrado)
+### 2.1 Componentes Principais
 
-### Pinout ESP32-CAM AI-Thinker
+| Componente | Especificação | Detalhes |
+|------------|---------------|----------|
+| **Microcontrolador** | ESP32-S | Dual Core Xtensa LX6 @ 240MHz |
+| **Memória RAM** | 520KB SRAM | ~320KB disponível para aplicação |
+| **Memória PSRAM** | 4MB | Essencial para buffers de imagem |
+| **Flash** | 4MB SPI | Particionável |
+| **Câmera** | OV2640 | 2MP CMOS, até 1600x1200 |
+| **Interface Câmera** | DVP | 8-bit parallel |
+| **WiFi** | 802.11 b/g/n | 2.4GHz apenas |
+| **Bluetooth** | 4.2 BR/EDR + BLE | Não usado neste projeto |
+| **Antena** | PCB + u.FL | Conector para externa |
 
-```
-Pinos da Câmera (NÃO ALTERAR):
-┌─────────────────────────────┐
-│ OV2640 Camera Configuration │
-├─────────────────────────────┤
-│ PWDN  │ GPIO32             │
-│ RESET │ -1 (not connected) │
-│ XCLK  │ GPIO0              │
-│ SDA   │ GPIO26             │
-│ SCL   │ GPIO27             │
-│ D7    │ GPIO35             │
-│ D6    │ GPIO34             │
-│ D5    │ GPIO39             │
-│ D4    │ GPIO36             │
-│ D3    │ GPIO21             │
-│ D2    │ GPIO19             │
-│ D1    │ GPIO18             │
-│ D0    │ GPIO5              │
-│ VSYNC │ GPIO25             │
-│ HREF  │ GPIO23             │
-│ PCLK  │ GPIO22             │
-└─────────────────────────────┘
+### 2.2 Características Elétricas
 
-Pinos de Programação:
-┌─────────────────────────┐
-│ VCC   │ 5V (externa)    │
-│ GND   │ Ground          │
-│ U0R   │ RX (FTDI)       │
-│ U0T   │ TX (FTDI)       │
-│ GPIO0 │ GND para flash  │
-│ RST   │ Reset           │
-└─────────────────────────┘
+| Parâmetro | Min | Típico | Max | Unidade |
+|-----------|-----|--------|-----|---------|
+| Tensão de operação | 4.8 | 5.0 | 5.5 | V |
+| Corrente (idle) | - | 80 | - | mA |
+| Corrente (WiFi TX) | - | 240 | 400 | mA |
+| Corrente (flash LED) | - | - | 480 | mA |
+| Temperatura operação | -20 | 25 | 70 | °C |
 
-GPIO Disponíveis:
-- GPIO1, GPIO3: TX0/RX0 (Serial)
-- GPIO12, GPIO13: Disponíveis
-- GPIO14, GPIO15: Disponíveis  
-- GPIO16: Disponível (PSRAM CS)
-- GPIO4: LED Flash (usado no projeto)
-```
+## 3. Mapa de Pinos
 
-## ⚡ Configuração Hardware
-
-### 1. Conexão para Programação (Flash)
+### 3.1 Diagrama da Placa
 
 ```
-ESP32-CAM          FTDI Programmer
-┌─────────┐       ┌─────────────┐
-│   VCC   ├───────┤ 5V          │
-│   GND   ├───────┤ GND         │
-│   U0R   ├───────┤ TX          │
-│   U0T   ├───────┤ RX          │
-│  GPIO0  ├───┐   │             │
-└─────────┘   │   └─────────────┘
-              │
-             GND (jumper para programação)
+┌─────────────────────────────────────┐
+│         ESP32-CAM AI-Thinker        │
+│                                     │
+│  ANT                          5V ───│ Alimentação
+│   ┌─┐                        GND ───│ Terra
+│   └─┘                        IO12 ──│ Disponível*
+│                              IO13 ──│ Disponível*
+│ ┌─────┐                      IO15 ──│ Disponível*
+│ │     │                      IO14 ──│ Disponível*
+│ │ CAM │                      IO2 ───│ LED interno
+│ │     │                      IO4 ───│ LED Flash
+│ └─────┘                      IO16 ──│ PSRAM CS
+│                              VCC ───│ 3.3V out
+│                              U0R ───│ UART RX
+│ [RESET]                      U0T ───│ UART TX
+│                              GND ───│ Terra
+│                              IO0 ───│ Boot/Flash
+└─────────────────────────────────────┘
+
+* GPIOs com limitações (ver seção 3.3)
 ```
 
-### 2. Conexão para Operação Normal
+### 3.2 Pinos da Câmera OV2640
+
+| Função | GPIO | Direção | Descrição |
+|--------|------|---------|-----------|
+| PWDN | 32 | OUT | Power down (1=desliga) |
+| RESET | -1 | - | Não conectado |
+| XCLK | 0 | OUT | Clock 20MHz para câmera |
+| SIOD | 26 | I/O | I2C Data (SDA) |
+| SIOC | 27 | OUT | I2C Clock (SCL) |
+| D7 | 35 | IN | Data bit 7 (MSB) |
+| D6 | 34 | IN | Data bit 6 |
+| D5 | 39 | IN | Data bit 5 |
+| D4 | 36 | IN | Data bit 4 |
+| D3 | 21 | IN | Data bit 3 |
+| D2 | 19 | IN | Data bit 2 |
+| D1 | 18 | IN | Data bit 1 |
+| D0 | 5 | IN | Data bit 0 (LSB) |
+| VSYNC | 25 | IN | Sincronização vertical |
+| HREF | 23 | IN | Referência horizontal |
+| PCLK | 22 | IN | Pixel clock |
+
+### 3.3 GPIOs Disponíveis e Limitações
+
+| GPIO | Status | Limitações |
+|------|--------|------------|
+| 0 | Usado (XCLK) | Boot strapping pin |
+| 1 | TX0 | Debug serial |
+| 2 | LED interno | Boot strapping pin |
+| 3 | RX0 | Debug serial |
+| 4 | LED Flash | Pode ser reutilizado |
+| 12 | Livre | Boot strapping pin* |
+| 13 | Livre | - |
+| 14 | Livre | - |
+| 15 | Livre | Boot strapping pin* |
+| 16 | Usado (PSRAM) | Não disponível |
+
+*Boot strapping pins: Cuidado ao usar durante boot
+
+## 4. Módulo Câmera OV2640
+
+### 4.1 Especificações do Sensor
+
+- **Resolução**: 2 Megapixels (1600x1200)
+- **Tamanho do sensor**: 1/4"
+- **Pixel size**: 2.2μm x 2.2μm
+- **Sensibilidade**: 0.6V/lux-sec
+- **Dynamic range**: 50dB
+- **Max frame rate**: 15fps @ UXGA, 30fps @ SVGA
+
+### 4.2 Modos de Operação Suportados
+
+| Formato | Resolução | FPS Max | Uso no Projeto |
+|---------|-----------|---------|----------------|
+| UXGA | 1600x1200 | 15 | Não usado |
+| SXGA | 1280x1024 | 15 | Não usado |
+| XGA | 1024x768 | 15 | Não usado |
+| SVGA | 800x600 | 30 | Não usado |
+| VGA | 640x480 | 30 | Não usado |
+| **QVGA** | **320x240** | **30** | **✓ Usado** |
+| QQVGA | 160x120 | 30 | Não usado |
+
+### 4.3 Formatos de Saída
+
+- **JPEG**: Compressão hardware (usado no projeto)
+- **RGB565**: 16-bit por pixel
+- **YUV422**: 16-bit por pixel
+- **Grayscale**: 8-bit por pixel
+
+## 5. Alimentação e Consumo
+
+### 5.1 Requisitos de Alimentação
+
+⚠️ **IMPORTANTE**: A ESP32-CAM requer fonte de alimentação robusta!
+
+- **Tensão**: 5V ±5% (regulador onboard para 3.3V)
+- **Corrente mínima**: 500mA
+- **Corrente recomendada**: 2A
+- **Capacitor de bypass**: 100-470μF próximo ao VCC
+
+### 5.2 Perfil de Consumo
 
 ```
-ESP32-CAM          Fonte
-┌─────────┐       ┌─────────────┐
-│   VCC   ├───────┤ 5V/2A       │
-│   GND   ├───────┤ GND         │
-└─────────┘       └─────────────┘
-
-REMOVER jumper GPIO0-GND
+Estado                 Corrente    Potência
+─────────────────────────────────────────────
+Deep Sleep            10mA        0.05W
+Idle (WiFi off)       80mA        0.40W
+WiFi connected        120mA       0.60W
+Capturando imagem     180mA       0.90W
+WiFi TX               240mA       1.20W
+WiFi TX + Captura     320mA       1.60W
+Flash LED ligado      +240mA      +1.20W
 ```
 
-### 3. Fonte de Alimentação
+### 5.3 Problemas Comuns de Alimentação
 
-**⚠️ IMPORTANTE:** A ESP32-CAM requer corrente alta durante operação da câmera:
-- **Mínimo:** 500mA durante operação normal
-- **Recomendado:** 2A para estabilidade
-- **Tensão:** 5V (regulador onboard para 3.3V)
+| Sintoma | Causa | Solução |
+|---------|-------|---------|
+| Brownout detector | Fonte inadequada | Usar fonte 5V/2A |
+| Reset durante TX | Queda de tensão | Adicionar capacitor |
+| Câmera falha | Corrente insuficiente | Fonte externa |
 
-## 🛠️ Configuração Software
+## 6. Conexões para Programação
 
-### 1. Instalação ESP-IDF 5.0+
+### 6.1 Esquema FTDI
+
+```
+ESP32-CAM          FTDI/USB-Serial
+─────────          ───────────────
+5V      ─────────  5V (ou VCC)
+GND     ─────────  GND
+U0R     ─────────  TX
+U0T     ─────────  RX
+IO0     ────┐
+GND     ────┘      (jumper para flash)
+```
+
+### 6.2 Procedimento de Upload
+
+1. **Conectar** jumper IO0-GND
+2. **Conectar** FTDI ao computador
+3. **Pressionar** botão RESET
+4. **Upload** do firmware
+5. **Remover** jumper IO0-GND
+6. **Pressionar** RESET novamente
+
+## 7. Considerações de Design
+
+### 7.1 Layout PCB
+
+- Manter antena WiFi longe de metais
+- Área de cobre sob antena deve ser removida
+- Trilhas de alimentação largas (>1mm)
+- Capacitores próximos aos pinos de alimentação
+
+### 7.2 Dissipação Térmica
+
+- ESP32 pode aquecer durante operação contínua
+- Considerar dissipador para aplicações 24/7
+- Manter boa ventilação no gabinete
+- Temperatura máxima do chip: 125°C
+
+### 7.3 Interferência Eletromagnética
+
+- Câmera sensível a EMI
+- Usar cabos curtos quando possível
+- Blindagem pode ser necessária em ambientes ruidosos
+- Manter distância de fontes chaveadas
+
+## 8. Troubleshooting de Hardware
+
+### 8.1 Diagnóstico Rápido
+
+| LED | Estado | Significado |
+|-----|--------|-------------|
+| Vermelho (GPIO33) | Aceso | Placa alimentada |
+| Flash (GPIO4) | Piscando | Atividade/Captura |
+| Azul (GPIO2) | Variável | Definido por software |
+
+### 8.2 Testes Básicos
 
 ```bash
-# Clone ESP-IDF
-git clone --recursive https://github.com/espressif/esp-idf.git
-cd esp-idf
+# Verificar comunicação serial
+screen /dev/ttyUSB0 115200
 
-# Instalar
-./install.sh
+# Verificar boot
+# Deve mostrar mensagens do bootloader
 
-# Carregar ambiente (fazer sempre antes de usar)
-. ./export.sh
+# Testar câmera (após flash)
+# LOG: Camera probe success
 ```
 
-### 2. Instalar Componente ESP32-Camera
+### 8.3 Falhas Comuns
 
-```bash
-# Navegar para componentes do ESP-IDF
-cd $IDF_PATH/components
+1. **"Camera probe failed"**
+   - Verificar alimentação
+   - Confirmar PSRAM habilitado
+   - Testar outra placa
 
-# Clonar componente da câmera
-git clone https://github.com/espressif/esp32-camera.git
+2. **Boot loop**
+   - Fonte inadequada
+   - Flash corrompido
+   - GPIO0 ainda em GND
 
-# Verificar instalação
-ls esp32-camera/driver/include/esp_camera.h
-```
+3. **WiFi não conecta**
+   - Antena danificada
+   - Usar antena externa
+   - Verificar se é 2.4GHz
 
-### 3. Configuração do Projeto
+## 9. Otimizações de Hardware
 
-```bash
-# No diretório do projeto
-cd esp32
+### 9.1 Melhorar Alcance WiFi
 
-# Definir target
-idf.py set-target esp32
+- Soldar conector u.FL
+- Usar antena externa 2.4GHz
+- Posicionar longe de obstáculos
+- Ganho típico: +3 a +5dBi
 
-# Configurar (opcional - já configurado via sdkconfig.defaults)
-idf.py menuconfig
-```
+### 9.2 Reduzir Consumo
 
-### 4. Configurações Críticas
+- Desabilitar LED flash quando não usado
+- Usar deep sleep entre capturas
+- Reduzir potência TX WiFi se possível
+- Desligar Bluetooth (não usado)
 
-**Em `idf.py menuconfig`:**
+## 10. Referências
 
-```
-Component config → ESP32-specific:
-  ☑ Support for external, SPI-connected RAM
-  ☑ SPI RAM config → Initialize SPI RAM when booting the ESP32
-  ☑ SPI RAM config → SPI RAM access method → Make RAM allocatable using malloc()
-
-Component config → Camera configuration:
-  ☑ OV2640 Support
-  ☑ Camera task pinned to core 0
-
-Component config → Wi-Fi:
-  - WiFi static RX buffer num: 10
-  - WiFi dynamic RX buffer num: 32
-  - WiFi dynamic TX buffer num: 32
-
-FreeRTOS:
-  ☑ Run FreeRTOS only on first core (unicore)
-```
-
-## 🔧 Compilação e Flash
-
-### 1. Compilação
-
-```bash
-cd esp32
-
-# Limpar build anterior (se existir)
-idf.py clean
-
-# Compilar
-idf.py build
-```
-
-### 2. Preparação para Flash
-
-```bash
-# 1. Conectar FTDI à ESP32-CAM
-# 2. Conectar jumper GPIO0-GND
-# 3. Conectar fonte 5V
-# 4. Reset ESP32-CAM
-```
-
-### 3. Flash do Firmware
-
-```bash
-# Detectar porta (ex: /dev/ttyUSB0)
-ls /dev/ttyUSB*
-
-# Flash
-idf.py -p /dev/ttyUSB0 flash
-
-# Monitor (opcional)
-idf.py -p /dev/ttyUSB0 monitor
-```
-
-### 4. Inicialização
-
-```bash
-# 1. Desconectar jumper GPIO0-GND
-# 2. Reset ESP32-CAM
-# 3. ESP32-CAM deve iniciar normalmente
-```
-
-## 📊 Configuração da Câmera
-
-### Configurações Otimizadas (main.c)
-
-```c
-static camera_config_t camera_config = {
-    .pin_pwdn = 32,
-    .pin_reset = -1,
-    .pin_xclk = 0,
-    .pin_sccb_sda = 26,
-    .pin_sccb_scl = 27,
-    .pin_d7 = 35,
-    .pin_d6 = 34,
-    .pin_d5 = 39,
-    .pin_d4 = 36,
-    .pin_d3 = 21,
-    .pin_d2 = 19,
-    .pin_d1 = 18,
-    .pin_d0 = 5,
-    .pin_vsync = 25,
-    .pin_href = 23,
-    .pin_pclk = 22,
-    .xclk_freq_hz = 20000000,       // 20MHz clock
-    .ledc_timer = LEDC_TIMER_0,
-    .ledc_channel = LEDC_CHANNEL_0,
-    .pixel_format = PIXFORMAT_JPEG, // JPEG compression
-    .frame_size = FRAMESIZE_QVGA,   // 320x240
-    .jpeg_quality = 10,             // Quality 0-63 (lower=better)
-    .fb_count = 2,                  // Double buffering
-    .fb_location = CAMERA_FB_IN_PSRAM,
-    .grab_mode = CAMERA_GRAB_WHEN_EMPTY
-};
-```
-
-### Configurações do Sensor
-
-```c
-sensor_t *s = esp_camera_sensor_get();
-
-// Otimizações para detecção de enchentes
-s->set_brightness(s, 0);     // Brilho normal
-s->set_contrast(s, 2);       // Contraste aumentado
-s->set_saturation(s, 0);     // Saturação normal
-s->set_whitebal(s, 1);       // White balance automático
-s->set_exposure_ctrl(s, 1);  // Exposição automática
-s->set_gain_ctrl(s, 1);      // Ganho automático
-s->set_hmirror(s, 0);        // Sem espelho horizontal
-s->set_vflip(s, 0);          // Sem flip vertical
-```
-
-## 💾 Gestão de Memória
-
-### PSRAM (8MB)
-```c
-// Verificar PSRAM
-size_t psram_size = esp_spiram_get_size();
-size_t psram_free = heap_caps_get_free_size(MALLOC_CAP_SPIRAM);
-
-// Alocar buffer de imagem em PSRAM
-uint8_t *image_buffer = (uint8_t*)heap_caps_malloc(
-    MAX_IMAGE_SIZE, MALLOC_CAP_SPIRAM);
-```
-
-### RAM Interna (~250KB livre)
-```c
-// Para estruturas pequenas e críticas
-camera_frame_t *frame = malloc(sizeof(camera_frame_t));
-
-// Verificar memória livre
-size_t free_heap = esp_get_free_heap_size();
-```
-
-## 🔍 Algoritmo de Detecção
-
-### Detecção de Diferenças JPEG
-
-```c
-static float calculate_image_difference(camera_frame_t *img1, camera_frame_t *img2) {
-    // 1. Verificar diferença de tamanho
-    float size_ratio = (float)img1->len / img2->len;
-    
-    // 2. Amostrar pontos da imagem JPEG
-    size_t sample_points = 20;
-    uint64_t diff_sum = 0;
-    
-    for (size_t i = 0; i < sample_points; i++) {
-        size_t pos = (i * min_len) / sample_points;
-        diff_sum += abs(img1->buf[pos] - img2->buf[pos]);
-    }
-    
-    // 3. Combinar diferenças
-    float content_diff = (float)diff_sum / (sample_points * 255);
-    float total_diff = (content_diff * 0.7) + (fabs(size_ratio - 1.0f) * 0.3);
-    
-    return total_diff;
-}
-```
-
-### Configurações de Alerta
-
-```c
-#define CHANGE_THRESHOLD 0.15    // 15% de diferença
-#define ALERT_THRESHOLD 0.50     // 50% para alerta de enchente
-```
-
-## 📡 Comunicação MQTT
-
-### Dados do Sensor
-
-```json
-{
-  "timestamp": 1704067200,
-  "image_size": 45678,
-  "compressed_size": 45678,
-  "difference": 0.234,
-  "width": 320,
-  "height": 240,
-  "format": 4,
-  "location": "rio_monitoring_esp32cam",
-  "modo": "camera_real"
-}
-```
-
-### Transmissão de Imagem
-
-```
-Topic: enchentes/imagem/dados/0/45678
-Payload: [chunk 0 de 1024 bytes]
-
-Topic: enchentes/imagem/dados/1024/45678  
-Payload: [chunk 1 de 1024 bytes]
-
-...
-```
-
-### Alertas
-
-```json
-{
-  "alert": "significant_change",
-  "difference": 0.567,
-  "timestamp": 1704067200,
-  "image_size": 45678,
-  "location": "rio_monitoring_esp32cam",
-  "modo": "camera_real"
-}
-```
-
-## 🧪 Testes e Depuração
-
-### 1. Teste da Câmera
-
-```bash
-# Via setup.sh
-./scripts/setup.sh
-# Opção 13: Testar câmera ESP32-CAM
-
-# Manual
-cd esp32
-idf.py -p /dev/ttyUSB0 flash monitor
-```
-
-### 2. Logs Importantes
-
-```
-✅ Inicialização OK:
-🎥 Inicializando câmera ESP32-CAM...
-✅ Câmera inicializada com sucesso!
-📷 Configuração: 320x240 JPEG, qualidade=10
-
-📸 Captura OK:
-📸 Imagem capturada: 45678 bytes (320x240), formato=4
-
-🔍 Análise OK:
-🔍 Análise: tamanho_ratio=1.05, diff_conteudo=0.234, diff_total=0.267
-```
-
-### 3. Problemas Comuns
-
-**Falha na inicialização da câmera:**
-```
-❌ Falha ao inicializar câmera: ESP_ERR_NOT_FOUND
-```
-- Verificar conexões dos pinos da câmera
-- Verificar fonte de alimentação (min 500mA)
-- Verificar componente esp32-camera instalado
-
-**Falha na captura:**
-```
-❌ Falha na captura da câmera
-```
-- Verificar PSRAM habilitado
-- Verificar qualidade JPEG não muito alta
-- Verificar iluminação adequada
-
-**Problemas de memória:**
-```
-❌ Falha ao alocar memória para buffer de imagem
-```
-- Verificar PSRAM funcionando
-- Reduzir qualidade JPEG
-- Verificar vazamentos de memória
-
-## 📈 Performance e Otimização
-
-### Benchmarks Típicos
-- **Inicialização:** ~3-5 segundos
-- **Captura:** ~200-500ms por imagem
-- **Processamento:** ~50-100ms por comparação
-- **Transmissão:** ~2-8 segundos (dependendo do tamanho)
-- **Intervalo:** 30 segundos entre capturas
-
-### Otimizações Implementadas
-1. **JPEG nativo** - reduz processamento
-2. **Buffer duplo** - evita perda de frames  
-3. **PSRAM para imagens** - preserva RAM interna
-4. **Flash LED automático** - melhora qualidade
-5. **Threshold adaptativo** - reduz falsos positivos
-6. **Chunks MQTT** - transmissão robusta
-
-## 🚨 Considerações de Segurança
-
-### Acesso WiFi
-- Configurar rede WiFi segura (WPA2/WPA3)
-- Usar senhas fortes
-- Considerar rede isolada para IoT
-
-### MQTT
-- Implementar autenticação se necessário
-- Criptografia TLS para dados sensíveis
-- Firewall para broker MQTT
-
-### Dados
-- Imagens podem conter informações sensíveis
-- Implementar rotação de dados
-- Backup seguro se necessário
+- [ESP32-CAM Schematic](https://github.com/SeeedDocument/forum_doc/raw/master/reg/ESP32_CAM_V1.6.pdf)
+- [OV2640 Datasheet](http://www.ovt.com/download_document.php?type=sensor&sensorid=80)
+- [ESP32 Hardware Design Guidelines](https://www.espressif.com/sites/default/files/documentation/esp32_hardware_design_guidelines_en.pdf)
 
 ---
 
-## 📞 Suporte
+Para instalação e configuração de software, consulte o [Guia de Instalação](INSTALACAO.md).  
+Para protocolo de comunicação, veja [API MQTT](API_MQTT.md).
 
-Para dúvidas ou problemas:
-
-**Gabriel Passos de Oliveira**  
-Email: gabriel.passos@unesp.br  
-IGCE/UNESP - Projeto de Iniciação Científica 2025
-
-**Documentação de Referência:**
-- [ESP32-CAM Datasheet](https://www.espressif.com/sites/default/files/documentation/esp32-cam_datasheet_en.pdf)
-- [ESP32-Camera Component](https://github.com/espressif/esp32-camera)
-- [ESP-IDF Programming Guide](https://docs.espressif.com/projects/esp-idf/en/latest/)
-
----
-
-*Guia atualizado em Janeiro 2025 - Versão ESP32-CAM Real* 
+**Autor:** Gabriel Passos de Oliveira  
+**Email:** gabriel.passos@unesp.br  
+**IGCE/UNESP** - Janeiro 2025 
