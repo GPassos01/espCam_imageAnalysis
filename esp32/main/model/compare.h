@@ -3,8 +3,9 @@
  * @brief Interface para comparação de imagens e detecção de movimento
  * 
  * Este módulo fornece funções para:
- * - Comparação de imagens usando diferença média de pixels
- * - Detecção de movimento baseada em threshold
+ * - Comparação de imagens pixel a pixel com decodificação JPEG
+ * - Análise por blocos para otimização de performance
+ * - Algoritmo otimizado para HVGA (480x320)
  * 
  * @author Gabriel Passos - UNESP 2025
  */
@@ -18,17 +19,16 @@
  * 
  * @param frame1 Primeira imagem para comparação
  * @param frame2 Segunda imagem para comparação
- * @return float Percentual de diferença entre as imagens (0.0 a 1.0)
+ * @return float Percentual de diferença entre as imagens (0.0 a 100.0)
  */
 float calculate_image_difference(camera_fb_t* frame1, camera_fb_t* frame2);
 
 /**
- * @brief Detecta movimento entre duas imagens
+ * @brief Libera os buffers de decodificação usados na comparação
  * 
- * @param frame1 Primeira imagem
- * @param frame2 Segunda imagem
- * @param threshold Threshold para detecção (0.0 a 1.0)
+ * Deve ser chamada quando o sistema precisa liberar memória
+ * ou ao finalizar o uso do módulo de comparação
  */
-bool detect_motion(camera_fb_t* frame1, camera_fb_t* frame2, float threshold);
+void compare_free_buffers(void);
 
 #endif // COMPARE_H 

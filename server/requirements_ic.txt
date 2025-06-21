@@ -1,29 +1,33 @@
-# Dependências para Monitor IC - Sistema de Nível d'Água
-# Projeto de Iniciação Científica - Gabriel Passos - IGCE/UNESP 2025
+# Dependências para Sistema Científico ESP32-CAM
+# Gabriel Passos - UNESP 2025 - Versão 2.0
+
+# === DEPENDÊNCIAS OBRIGATÓRIAS ===
 
 # MQTT para comunicação com ESP32-CAM
-paho-mqtt==1.6.1
+paho-mqtt>=1.6.1
 
-# Geração de relatórios em PDF
-fpdf2==2.7.8
+# Análise científica e gráficos
+matplotlib>=3.7.0
+pandas>=2.0.0
+numpy>=1.24.0
+seaborn>=0.12.0
 
-# Database local (built-in no Python)
-# sqlite3 já incluído no Python padrão
+# === DEPENDÊNCIAS OPCIONAIS ===
 
-# Logging e utilitários (built-in no Python)
-# logging, json, threading, time, datetime já incluídos
+# Análise estatística avançada
+scipy>=1.11.0
 
-# Typing hints (built-in Python 3.5+)
-# typing já incluído
+# Geração de relatórios PDF (se necessário)
+fpdf2>=2.7.0
 
-# === Dependências opcionais para análise avançada ===
-# Descomente se precisar de análise de dados mais avançada:
+# === DEPENDÊNCIAS BUILT-IN (já incluídas no Python) ===
+# sqlite3 - Banco de dados
+# json - Processamento JSON
+# threading - Multithreading
+# datetime - Manipulação de datas
+# os - Sistema operacional
+# base64 - Codificação de imagens
+# statistics - Estatísticas básicas
 
-# pandas==2.0.3          # Para análise de dados históricos
-# matplotlib==3.7.2      # Para gráficos e visualizações  
-# numpy==1.24.3          # Para cálculos numéricos
-# scipy==1.11.1          # Para análise estatística
-
-# === Para interface web opcional ===
-# flask==2.3.3           # Web server simples
-# jinja2==3.1.2          # Templates HTML 
+# === INSTALAÇÃO ===
+# pip3 install -r requirements_ic.txt 

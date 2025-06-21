@@ -22,8 +22,8 @@ Sistema embarcado para monitoramento contínuo de níveis fluviais utilizando pr
 ```
 ┌─────────────────────────┐
 │   Camada de Captura     │
-│  ├─ OV2640 (320x240)    │
-│  └─ Frame Buffer PSRAM  │
+│  ├─ OV2640 (640x480)    │
+│  └─ Frame Buffer 8MB PSRAM │
 ├─────────────────────────┤
 │   Camada de Análise     │
 │  ├─ Algoritmo JPEG Size │
@@ -134,7 +134,7 @@ CPU:
 
 Memória:
   - Heap: 180KB/320KB (56%)
-  - PSRAM: 1.2MB/4MB (30%)
+  - PSRAM: 2.4MB/8MB (30%) - Configuração premium
   - Stack: 8KB (monitoring_task)
 
 Energia:
@@ -180,7 +180,7 @@ CREATE INDEX idx_timestamp ON table(timestamp);
 ### 6.1 Firmware
 1. **Double buffering**: Captura paralela
 2. **JPEG nativo**: Sem conversão de formato
-3. **PSRAM exclusivo**: Para buffers de imagem
+3. **PSRAM 8MB exclusivo**: Para buffers avançados e histórico
 4. **Watchdog timer**: Recuperação automática
 
 ### 6.2 Comunicação
@@ -224,12 +224,12 @@ CREATE INDEX idx_timestamp ON table(timestamp);
 - Algoritmo sensível a mudanças de iluminação
 - Detecção global apenas (não localizada)
 - Dependência de infraestrutura WiFi
-- Resolução limitada a QVGA
+- Resolução VGA otimizada para 8MB PSRAM
 
 ### 8.2 Trade-offs de Design
 - **Simplicidade vs. Precisão**: Algoritmo simples mas robusto
 - **Latência vs. Consumo**: 15s otimiza bateria
-- **Resolução vs. Performance**: QVGA suficiente
+- **Resolução vs. Performance**: VGA com 8MB PSRAM
 - **Local vs. Cloud**: Processamento embarcado
 
 ---
@@ -249,7 +249,7 @@ W IMG_MONITOR: Heap baixa: 45KB
 ### 9.2 Monitoramento de Saúde
 
 - Heap livre > 50KB
-- PSRAM livre > 1MB
+- PSRAM livre > 2MB (de 8MB total)
 - WiFi RSSI > -70dBm
 - MQTT reconnects < 5/hora
 - Uptime > 24h

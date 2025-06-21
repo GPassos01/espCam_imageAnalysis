@@ -12,6 +12,8 @@
 #include "freertos/FreeRTOS.h"
 #include "freertos/semphr.h"
 #include "esp_spiffs.h"
+#include <time.h>
+#include <sys/time.h>
 
 static const char *TAG = "INIT_HW";
 
@@ -45,27 +47,38 @@ esp_err_t camera_init(void) {
         return ESP_FAIL;
     }
     
-    // Configura parâmetros do sensor
-    s->set_brightness(s, 0);     // -2,2
-    s->set_contrast(s, 0);       // -2,2
-    s->set_saturation(s, 0);     // -2,2
-    s->set_special_effect(s, 0); // 0,6
-    s->set_whitebal(s, 1);       // 0,1
-    s->set_awb_gain(s, 1);       // 0,1
-    s->set_wb_mode(s, 0);        // 0,4
-    s->set_exposure_ctrl(s, 1);  // 0,1
-    s->set_aec2(s, 0);           // 0,1
-    s->set_gain_ctrl(s, 1);      // 0,1
-    s->set_agc_gain(s, 0);       // 0,30
-    s->set_gainceiling(s, (gainceiling_t)0);  // 0,6
-    s->set_bpc(s, 0);            // 0,1
-    s->set_wpc(s, 1);            // 0,1
-    s->set_raw_gma(s, 1);        // 0,1
-    s->set_lenc(s, 1);           // 0,1
-    s->set_hmirror(s, 0);        // 0,1
-    s->set_vflip(s, 0);          // 0,1
-    s->set_dcw(s, 1);            // 0,1
-    s->set_colorbar(s, 0);       // 0,1
+    // Configura parâmetros do sensor - OTIMIZADO PARA CORES NATURAIS
+    s->set_brightness(s, 0);     // -2 a 2 (0=neutro)
+    s->set_contrast(s, 0);       // -2 a 2 (0=neutro)
+    s->set_saturation(s, -1);    // -2 a 2 (reduzir saturação para cores mais naturais)
+    s->set_special_effect(s, 0); // 0=sem efeito (CRÍTICO: evita tints de cor)
+    
+    // CONFIGURAÇÕES ANTI-ESVERDEADO
+    s->set_whitebal(s, 1);       // Habilitar auto white balance
+    s->set_awb_gain(s, 1);       // Habilitar ganho AWB
+    s->set_wb_mode(s, 1);        // 1=Sunny (melhor para ambientes externos)
+    
+    // EXPOSIÇÃO E GANHO OTIMIZADOS
+    s->set_exposure_ctrl(s, 1);  // Habilitar controle automático de exposição
+    s->set_aec2(s, 0);           // AEC2 desabilitado (pode causar artefatos)
+    s->set_ae_level(s, 0);       // Nível de exposição neutro
+    s->set_gain_ctrl(s, 1);      // Habilitar controle de ganho
+    s->set_agc_gain(s, 4);       // Ganho moderado (0-30, evitar 0 que pode causar tints)
+    s->set_gainceiling(s, (gainceiling_t)2);  // Limite de ganho moderado
+    
+    // CORREÇÕES DE IMAGEM
+    s->set_bpc(s, 1);            // Habilitar correção de pixel ruim
+    s->set_wpc(s, 1);            // Habilitar correção de pixel branco
+    s->set_raw_gma(s, 1);        // Habilitar correção gamma
+    s->set_lenc(s, 1);           // Habilitar correção de lente
+    
+    // ORIENTAÇÃO
+    s->set_hmirror(s, 0);        // Sem espelhamento horizontal
+    s->set_vflip(s, 0);          // Sem inversão vertical
+    s->set_dcw(s, 1);            // Habilitar downsize
+    s->set_colorbar(s, 0);       // Desabilitar barra de cores de teste
+    
+    ESP_LOGI(TAG, "✅ Configurações anti-esverdeado aplicadas");
     
     ESP_LOGI(TAG, "Câmera inicializada com sucesso");
     return ESP_OK;
@@ -152,4 +165,212 @@ camera_config_t get_camera_config(void) {
 
 void create_camera_mutex(void) {
     if (!camera_mutex) camera_mutex = xSemaphoreCreateMutex();
+}
+
+esp_err_t camera_adjust_color_settings(int wb_mode, int saturation, int gain_level) {
+    sensor_t *s = esp_camera_sensor_get();
+    if (!s) {
+        ESP_LOGE(TAG, "Falha ao obter sensor da câmera");
+        return ESP_FAIL;
+    }
+    
+    // Validar parâmetros
+    if (wb_mode < 0 || wb_mode > 4) wb_mode = 1; // Default: Sunny
+    if (saturation < -2 || saturation > 2) saturation = -1; // Default: reduzido
+    if (gain_level < 0 || gain_level > 30) gain_level = 4; // Default: moderado
+    
+    ESP_LOGI(TAG, "🎨 Ajustando configurações de cor: WB=%d, Sat=%d, Gain=%d", 
+             wb_mode, saturation, gain_level);
+    
+    // Aplicar configurações
+    s->set_wb_mode(s, wb_mode);
+    s->set_saturation(s, saturation);
+    s->set_agc_gain(s, gain_level);
+    
+    // Forçar recalibração do AWB
+    s->set_whitebal(s, 0);
+    vTaskDelay(pdMS_TO_TICKS(100));
+    s->set_whitebal(s, 1);
+    
+    ESP_LOGI(TAG, "✅ Configurações de cor aplicadas");
+    return ESP_OK;
+}
+
+esp_err_t camera_apply_anti_green_settings(bool is_outdoor) {
+    sensor_t *s = esp_camera_sensor_get();
+    if (!s) {
+        ESP_LOGE(TAG, "Falha ao obter sensor da câmera");
+        return ESP_FAIL;
+    }
+    
+    ESP_LOGI(TAG, "🌿 Aplicando configurações anti-esverdeado (%s)", 
+             is_outdoor ? "externo" : "interno");
+    
+    if (is_outdoor) {
+        // Configurações para ambiente externo
+        s->set_wb_mode(s, 1);        // Sunny
+        s->set_saturation(s, -1);    // Saturação reduzida
+        s->set_agc_gain(s, 3);       // Ganho baixo-moderado
+        s->set_ae_level(s, 0);       // Exposição neutra
+    } else {
+        // Configurações para ambiente interno
+        s->set_wb_mode(s, 3);        // Office
+        s->set_saturation(s, -2);    // Saturação mais reduzida
+        s->set_agc_gain(s, 6);       // Ganho moderado
+        s->set_ae_level(s, 1);       // Exposição ligeiramente aumentada
+    }
+    
+    // Configurações comuns anti-esverdeado
+    s->set_special_effect(s, 0);     // CRÍTICO: sem efeitos
+    s->set_whitebal(s, 1);           // AWB habilitado
+    s->set_awb_gain(s, 1);           // Ganho AWB habilitado
+    s->set_bpc(s, 1);                // Correção de pixel ruim
+    s->set_wpc(s, 1);                // Correção de pixel branco
+    s->set_raw_gma(s, 1);            // Correção gamma
+    
+    ESP_LOGI(TAG, "✅ Configurações anti-esverdeado aplicadas");
+    return ESP_OK;
+}
+
+esp_err_t camera_warmup_capture(void) {
+    ESP_LOGI(TAG, "🔥 Realizando captura de warm-up...");
+    
+    // Captura descartável para estabilizar sensor
+    camera_fb_t *fb = esp_camera_fb_get();
+    if (fb) {
+        esp_camera_fb_return(fb);
+        ESP_LOGI(TAG, "✅ Warm-up concluído");
+        return ESP_OK;
+    }
+    
+    ESP_LOGW(TAG, "⚠️ Falha na captura de warm-up");
+    return ESP_FAIL;
+}
+
+bool detect_green_tint(camera_fb_t *fb) {
+    if (!fb || fb->format != PIXFORMAT_JPEG) {
+        return false;
+    }
+    
+    // Análise simples baseada no tamanho da imagem
+    // Imagens com tint verde tendem a ter compressão diferente
+    static uint32_t avg_size = 0;
+    static uint32_t sample_count = 0;
+    
+    if (sample_count < 10) {
+        // Construir baseline das primeiras 10 imagens
+        avg_size = (avg_size * sample_count + fb->len) / (sample_count + 1);
+        sample_count++;
+        return false; // Não detectar durante calibração inicial
+    }
+    
+    // Verificar se o tamanho está muito fora do padrão
+    // Imagens com tint verde podem ter compressão anômala
+    float size_ratio = (float)fb->len / avg_size;
+    
+    if (size_ratio < 0.7 || size_ratio > 1.4) {
+        ESP_LOGD(TAG, "🔍 Possível tint detectado - Tamanho anômalo: %d vs %d (ratio: %.2f)", 
+                 fb->len, avg_size, size_ratio);
+        return true;
+    }
+    
+    return false;
+}
+
+esp_err_t smart_capture_with_correction(camera_fb_t **fb_out) {
+    const int MAX_RETRIES = 3;
+    bool had_green_tint = false;
+    
+    for (int retry = 0; retry < MAX_RETRIES; retry++) {
+        // Warm-up se for primeira tentativa
+        if (retry == 0) {
+            camera_warmup_capture();
+            vTaskDelay(pdMS_TO_TICKS(200));
+        }
+        
+        camera_fb_t *fb = esp_camera_fb_get();
+        if (!fb) {
+            ESP_LOGW(TAG, "⚠️ Falha na captura, tentativa %d", retry + 1);
+            continue;
+        }
+        
+        // Verificar se há tint verde
+        if (!detect_green_tint(fb)) {
+            *fb_out = fb;
+            ESP_LOGI(TAG, "✅ Captura OK na tentativa %d", retry + 1);
+            update_quality_stats(had_green_tint, retry);
+            return ESP_OK;
+        }
+        
+        // Se detectou tint, descartar e reconfigurar
+        had_green_tint = true;
+        esp_camera_fb_return(fb);
+        ESP_LOGW(TAG, "🌿 Tint verde detectado, reconfigurando... (tentativa %d)", retry + 1);
+        
+        // Recalibrar AWB
+        sensor_t *s = esp_camera_sensor_get();
+        if (s) {
+            s->set_whitebal(s, 0);
+            vTaskDelay(pdMS_TO_TICKS(100));
+            s->set_whitebal(s, 1);
+            vTaskDelay(pdMS_TO_TICKS(300));
+        }
+    }
+    
+    ESP_LOGE(TAG, "❌ Falha ao obter imagem sem tint após %d tentativas", MAX_RETRIES);
+    update_quality_stats(had_green_tint, MAX_RETRIES);
+    return ESP_FAIL;
+}
+
+void apply_time_based_settings(void) {
+    time_t now;
+    struct tm timeinfo;
+    time(&now);
+    localtime_r(&now, &timeinfo);
+    
+    int hour = timeinfo.tm_hour;
+    sensor_t *s = esp_camera_sensor_get();
+    
+    if (!s) {
+        ESP_LOGW(TAG, "⚠️ Sensor não disponível para configurações por horário");
+        return;
+    }
+    
+    if (hour >= 6 && hour <= 18) {
+        // Período diurno - configurações para luz natural
+        s->set_wb_mode(s, 1);      // Sunny
+        s->set_saturation(s, -1);  // Saturação reduzida
+        s->set_agc_gain(s, 3);     // Ganho baixo
+        ESP_LOGI(TAG, "☀️ Configurações diurnas aplicadas (hora: %d)", hour);
+    } else {
+        // Período noturno - configurações para luz artificial
+        s->set_wb_mode(s, 3);      // Office
+        s->set_saturation(s, -2);  // Saturação mais reduzida
+        s->set_agc_gain(s, 8);     // Ganho aumentado
+        ESP_LOGI(TAG, "🌙 Configurações noturnas aplicadas (hora: %d)", hour);
+    }
+}
+
+void update_quality_stats(bool had_green_tint, int retries) {
+    static struct {
+        uint32_t total_captures;
+        uint32_t green_tint_detected;
+        uint32_t retries_needed;
+        uint32_t warmup_used;
+        float success_rate;
+    } stats = {0};
+    
+    stats.total_captures++;
+    if (had_green_tint) stats.green_tint_detected++;
+    if (retries > 0) stats.retries_needed++;
+    
+    stats.success_rate = ((float)(stats.total_captures - stats.green_tint_detected) / stats.total_captures) * 100.0f;
+    
+    // Log estatísticas a cada 50 capturas
+    if (stats.total_captures % 50 == 0) {
+        ESP_LOGI(TAG, "📊 Qualidade de Imagem - Taxa de Sucesso: %.1f%% (%d/%d)", 
+                 stats.success_rate, stats.total_captures - stats.green_tint_detected, stats.total_captures);
+        ESP_LOGI(TAG, "📊 Estatísticas: Tint Verde: %d, Retries: %d, Total: %d", 
+                 stats.green_tint_detected, stats.retries_needed, stats.total_captures);
+    }
 } 

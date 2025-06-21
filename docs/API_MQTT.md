@@ -87,7 +87,7 @@ Status do sistema enviado periodicamente.
   "device_id": "esp32_cam_001",
   "timestamp": 1704067200,
   "free_heap": 145632,            // Heap livre em bytes
-  "free_psram": 3145728,          // PSRAM livre em bytes
+  "free_psram": 6291456,          // PSRAM livre em bytes (de 8MB total)
   "uptime": 3600                  // Uptime em segundos
 }
 ```

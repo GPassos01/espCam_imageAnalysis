@@ -7,6 +7,8 @@ idf_component_register(
         "model/init_net.c"
         "model/init_hw.c"
         "model/wifi_sniffer.c"
+        "model/chip_info.c"
+        "model/advanced_analysis.c"
     INCLUDE_DIRS 
         "."
         "model"
@@ -21,5 +23,5 @@ idf_component_register(
         esp_psram
         esp_timer
         spiffs
-    PRIV_REQUIRES json
+    PRIV_REQUIRES json spi_flash
 )

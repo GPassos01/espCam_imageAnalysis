@@ -6,7 +6,6 @@
  * - Envio de imagens em chunks
  * - Envio de dados de monitoramento
  * - Envio de alertas
- * - Envio de estatísticas
  * 
  * @author Gabriel Passos - UNESP 2025
  */
@@ -32,6 +31,17 @@ extern "C" {
 esp_err_t mqtt_send_image(camera_fb_t* fb, const char* topic);
 
 /**
+ * @brief Envia uma imagem via MQTT com informações adicionais.
+ * 
+ * @param fb Ponteiro para o frame buffer da câmera.
+ * @param topic Tópico MQTT para publicar a imagem.
+ * @param reason Motivo do envio da imagem.
+ * @param difference Diferença detectada (para alertas).
+ * @return esp_err_t 
+ */
+esp_err_t mqtt_send_image_with_info(camera_fb_t* fb, const char* topic, const char* reason, float difference);
+
+/**
  * @brief Envia dados de monitoramento (heap, psram, uptime).
  * 
  * @param free_heap Heap livre.
@@ -49,18 +59,6 @@ esp_err_t mqtt_send_monitoring(uint32_t free_heap, uint32_t free_psram, uint32_t
  * @return esp_err_t 
  */
 esp_err_t mqtt_send_alert(float difference_percent, camera_fb_t* frame);
-
-/**
- * @brief Envia estatísticas do WiFi sniffer.
- * 
- * @param total_packets Total de pacotes capturados.
- * @param total_bytes Total de bytes capturados.
- * @param mqtt_packets Pacotes MQTT capturados.
- * @param mqtt_bytes Bytes MQTT capturados.
- * @return esp_err_t 
- */
-esp_err_t mqtt_send_sniffer_stats(uint32_t total_packets, uint32_t total_bytes,
-                                 uint32_t mqtt_packets, uint32_t mqtt_bytes);
 
 /**
  * @brief Envia dados detalhados de monitoramento de imagem.

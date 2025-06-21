@@ -54,6 +54,7 @@ esp_err_t mqtt_send_image(camera_fb_t* frame, const char* topic) {
     cJSON_AddNumberToObject(root, "height", frame->height);
     cJSON_AddNumberToObject(root, "format", frame->format);
     cJSON_AddNumberToObject(root, "size", frame->len);
+    cJSON_AddStringToObject(root, "reason", "unknown");  // Padrão
     cJSON_AddStringToObject(root, "image", base64_buffer);
     
     char *json_payload = cJSON_PrintUnformatted(root);
@@ -78,6 +79,73 @@ esp_err_t mqtt_send_image(camera_fb_t* frame, const char* topic) {
     return ESP_OK;
 }
 
+esp_err_t mqtt_send_image_with_info(camera_fb_t* frame, const char* topic, const char* reason, float difference) {
+    if (!frame || !topic || !reason) {
+        ESP_LOGE(TAG, "Parâmetros inválidos");
+        return ESP_ERR_INVALID_ARG;
+    }
+
+    if (!mqtt_client) {
+        ESP_LOGE(TAG, "Cliente MQTT não inicializado");
+        return ESP_ERR_INVALID_STATE;
+    }
+
+    // Calcular tamanho necessário para base64 (4/3 do tamanho original + padding)
+    size_t base64_len = ((frame->len + 2) / 3) * 4 + 1;
+    char* base64_buffer = malloc(base64_len);
+    if (!base64_buffer) {
+        ESP_LOGE(TAG, "Falha ao alocar memória para base64");
+        return ESP_ERR_NO_MEM;
+    }
+
+    // Converter imagem para base64
+    size_t out_len = 0;
+    int ret = mbedtls_base64_encode((unsigned char*)base64_buffer, base64_len, &out_len, frame->buf, frame->len);
+    if (ret != 0) {
+        ESP_LOGE(TAG, "Falha na codificação base64: %d", ret);
+        free(base64_buffer);
+        return ESP_FAIL;
+    }
+
+    // Criar JSON com a imagem em base64 e informações adicionais
+    cJSON *root = cJSON_CreateObject();
+    cJSON_AddStringToObject(root, "device_id", DEVICE_ID);
+    cJSON_AddNumberToObject(root, "timestamp", esp_timer_get_time() / 1000000);
+    cJSON_AddNumberToObject(root, "width", frame->width);
+    cJSON_AddNumberToObject(root, "height", frame->height);
+    cJSON_AddNumberToObject(root, "format", frame->format);
+    cJSON_AddNumberToObject(root, "size", frame->len);
+    cJSON_AddStringToObject(root, "reason", reason);
+    
+    // Adicionar diferença apenas se for maior que 0
+    if (difference > 0.0f) {
+        cJSON_AddNumberToObject(root, "difference", difference);
+    }
+    
+    cJSON_AddStringToObject(root, "image", base64_buffer);
+    
+    char *json_payload = cJSON_PrintUnformatted(root);
+    cJSON_Delete(root);
+    free(base64_buffer);
+
+    if (!json_payload) {
+        ESP_LOGE(TAG, "Falha ao criar JSON payload");
+        return ESP_ERR_NO_MEM;
+    }
+
+    // Enviar JSON com imagem via MQTT
+    int msg_id = esp_mqtt_client_publish(mqtt_client, topic, json_payload, strlen(json_payload), 1, 0);
+    free(json_payload);
+
+    if (msg_id < 0) {
+        ESP_LOGE(TAG, "Falha ao publicar imagem via MQTT");
+        return ESP_FAIL;
+    }
+
+    ESP_LOGI(TAG, "Imagem enviada via MQTT: %zu bytes -> %zu bytes base64 (motivo: %s)", frame->len, out_len, reason);
+    return ESP_OK;
+}
+
 esp_err_t mqtt_send_monitoring(uint32_t free_heap, uint32_t free_psram, uint32_t uptime) {
     if (!mqtt_client) {
         ESP_LOGE(TAG, "Cliente MQTT não inicializado");
@@ -90,9 +158,12 @@ esp_err_t mqtt_send_monitoring(uint32_t free_heap, uint32_t free_psram, uint32_t
         return ESP_ERR_NO_MEM;
     }
     
+    uint32_t min_free_heap = esp_get_minimum_free_heap_size();
+    
     cJSON_AddStringToObject(root, "device_id", DEVICE_ID);
     cJSON_AddNumberToObject(root, "free_heap", free_heap);
     cJSON_AddNumberToObject(root, "free_psram", free_psram);
+    cJSON_AddNumberToObject(root, "min_free_heap", min_free_heap);
     cJSON_AddNumberToObject(root, "uptime", uptime);
     
     char *payload = cJSON_PrintUnformatted(root);
@@ -144,33 +215,6 @@ esp_err_t mqtt_send_alert(float difference_percent, camera_fb_t* frame) {
         snprintf(topic, sizeof(topic), "%s/%s", MQTT_TOPIC_BASE, MQTT_TOPIC_IMAGE);
         return mqtt_send_image(frame, topic);
     }
-
-    return ESP_OK;
-}
-
-esp_err_t mqtt_send_sniffer_stats(uint32_t total_packets, uint32_t total_bytes,
-                                 uint32_t mqtt_packets, uint32_t mqtt_bytes) {
-    if (!mqtt_client) {
-        ESP_LOGE(TAG, "Cliente MQTT não inicializado");
-        return ESP_ERR_INVALID_STATE;
-    }
-
-    cJSON *root = cJSON_CreateObject();
-    cJSON_AddStringToObject(root, "device_id", DEVICE_ID);
-    cJSON_AddNumberToObject(root, "total_packets", total_packets);
-    cJSON_AddNumberToObject(root, "total_bytes", total_bytes);
-    cJSON_AddNumberToObject(root, "mqtt_packets", mqtt_packets);
-    cJSON_AddNumberToObject(root, "mqtt_bytes", mqtt_bytes);
-    cJSON_AddNumberToObject(root, "timestamp", esp_timer_get_time() / 1000000);
-    
-    char *payload = cJSON_PrintUnformatted(root);
-    cJSON_Delete(root);
-
-    char topic[64];
-    snprintf(topic, sizeof(topic), "%s/%s", MQTT_TOPIC_BASE, MQTT_TOPIC_STATS);
-    
-    esp_mqtt_client_publish(mqtt_client, topic, payload, strlen(payload), 1, 0);
-    free(payload);
 
     return ESP_OK;
 }

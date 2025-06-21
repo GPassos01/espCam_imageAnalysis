@@ -16,19 +16,23 @@ scripts/__pycache__/
 *.pyo
 *.pyd
 
-# Logs e dados da IC
+# Dados científicos (não versionar dados coletados)
+data/databases/*.db
+data/images/
+data/reports/
+logs/*.log
+
+# Arquivos temporários de desenvolvimento
 server/*.log
-server/*.db
 server/*.png
 
-# Imagens processadas
+# Imagens processadas (legacy)
 imagens/*_320x240.jpg
 imagens/diferenca.jpg
 server/extracted_images/
 server/extracted_final_images/
-server/received_images/
 
-# Reports
+# Reports (legacy)
 reports/
 
 # Sistema

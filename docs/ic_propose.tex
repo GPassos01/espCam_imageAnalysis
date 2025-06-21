@@ -1,0 +1,314 @@
+\documentclass[12pt]{article}
+
+%--------------------------Packages-----------------------------------
+%---------------------------------------------------------------------
+
+\usepackage[utf8]{inputenc}
+\usepackage{epsfig}
+\usepackage{setspace}
+\usepackage[brazil]{babel}
+\usepackage{setspace}
+\usepackage{url}
+\usepackage{multirow}
+\usepackage{array}
+\usepackage{tabularx,colortbl}
+\usepackage[table,xcdraw]{xcolor}
+\usepackage{amssymb}% http://ctan.org/pkg/amssymb
+\usepackage{pifont}% http://ctan.org/pkg/pifont
+\usepackage{verbatim}
+\usepackage{placeins}
+\usepackage{times}
+\usepackage{subfig}
+\bibliographystyle{plain} 
+\oddsidemargin 0pt  % was 38
+\evensidemargin 0pt % was 38
+\marginparwidth 0pt % was 68
+
+%\usepackage{subfigure}
+
+%--------------------------Commands-----------------------------------
+%---------------------------------------------------------------------
+
+\newcommand{\esup}	{$\textcolor[rgb]{0,0.6,0}{\blacktriangle}$}
+\newcommand{\einf}	{$\textcolor[rgb]{0.7,0,0}{\blacktriangledown}$}
+\newcommand{\eig}	{\textcolor[rgb]{0.5,0.5,0.5}{\textbullet}}
+
+\newcolumntype{x}{>{\centering\hspace{0pt}}p{0.70cm}}
+\newcolumntype{y}{>{\centering\hspace{0pt}}p{0.80cm}}
+
+\definecolor{red}{rgb}{1,0,0}
+\definecolor{green}{rgb}{0,0.5,1}
+\definecolor{cinza}{rgb}{0.5,0.5,0.5}
+
+\topmargin 10pt   % was 27
+\headheight 0pt  % was 12
+\headsep 0pt     % was 25
+  %\footheight 0pt  % was 12
+\footskip 30pt   % was 30
+
+\textwidth 480pt      % was 390pt
+\textheight 600pt  % was 536.5
+
+%--------------------------Document-----------------------------------
+%---------------------------------------------------------------------
+
+\begin{document}
+
+%-------------------------------CAPA----------------------------------
+%---------------------------------------------------------------------
+\thispagestyle{empty}
+\begin{figure}[!htb]
+\begin{center}
+\includegraphics[scale=0.12]{iconigce.png}
+\end{center}
+\end{figure}
+
+\begin{center}
+{{\large  Instituto de Geociências e Ciências Exatas – IGCE}\par} 
+
+{{\large Universidade Estadual Paulista – UNESP}\par}
+\end{center}
+
+\vspace{2 cm}
+\begin{center}
+    { {\Large \bf Arquitetura para coleta de imagens e leituras de sensores visando gerenciamento de inundações urbanas}}
+\end{center}
+
+
+\vspace{2 cm}
+\begin{center}
+{ {\large \bf Projeto de Iniciação Científica}}
+
+%{ {\large \bf PUB - Programa Unificado de Bolsas}}
+\end{center}
+
+\vspace{1cm}
+\begin{center}
+\large{Gabriel Passos de Oliveira}\\
+\vspace{1.5cm}
+\large{Orientador:\hspace{0.18 cm}Prof. Dr. Caetano Mazzoni Ranieri}
+
+\large{Professor Doutor do IGCE/UNESP} 
+\end{center}
+
+\vfill
+{\centering Rio Claro, SP \\ 2024 \par}
+
+%-------------------------------Resumo--------------------------------
+%---------------------------------------------------------------------
+\newpage
+\begin{center}
+{\large \bf RESUMO}\\
+\end{center}
+\vspace{1.0 pt}
+\begin{spacing}{1.0}
+
+
+
+
+
+\thispagestyle{empty}
+
+\noindent Enchentes são uma problemática frequente no Brasil trazendo diversas dificuldades e prejuízos principalmente para a população. Para prevenir esse problema, pesquisadores tem explorado formas de monitorar e prever estes a fim de diminuir seus danos. Diversas formas para monitoramento em tempo real foram desenvolvidas nesse contexto, a maioria fazendo uso de placas como Arduino Uno acopladas de sensores e módulos GSM para o envio da informação. Porém apenas o uso de sensores limita a informação passada e impede uma visão mais geral da situação do local monitorado, tal cobertura pode ser feita com uso de câmeras, como outros trabalhos tentam fazer. Nesse segundo cenário surge outro problema no custo do envio continuo de imagens via 4G. Neste projeto pretende-se oferecer uma solução para o barateamento do uso de dados móveis ao fazer uso de câmeras. Para isso busca-se produzir um protótipo de uma placa ESP32 acoplada com uma câmera e construir um algoritmo para análise de imagens ainda dentro da placa para que assim, ao invés do envio continuo de imagens, seja feita um envio mais inteligente poupando uso desnecessário do pacote de redes móveis.
+
+\end{spacing}
+\begin{spacing}{1.5}
+\textbf {Palavras-chave}: Internet das Coisas, Enchentes e inundações, Processamento de imagens, Câmeras de monitoramento, Sensoriamento remoto.
+\end{spacing}
+
+
+%---------------------------------------------------------------------
+%---------------------------------------------------------------------
+\newpage
+\thispagestyle{empty}
+\begin{spacing}{1}
+
+\newpage
+
+\tableofcontents
+
+\newpage
+
+
+
+%---------------------------Introdução Gabriel------------------------
+%---------------------------------------------------------------------
+\setcounter{page}{1} 
+
+\section{Introdução}
+
+As inundações em leitos de rios, quando ocorrida em ambiente urbano ou povoado, representam um das mais destrutivas catástrofes naturais no Brasil agravadas pela ação antrópica, causando danos significativos a propriedades, infraestruturas e, mais crucialmente, colocando vidas humanas em risco. No ano de 2024, tivemos as enchentes no Rio Grande do Sul sendo considerado o maior impacto ambiental na economia Brasileira, afetando 94,3 de toda a atividade econômica do RS \cite{label1}. No estado de São Paulo, as enchentes também são uma problemática recorrente tanto na capital como no interior \cite{label2}. A detecção precoce e o monitoramento contínuo dos níveis de água são essenciais para mitigar os impactos dessas enchentes, permitindo uma resposta rápida e eficaz das autoridades competentes. Nesse contexto, o avanço das tecnologias de monitoramento ambiental desempenham um papel crucial.
+
+Atualmente existem algumas abordagens de monitoramento ambiental voltado a enchentes sendo utilizadas \cite{barizao2023inovaccoes}. Dentre elas destacam-se: o uso combinado de imagens do radar meteorológico com sistemas de circuito fechado de vigilância, sistema de monitoramento via satélite, uso de sensores LiDAR e a utilização de um sistema de boias com sensores. Este trabalho visa trabalhar com visão computacional~\cite{iqbal2021computer} usando imagens provenientes de câmeras de monitoramento, uma abordagem de fácil implementação que pode valer-se da implantação de sistemas de monitoramento urbano já existentes.
+
+A contribuição deste trabalho se dará dentro do contexto do projeto E-Noé~\cite{ranieri2024deep}, que conta com pontos de monitoramento já instalados na cidade de São Carlos por meio dos quais é possível realizar novos experimentos e propor melhorias a tecnologias já existentes. O sistema existente faz uso de um computador embarcado da família Raspberry Pi, o que encarece o protótipo se comparado a outras tecnologias de mais baixo custo. Este projeto consiste na adaptação do sistema para a plataforma ESP32 seguida da analise comparativa da seu desempenho e viabilidade em relação ao sistema original, visando a redução dos custos sem comprometer a eficiência e a precisão do monitoramento. O ESP32 é uma solução de microcontrolador de baixo custo, com capacidade de processamento suficiente para lidar com a captura de imagens e a comunicação de dados em tempo real. Além disso, sua integração com redes sem fio o torna ideal para aplicações em locais remotos, onde a infraestrutura de comunicação pode ser limitada. Tal comunicação entre o dispositivo e a base computacional também sera testada em um ambiente de testes em rede.
+
+Outra contribuição a ser explorada é a redução do consumo de dados da rede móvel através de estratégias nos envios de imagens da placa para a base computacional a fim de reduzir os gastos com o plano de internet. A estratégia consiste em comparar as imagens e envia-las apenas quando tiver mudanças significativas entre elas. Essa análise sera feita na placa de baixo custo, o que limitará os algoritmos ou modelos a serem explorados. Essas adaptações não apenas tornam o projeto mais acessível economicamente, mas também facilitaram sua implementação em uma gama mais ampla de cenários, aumentando o potencial de prevenção e mitigação de desastres naturais em comunidades vulneráveis. O objetivo deste artigo é detalhar esse processo de transição do sistema baseado em \textit{Raspberry Pi} para o \textit{ESP32}, destacando as vantagens, os desafios e as soluções encontradas ao longo do desenvolvimento.
+
+%--------------------------Objetivos----------------------------------
+%---------------------------------------------------------------------
+%\newpage
+\subsection{Objetivos} 
+
+\subsubsection{Objetivo Geral}
+O objetivo é projetar e avaliar um sistema de monitoramento e detecção de enchentes baseado em imagens de câmeras de vídeo utilizando uma ESP32 e reduzir a quantidade de dados usados através de estratégias para o envio de imagens pela rede móvel.
+
+\subsubsection{Objetivos Específicos}
+\begin{itemize}
+    \item Prover uma protótipo para analisar imagens obtidas de uma câmera usando uma placa ESP32;
+    \item Elaborar uma estratégia de baixo custo computacional para identificar imagens redundantes, a fim de reduzir o número de imagens a serem enviadas;
+    \item Contribuir para a elaboração de novas estratégias de monitoramento de rios e córregos urbanos para controle de dados provenientes de inundações;
+    \item Participar de congressos de iniciação científica e fomentar novos trabalhos na área.
+\end{itemize}
+
+%---------------------Trabalhos Relacionados--------------------------
+%---------------------------------------------------------------------
+\section{Trabalhos Relacionados}
+% Utilizar-se da tecnologia para monitoramento de enchentes é uma estratégia que já vem sendo explorada no meio acadêmico e diversos trabalhos sobre o tema foram desenvolvidos. Alguns desses trabalhos serão explorados nessa secção.
+
+% No trabalho de Satria et al.~\cite{satria2018design}, foi desenvolvido um protótipo de sistema de monitoramento de enchentes baseado em dois sensores, sendo um sensor de chuva, com a finalidade de para medir a precipitação, e um sensor ultrassônico, para medir o nível atual da água através da distancia entre o sensor e a superfície da água. Ambos os sensores enviam seus dados para um Arduino Uno em formato \textit{web} por meio de conexão Ethernet, permitindo sua visualização através de um \textit{browser}. A construção para medir a altura da inundação foi realizada usando um tubo de paralon de 5 polegadas, colocando o sensor ultrassônico dentro no tubo e sensor de chuva na parte superior. No interior, foi colocado um flutuador de cortiça com uma seção transversal para refletir o sinal de eco que será recebido pelo componente de disparo do sensor ultrassônico. O servidor \textit{web} foi construído usando HTML e JavaScript e conseguiu apresentar os dados em tempo real e de maneira visualmente de fácil entendimento.
+
+% Um protótipo de monitoramento do nível da aguá foi desenvolvido em outro trabalho de Satria et al. \cite{satria2017prototype} utilizando um Arduino Uno acoplado com um sensor ultrassônico HC-SR04, um módulo GSM sim900 e um módulo GPS U-Blox 6m. O protótipo permitiu transmitir com sucesso as informações de nível da água e localização GPS do dispositivo no formato Google Maps sendo programado em PHP e DBMS MySQL integrado com API do Google Maps.
+
+% Outra estratégia abordada foi o uso de notificação via SMS. Num trabalho de Azid\cite{azid2015sms} é utilizado, também, um Arduino Uno acoplado de um módulo GSM e um sensor de pressão para medir o nível da água. O sistema foi feito de modo a funcionar de forma autônoma recarregando com energia solar e bateria para durar por cerca de uma semana. O sistema é capaz de armazenar contatos e, quando detecta uma enchente, dispara o sistema SMS para esses contatos. É utilizado um sensor de pressão para medir o nível da água ao invés de um sensor ultrassônico pois esse é mais barato e usa menos energia para funcionar, prolongando a autonomia do sistema sem recarregar. Esse sistema conseguiu funcionar bem de forma autônoma porém destaca-se o problema de, caso o provedor de rede faça alterações na rede, não é possível atualizar o módulo GSM remotamente, sendo necessário o acesso físico ao dispositivo para a atualização.
+
+% Na revisão sistemática de Arshad et al.~\cite{arshad2019computer}, foram analisados diversos trabalhos que utilizam sensores IoT ou visão computacional. Concluiu-se que os sensores avaliados produzem resultados acurados, porém pecam na abrangência da informação por focar apenas em um ponto. Por outro lado, embora o uso de visão computacional aumente essa abrangência devido ao campo de visão maior, seus resultados mostram-se pouco acurados. Portanto, a deficiência de cada abordagem pode ser abordadas pelo uso conjunto de ambas as estratégias.
+
+% Ao trabalhos apresentados até o momento avaliam várias formas diferentes de monitorar e disparar alertas precoces de enchentes, porém é feito o uso de câmeras que, como visto na revisão sistemática de Arshad et al. \cite{arshad2019computer}, oferece mais dados e abrangência do cenário da enchente.
+
+% Neste trabalho do Domingues et al. \cite{domingues2024deep}, foram testados e analisados diversos algoritmos de \textit{deep learning} nas imagens de uma câmera que filmava uma placa zebrada para medir o nível da água, com a finalidade de ser capaz de emitir alertas de enchentes apenas com base nas imagens. O problema, que pode vir a ser um gargalo no uso de câmeras nesses projetos, está no grande consumo de dados que o envio continuo de imagens pode trazer para o plano de redes moveis usado, encarecendo consideravelmente o projeto.
+
+% Diante desse cenário, neste trabalho, busca-se fazer uso de câmera para auxiliar no monitoramento dos cursos de água e oferecer uma solução para diminuir o uso dos dados móveis considerando uma implementação com placa microcontrolada de baixo custo. Essa abordagem se contrasta com o uso de computadores embarcados mais sofisticados, como o Raspberry Pi.
+
+O monitoramento de enchentes por meio da tecnologia tem sido amplamente explorado na academia, com diversas abordagens desenvolvidas. Esta seção apresenta alguns trabalhos relevantes.
+
+Satria et al.~\cite{satria2018design} propuseram um sistema baseado em sensores de chuva e ultrassônico para medir a precipitação e o nível da água. Os dados são enviados para um Arduino Uno via Ethernet e exibidos em um servidor \textit{web} construído com HTML e JavaScript. O sensor ultrassônico foi instalado dentro de um tubo de 5 polegadas, refletindo sinais em um flutuador de cortiça para melhor precisão.
+
+Em outro estudo, Satria et al.~\cite{satria2017prototype} desenvolveram um protótipo de monitoramento do nível da água utilizando Arduino Uno, sensor ultrassônico HC-SR04, módulo GSM sim900 e GPS U-Blox 6m. O sistema transmitia os dados via Google Maps, utilizando PHP e MySQL integrados à API do Google Maps.
+
+Azid~\cite{azid2015sms} adotou uma abordagem baseada em notificação por SMS, usando um Arduino Uno, módulo GSM e sensor de pressão alimentado por energia solar, garantindo autonomia de uma semana. O sensor de pressão foi escolhido por ser mais econômico e eficiente. No entanto, o sistema exige atualização manual caso haja mudanças na rede do provedor GSM.
+
+Uma revisão sistemática de Arshad et al.~\cite{arshad2019computer} analisou sensores IoT e visão computacional, concluindo que sensores fornecem medições precisas, mas limitadas a um único ponto, enquanto visão computacional amplia a cobertura, porém com menor acurácia. Assim, o uso combinado dessas abordagens pode mitigar suas deficiências.
+
+Domingues et al.~\cite{domingues2024deep} exploraram algoritmos de \textit{deep learning} para analisar imagens de uma câmera capturando uma placa zebrada, com o objetivo de emitir alertas de enchentes. O principal desafio identificado foi o alto consumo de dados móveis devido à transmissão contínua de imagens.
+
+Este trabalho propõe o uso de câmeras para monitoramento de cursos d’água, buscando reduzir o consumo de dados móveis por meio de uma implementação em placa microcontrolada de baixo custo, contrastando com soluções mais sofisticadas baseadas em computadores embarcados, como o Raspberry Pi.
+
+%-------------------------------------------------------------------------------------------------------------------------
+
+\section{Detalhamento do Projeto de Pesquisa}
+% Nesta seção, serão apresentados os detalhes sobre o projeto de pesquisa, atividades propostas e metodologia.
+
+% \subsection{Abordagem}
+O projeto propõe o desenvolvimento de um sistema otimizado e de baixo custo para o monitoramento de cursos de água, utilizando a placa ESP32. A abordagem inclui a realização do processamento inicial das imagens diretamente na ESP32, reduzindo significativamente o volume de dados transmitidos via rede móvel 4G. Essa estratégia visa não apenas minimizar o consumo de dados, mas também aumentar a eficiência do sistema, tornando-o mais acessível e sustentável.
+
+% \newpage
+\begin{figure}[!htb]
+\centering
+\includegraphics[scale=0.4]{EsquemaIC2.png}
+\vspace{-0.2cm}
+\caption{Exemplo de montagem do projeto}
+\label{1}
+\vspace{-0.3cm}
+\end{figure}
+
+\FloatBarrier
+
+Busca-se posicionar e calibrar a câmera no leito de cursos de água e, idealmente, fazer com que as imagens só sejam enviadas em caso de haver diferenças significativas entre a imagem captada e a imagem de normalidade como seria o caso de uma possível enchente. O uso da ESP32 parte do principio de ser uma placa mais barata em relação a outras comumente usadas como Arduino e Raspberry PI e já possuir módulo \textit{wi-fi} embutido na placa o qual utilizará o protocolo MQTT para transmitir os dados.
+
+\subsection{Materiais}
+Será utilizado uma placa ESP32 \ref{fig:esp} e uma câmera própria para a placa\ref{cameraEsp}.
+
+
+
+\begin{figure}[htb]
+\centering
+    \subfloat[\label{fig:esp}ESP32 ESP-WROOM-32 WiFi.]{%
+    \includegraphics[scale=0.17]{ESP32.png}
+     }
+     \hspace{18px}
+    \subfloat[\label{cameraEsp}Câmera Para ESP32 OV2640.]{%
+         \includegraphics[scale=0.12]{cameraEsp.png}
+    }
+    \caption{Equipamentos a serem usados no projeto.}
+    \label{fig:imagem-barra}
+\end{figure}
+
+\FloatBarrier %sem ele a metodologia estava vindo antes da imagem
+
+\subsection{Metodologia}
+O desenvolvimento do projeto será dividido em diferentes etapas.
+%\subsection{Estudo e Levantamento de Requisitos}
+Inicialmente, será feita a revisão de projetos semelhantes para entender as limitações e as possibilidades de otimização. Em particular, serão analisadas possibilidades de implementação do sistema com uso de computadores embarcados mais sofisticados e de custo mais elevado, como Raspberry Pi. No contexto deste projeto, serão consideradas placas microcontroladas de baixo custo. Assim, serão realizados a identificação dos componentes necessários (e.g., ESP32, câmera) e o levantamento das especificações técnicas adequadas ao projeto.
+
+%\subsection{Desenvolvimento do Sistema de Monitoramento}
+Na próxima etapa, será realizado o projeto e implementação do protótipo de sistema de monitoramento.
+Nessa parte, serão realizadas as configurações iniciais de hardware integrando ESP32 com a câmera, configurado a rede móvel da placa e estabelecendo conexão com um computador pessoal. Uma vez que o sistema esteja funcional, serão realizados diferentes experimentos acerca do tratamento de imagens na ESP32. Adicionalmente, poderão ser explorados ajustes no \textit{firmware} para transmissão mais eficiente de dados via rede 4G.
+
+%\subsection{Testes e Otimização}
+Em seguida, serão realizados testes em ambiente controlado para avaliar a confiabilidade do sistema e a eficiência do tratamento de imagens na redução do tráfego de dados. Para isso, será estabelecido um ambiente para coleta de imagens que possam ser usadas para avaliar os algoritmos para redução do consumo de dados. Também será feita a comparação dos resultados obtidos com sistemas de monitoramento que fazem uso de placas microprocessadas de maior poder computacional, como Raspberry Pi, as quais podem rodar modelos mais sofisticados baseados em aprendizado de máquina e \textit{deep learning}.
+Nestes testes, será feita a identificação de possíveis gargalos ou limitações no processamento de imagens e na transmissão de dados e possíveis implementações de melhorias no hardware e no software para superar as limitações encontradas.
+
+%\subsection{Documentação, Análise e Divulgação dos Resultados}
+Finalmente, será feito o registro das configurações e dos resultados obtidos para cada etapa, elaborados os relatórios com análise comparativa de custos, eficiência e viabilidade do sistema proposto.
+Espera-se que o projeto proposto resulte na redação de artigos a serem publicados em congressos de iniciação científica e, eventualmente, conferências relevantes da área. Futuramente, espera-se integrar as abordagens exploradas neste trabalho a projetos reais de monitoramento de recursos hídricos, permitindo redução de custos de implantação.
+
+\section{Cronograma e Atividades Propostas}
+O projeto será desenvolvido em um período de 12 meses. A Tabela~\ref{tab1} indica o cronograma de atividades.
+
+\begin{itemize}
+    
+    \item \textbf{Revisão bibliográfica (A1):} será continuamente realizada revisão bibliográfica sobre novos desenvolvimentos na área.
+    % Diminui, está bom?
+    
+    \item \textbf{Configuração do Hardware (A2):} será instalada e configurada a câmera na ESP32 de modo que os dados deste equipamento.
+
+    \item \textbf{Implementação do Software (A3):} serão criadas, analisadas e testadas estratégias para o tratamento de imagem dentro da ESP32. %Com o objetivo de sugerir formas mais econômicas de enviar as informações essenciais para identificação e alerta de enchentes.
+
+    \item \textbf{Testes e Validação (A4):} será testado e analisado o protótipo em ambiente real ou simulado para captação de seus dados e conferida a eficiência em relação a outros projetos.
+    
+    \item \textbf{Relatório final (A5):} esta etapa consistirá em confeccionar o relatório final, assim como publicar os resultados obtidos em congressos de iniciação científica.
+    
+\end{itemize}
+
+\begin{table}[!htb]
+\centering
+\begin{tabular}{|c|c|c|c|c|c|c|}
+\hline
+\multicolumn{1}{|c|}{} & \multicolumn{6}{c|}{\textbf{Período (meses após implementação)}} \\ \hline
+\textbf{Atividade} & \textbf{1 - 2} & \textbf{2 - 4} & \textbf{4 - 6} & \textbf{6 - 8} & \textbf{8 - 10} & \textbf{10 - 12} \\ \hline
+\textbf{A1} & X & X & X & X & X & X \\ \hline
+\textbf{A2} & X & X &   &   &   &   \\ \hline
+\textbf{A3} &   &   & X & X &   &   \\ \hline
+\textbf{A4} &   &   &   & X & X & X \\ \hline
+\textbf{A5} &   &   & X & X & X & X \\ \hline
+\end{tabular}
+\caption{Cronograma de atividades}
+\label{tab1}
+\end{table}
+
+\FloatBarrier
+
+\section{Resultados Esperados}
+Ao final do projeto espera-se que seja possível fazer com que a placa ESP32 consiga captar as imagens do leito de rio, analisa-las comparando as imagens entre si e fazer o envio via 4G para o servidor somente das imagens que possuem diferenças significativas em relação a imagem de normalidade. Dessa forma almeja-se ter uma solução satisfatória e que seja escalonável e adaptável para que possa ser aplicado em outros trabalhos dentro e fora desse contexto. Também espera-se aplicar conceitos estudados na graduação e aprender novos na prática, além de ganhar experiência de se fazer um projeto de pesquisa.
+
+
+\end{spacing}
+ 
+ 
+\newpage
+
+\bibliography{references}
+% \bibliographystyle{plain}
+
+% \begin{thebibliography}{1}
+
+% \bibitem{retinanet}
+% LIN, T.; GOYA, P.; GIRSHICK, R.; HE, K.; DOLLAR,  P. Focal loss for dense object detection. In: \textbf{Proceedings of the IEEE international conference on computer vision}. 2017. p. 2980-2988.
+
+% \end{thebibliography}
+
+%---------------------------------------------------------------------
+%---------------------------------------------------------------------
+
+\end{document}

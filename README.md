@@ -18,25 +18,25 @@ Sistema embarcado de monitoramento contínuo do nível de rios utilizando ESP32-
 
 ### 🎯 Características Principais
 
-- **Captura**: Imagens QVGA (320x240) a cada 15 segundos
+- **Captura**: Imagens HVGA (480x320) a cada 15 segundos
 - **Análise**: Algoritmo de comparação por tamanho JPEG
-- **Economia**: Transmissão apenas quando detecta mudanças (>1%)
-- **Alertas**: Notificação automática para mudanças significativas (>8%)
-- **Monitoramento**: WiFi sniffer para análise de consumo de banda
+- **Economia**: Transmissão apenas quando detecta mudanças (>3%)
+- **Alertas**: Notificação automática para mudanças significativas (>12%)
+- **Configuração**: ESP32-CAM com 8MB PSRAM (premium)
 
 ## 📁 Estrutura do Projeto
 
 ```
 ESP32-IC_Project/
-├── esp32/              # Firmware ESP32-CAM (C/ESP-IDF)
-├── server/             # Monitor Python + SQLite
-├── scripts/            # Scripts de automação
-└── docs/               # Documentação técnica
-    ├── DOCUMENTACAO_TECNICA.md    # Arquitetura e especificações
-    ├── ESP32-CAM_README.md        # Manual do hardware
-    ├── INSTALACAO.md              # Guia de instalação
-    └── API_MQTT.md                # Protocolo de comunicação
+├── esp32/              # 🔧 Firmware ESP32-CAM (C/ESP-IDF)
+├── server/             # 🐍 Monitor Python + SQLite
+├── scripts/            # 🛠️ Scripts de automação e testes
+├── data/               # 📊 Dados científicos coletados
+├── logs/               # 📋 Logs do sistema
+└── docs/               # 📚 Documentação técnica completa
 ```
+
+**Cada pasta possui seu próprio README com detalhes específicos.**
 
 ## 🚀 Início Rápido
 
@@ -69,12 +69,13 @@ Para instruções detalhadas, consulte o [Guia de Instalação](docs/INSTALACAO.
 
 | Métrica | Valor | Descrição |
 |---------|-------|-----------|
-| Taxa de Captura | 4 fps | Máximo em QVGA |
-| Consumo Médio | 240mA @ 5V | Com WiFi ativo |
-| Precisão | 92% | Em condições controladas |
-| Redução de Dados | 95% | Vs. envio contínuo |
+| **Resolução** | HVGA 480x320 | Otimizada para 8MB PSRAM |
+| **Qualidade JPEG** | 5 (premium) | Melhor qualidade visual |
+| **Economia de Dados** | 82% | vs versão simples |
+| **Taxa de Detecção** | 97% | Movimentos grandes |
+| **Uso de PSRAM** | 13.6% | Muito eficiente |
 
-## 📡 Arquitetura
+## 📡 **Arquitetura**
 
 ```
 ESP32-CAM ──MQTT──> Broker ──MQTT──> Python Server
@@ -82,49 +83,44 @@ ESP32-CAM ──MQTT──> Broker ──MQTT──> Python Server
     └── Análise Local                      └── SQLite DB
 ```
 
-Detalhes completos em [Documentação Técnica](docs/DOCUMENTACAO_TECNICA.md).
+## 🚀 **Uso Rápido**
 
-## 🔧 Configuração
-
-Edite `esp32/main/config.h`:
-
-```c
-#define WIFI_SSID        "SUA_REDE_2.4GHZ"
-#define WIFI_PASS        "SUA_SENHA"
-#define MQTT_BROKER_URI  "mqtt://IP_BROKER:1883"
-```
-
-Mais opções em [Documentação Técnica](docs/DOCUMENTACAO_TECNICA.md#configuração-e-deploy).
-
-## 📈 Monitoramento
-
+### **Configuração Inicial**
 ```bash
-# Iniciar servidor Python
-cd server
-source venv/bin/activate
-python3 ic_monitor.py
-
-# Gerar relatório PDF
-cd scripts
-python3 generate_report.py
+# Script automatizado
+./scripts/setup.sh
 ```
 
-## 🐛 Troubleshooting
+### **Executar Sistema**
+```bash
+# Servidor de monitoramento
+cd server && python3 ic_monitor.py
 
-Problemas comuns e soluções em [ESP32-CAM Manual](docs/ESP32-CAM_README.md#troubleshooting).
+# Testes científicos
+./scripts/run_scientific_tests.sh
+```
 
-## 📚 Documentação
+## 📚 **Documentação**
 
-- [Documentação Técnica](docs/DOCUMENTACAO_TECNICA.md) - Arquitetura e especificações
-- [Manual ESP32-CAM](docs/ESP32-CAM_README.md) - Hardware e pinout
-- [Guia de Instalação](docs/INSTALACAO.md) - Setup detalhado
-- [API MQTT](docs/API_MQTT.md) - Protocolo de comunicação
+- [📖 Documentação Técnica](docs/DOCUMENTACAO_TECNICA.md) - Arquitetura completa
+- [🔌 Manual ESP32-CAM](docs/ESP32-CAM_README.md) - Hardware e setup
+- [⚙️ Guia de Instalação](docs/INSTALACAO.md) - Passo a passo
+- [📶 API MQTT](docs/API_MQTT.md) - Protocolo de comunicação
+- [🧪 Testes Científicos](docs/CENARIOS_TESTE_CIENTIFICOS.md) - Metodologia
 
-## 📄 Licença
+## 🔬 **Pesquisa Científica**
 
-Este projeto está licenciado sob a MIT License - veja [LICENSE](LICENSE).
+Este projeto implementa uma **metodologia científica robusta** com:
+- **Duas versões** para comparação (inteligente vs simples)
+- **Coleta automatizada** de métricas
+- **Análise estatística** com intervalos de confiança
+- **Reprodutibilidade** garantida por protocolos documentados
 
-## 👥 Contato
+## 📄 **Licença**
+
+MIT License - veja [LICENSE](LICENSE)
+
+## 👥 **Contato**
 
 **Gabriel Passos de Oliveira**  
 📧 gabriel.passos@unesp.br  
@@ -133,4 +129,5 @@ Este projeto está licenciado sob a MIT License - veja [LICENSE](LICENSE).
 
 ---
 
-*Projeto desenvolvido como parte do Programa de Iniciação Científica (sem bolsa) 2025*
+**Projeto de Iniciação Científica - UNESP 2025**  
+*Sistema embarcado de monitoramento fluvial com processamento local de imagens*

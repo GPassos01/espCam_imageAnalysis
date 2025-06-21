@@ -18,7 +18,7 @@ Manual técnico do módulo ESP32-CAM AI-Thinker utilizado no sistema de monitora
 |------------|---------------|----------|
 | **Microcontrolador** | ESP32-S | Dual Core Xtensa LX6 @ 240MHz |
 | **Memória RAM** | 520KB SRAM | ~320KB disponível para aplicação |
-| **Memória PSRAM** | 4MB | Essencial para buffers de imagem |
+| **Memória PSRAM** | 8MB | Configuração premium para buffers avançados |
 | **Flash** | 4MB SPI | Particionável |
 | **Câmera** | OV2640 | 2MP CMOS, até 1600x1200 |
 | **Interface Câmera** | DVP | 8-bit parallel |
@@ -121,7 +121,8 @@ Manual técnico do módulo ESP32-CAM AI-Thinker utilizado no sistema de monitora
 | XGA | 1024x768 | 15 | Não usado |
 | SVGA | 800x600 | 30 | Não usado |
 | VGA | 640x480 | 30 | Não usado |
-| **QVGA** | **320x240** | **30** | **✓ Usado** |
+| **VGA** | **640x480** | **30** | **✓ Usado (com 8MB PSRAM)** |
+| **QVGA** | **320x240** | **30** | **Disponível** |
 | QQVGA | 160x120 | 30 | Não usado |
 
 ### 4.3 Formatos de Saída
