@@ -96,9 +96,9 @@ Nosso ESP32-CAM (8MB PSRAM):
 
 ### **Documentos a Atualizar:**
 1. **config.h** - Reduzir HISTORY_BUFFER_SIZE para 3
-2. **OTIMIZACOES_8MB_PSRAM.md** - Esclarecer limitação
-3. **DOCUMENTACAO_TECNICA.md** - Corrigir valores utilizáveis
-4. **ESP32-CAM_README.md** - Adicionar nota técnica
+2. **memory_optimization.md** - Esclarecer limitação
+3. **technical_guide.md** - Corrigir valores utilizáveis
+4. **hardware_guide.md** - Adicionar nota técnica
 
 ### **Especificação Técnica Correta:**
 ```yaml

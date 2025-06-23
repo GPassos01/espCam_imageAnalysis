@@ -134,8 +134,8 @@ Movimentos: 5cm a cada 2 minutos
 ### **Após o Teste**
 1. **Gerar relatórios**:
    ```bash
-   cd server
-   python3 scientific_report.py
+   cd scripts
+   python3 generate_report.py
    ```
 
 2. **Backup dos dados**:

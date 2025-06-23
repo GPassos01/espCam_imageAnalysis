@@ -19,9 +19,10 @@ from datetime import datetime
 import threading
 import statistics
 from collections import defaultdict
+import argparse
 
 # Configurações
-MQTT_BROKER = "192.168.1.48"
+MQTT_BROKER = "192.168.1.38"  # Auto-detectado
 MQTT_PORT = 1883
 MQTT_TOPICS = [
     "esp32cam/status",
@@ -48,17 +49,33 @@ stats_simple = defaultdict(list)
 stats_lock = threading.Lock()
 
 class ScientificMonitor:
-    def __init__(self):
+    def __init__(self, forced_version=None, test_session=None, test_name=None):
         self.client = mqtt.Client()
         self.client.on_connect = self.on_connect
         self.client.on_message = self.on_message
         self.running = True
         
-        # Detectar versão atual baseada nos dados recebidos
-        self.current_version = "unknown"
+        # Versão forçada para testes científicos
+        self.forced_version = forced_version
+        
+        # Sessão de teste para separação de dados
+        self.test_session = test_session or f"session_{int(time.time())}"
+        self.test_name = test_name or "Teste não especificado"
+        self.session_start_time = datetime.now()
+        
+        # Detectar versão atual baseada nos dados recebidos (apenas se não forçada)
+        self.current_version = forced_version if forced_version else "unknown"
         self.version_detection_count = 0
         
-        # Contadores para métricas
+        # Contadores para métricas da sessão
+        self.session_metrics = {
+            'images_count': 0,
+            'total_bytes': 0,
+            'alerts_count': 0,
+            'start_time': time.time()
+        }
+        
+        # Contadores para métricas gerais
         self.metrics = {
             'intelligent': {
                 'images_received': 0,
@@ -81,6 +98,9 @@ class ScientificMonitor:
         # Configurar bancos de dados
         self.setup_databases()
         
+        # Registrar sessão de teste
+        self.register_test_session()
+        
         # Criar diretórios
         os.makedirs(IMAGE_DIR_INTELLIGENT, exist_ok=True)
         os.makedirs(IMAGE_DIR_SIMPLE, exist_ok=True)
@@ -88,6 +108,13 @@ class ScientificMonitor:
         print("🚀 Iniciando Sistema de Monitoramento Científico")
         print("=" * 60)
         print("📊 Coleta de dados para análise comparativa")
+        if self.forced_version:
+            print(f"🔒 Versão FORÇADA: {self.forced_version.upper()}")
+            print(f"📁 Salvando TODAS as imagens em: data/images/{self.forced_version}/")
+        else:
+            print("🔍 Modo de detecção automática ativado")
+        print(f"🎯 Sessão de teste: {self.test_session}")
+        print(f"📝 Nome do teste: {self.test_name}")
         print("🧠 Versão Inteligente → DB:", DB_INTELLIGENT)
         print("📷 Versão Simples → DB:", DB_SIMPLE)
         print("=" * 60)
@@ -98,11 +125,13 @@ class ScientificMonitor:
             conn = sqlite3.connect(db_name)
             cursor = conn.cursor()
             
-            # Tabela de imagens com métricas detalhadas
+            # Tabela de imagens com métricas detalhadas e separação por sessão
             cursor.execute('''
                 CREATE TABLE IF NOT EXISTS images (
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
                     timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
+                    test_session_id TEXT,
+                    test_name TEXT,
                     device_id TEXT,
                     reason TEXT,
                     difference_percent REAL,
@@ -117,11 +146,13 @@ class ScientificMonitor:
                 )
             ''')
             
-            # Tabela de alertas
+            # Tabela de alertas com sessão
             cursor.execute('''
                 CREATE TABLE IF NOT EXISTS alerts (
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
                     timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
+                    test_session_id TEXT,
+                    test_name TEXT,
                     device_id TEXT,
                     difference_percent REAL,
                     alert_type TEXT,
@@ -129,11 +160,13 @@ class ScientificMonitor:
                 )
             ''')
             
-            # Tabela de status do sistema
+            # Tabela de status do sistema com sessão
             cursor.execute('''
                 CREATE TABLE IF NOT EXISTS system_status (
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
                     timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
+                    test_session_id TEXT,
+                    test_name TEXT,
                     device_id TEXT,
                     free_heap INTEGER,
                     free_psram INTEGER,
@@ -144,11 +177,13 @@ class ScientificMonitor:
                 )
             ''')
             
-            # Tabela de tráfego de rede
+            # Tabela de tráfego de rede com sessão
             cursor.execute('''
                 CREATE TABLE IF NOT EXISTS network_traffic (
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
                     timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
+                    test_session_id TEXT,
+                    test_name TEXT,
                     device_id TEXT,
                     total_packets INTEGER,
                     mqtt_packets INTEGER,
@@ -159,11 +194,13 @@ class ScientificMonitor:
                 )
             ''')
             
-            # Tabela de dados de monitoramento
+            # Tabela de dados de monitoramento com sessão
             cursor.execute('''
                 CREATE TABLE IF NOT EXISTS monitoring_data (
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
                     timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
+                    test_session_id TEXT,
+                    test_name TEXT,
                     device_id TEXT,
                     difference_percent REAL,
                     image_size INTEGER,
@@ -176,11 +213,29 @@ class ScientificMonitor:
                 )
             ''')
             
-            # Tabela de métricas de performance
+            # Tabela de sessões de teste para controle
+            cursor.execute('''
+                CREATE TABLE IF NOT EXISTS test_sessions (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    session_id TEXT UNIQUE,
+                    test_name TEXT,
+                    version TEXT,
+                    start_time DATETIME,
+                    end_time DATETIME,
+                    duration_minutes INTEGER,
+                    total_images INTEGER,
+                    total_bytes INTEGER,
+                    notes TEXT
+                )
+            ''')
+            
+            # Tabela de métricas de performance com sessão
             cursor.execute('''
                 CREATE TABLE IF NOT EXISTS performance_metrics (
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
                     timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
+                    test_session_id TEXT,
+                    test_name TEXT,
                     version TEXT,
                     metric_name TEXT,
                     metric_value REAL,
@@ -192,14 +247,18 @@ class ScientificMonitor:
             conn.commit()
             conn.close()
         
-        print("📊 Bancos de dados configurados com sucesso")
+        print("📊 Bancos de dados configurados com separação por sessão de teste")
 
     def detect_version_from_data(self, topic, data):
         """Detectar versão baseada nos dados recebidos"""
+        # Se versão está forçada, sempre usar ela
+        if self.forced_version:
+            return self.forced_version
+        
         version_hints = {
             'intelligent': [
                 'significant_change', 'reference_established', 'anomaly_detected',
-                'difference', 'alert', 'comparison'
+                'comparison', 'alert'
             ],
             'simple': [
                 'periodic', 'first_capture', 'periodic_sample'
@@ -212,29 +271,29 @@ class ScientificMonitor:
         intelligent_score = sum(1 for hint in version_hints['intelligent'] if hint in data_str)
         simple_score = sum(1 for hint in version_hints['simple'] if hint in data_str)
         
-        # Heurísticas adicionais
+        # Heurísticas específicas por tópico
         if topic == "esp32cam/image":
             if 'reason' in data:
                 reason = data.get('reason', '').lower()
                 if reason in ['periodic', 'first_capture', 'periodic_sample']:
-                    simple_score += 2
+                    simple_score += 3  # Peso maior para certeza
                 elif reason in ['significant_change', 'reference_established', 'anomaly_detected']:
-                    intelligent_score += 2
+                    intelligent_score += 3
         
-        # Determinar versão
-        if intelligent_score > simple_score:
+        # Determinar versão com maior confiança
+        if intelligent_score > simple_score and intelligent_score >= 2:
             detected = "intelligent"
-        elif simple_score > intelligent_score:
+        elif simple_score > intelligent_score and simple_score >= 2:
             detected = "simple"
         else:
             detected = "unknown"
         
-        # Atualizar versão atual com confiança
-        if detected != "unknown":
+        # Atualizar versão atual apenas se detectada com confiança
+        if detected != "unknown" and not self.forced_version:
             self.version_detection_count += 1
-            if self.version_detection_count >= 3:  # Confirmar com 3 detecções
+            if self.version_detection_count >= 2:  # Confirmar com 2 detecções
                 if self.current_version != detected:
-                    print(f"🔄 Versão detectada: {detected.upper()}")
+                    print(f"🔄 Versão detectada automaticamente: {detected.upper()}")
                     self.current_version = detected
         
         return detected
@@ -285,11 +344,18 @@ class ScientificMonitor:
             data = json.loads(msg.payload.decode())
             timestamp = datetime.now().strftime("%H:%M:%S")
             
-            # Detectar versão baseada nos dados
-            detected_version = self.detect_version_from_data(topic, data)
-            version_to_use = detected_version if detected_version != "unknown" else self.current_version
+            # Determinar versão a usar (prioridade: forçada > detectada > padrão)
+            if self.forced_version:
+                version_to_use = self.forced_version
+            else:
+                # Tentar detectar versão automaticamente
+                detected_version = self.detect_version_from_data(topic, data)
+                if detected_version != "unknown":
+                    version_to_use = detected_version
+                else:
+                    version_to_use = self.current_version if self.current_version != "unknown" else "simple"
             
-            # Selecionar banco de dados
+            # Selecionar banco de dados e diretório
             db_name = self.get_database_for_version(version_to_use)
             image_dir = self.get_image_dir_for_version(version_to_use)
             
@@ -317,6 +383,8 @@ class ScientificMonitor:
             
         except Exception as e:
             print(f"❌ Erro ao processar mensagem: {e}")
+            import traceback
+            traceback.print_exc()
 
     def handle_sniffer_stats(self, cursor, data, timestamp, version):
         """Processar estatísticas do sniffer"""
@@ -333,11 +401,11 @@ class ScientificMonitor:
         
         cursor.execute('''
             INSERT INTO network_traffic 
-            (device_id, total_packets, mqtt_packets, total_bytes, mqtt_bytes, throughput_bps, efficiency_percent)
-            VALUES (?, ?, ?, ?, ?, ?, ?)
-        ''', (device_id, total_packets, mqtt_packets, total_bytes, mqtt_bytes, throughput, efficiency))
+            (test_session_id, test_name, device_id, total_packets, mqtt_packets, total_bytes, mqtt_bytes, throughput_bps, efficiency_percent)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+        ''', (self.test_session, self.test_name, device_id, total_packets, mqtt_packets, total_bytes, mqtt_bytes, throughput, efficiency))
         
-        print(f"📡 {timestamp} - Sniffer Stats ({version.upper()}):")
+        print(f"📡 {timestamp} - Sniffer Stats ({version.upper()}) [Sessão: {self.test_session}]:")
         print(f"   📦 Total: {total_packets:,} pkts ({total_bytes/1024:.1f} KB)")
         print(f"   📡 MQTT: {mqtt_packets:,} pkts ({mqtt_bytes/1024:.1f} KB) - {efficiency:.1f}% do tráfego")
         print(f"   🔧 Dispositivo: {device_id}")
@@ -358,14 +426,14 @@ class ScientificMonitor:
         
         cursor.execute('''
             INSERT INTO monitoring_data 
-            (device_id, difference_percent, image_size, width, height, format, location, mode, detection_accuracy)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-        ''', (device_id, difference, image_size, width, height, format_val, location, mode, detection_accuracy))
+            (test_session_id, test_name, device_id, difference_percent, image_size, width, height, format, location, mode, detection_accuracy)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        ''', (self.test_session, self.test_name, device_id, difference, image_size, width, height, format_val, location, mode, detection_accuracy))
         
         # Calcular métricas
         self.calculate_metrics(version, 'image_size', image_size)
         
-        print(f"📊 {timestamp} - Diferença: {difference:.1f}% ({image_size:,} bytes) {width}x{height} [{version.upper()}]")
+        print(f"📊 {timestamp} - Diferença: {difference:.1f}% ({image_size:,} bytes) {width}x{height} [{version.upper()}] [Sessão: {self.test_session}]")
 
     def handle_system_status(self, cursor, data, timestamp, version):
         """Processar status do sistema"""
@@ -381,9 +449,9 @@ class ScientificMonitor:
         
         cursor.execute('''
             INSERT INTO system_status 
-            (device_id, free_heap, free_psram, min_free_heap, uptime, cpu_usage_percent, memory_efficiency)
-            VALUES (?, ?, ?, ?, ?, ?, ?)
-        ''', (device_id, free_heap, free_psram, min_free_heap, uptime, heap_usage, memory_efficiency))
+            (test_session_id, test_name, device_id, free_heap, free_psram, min_free_heap, uptime, cpu_usage_percent, memory_efficiency)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+        ''', (self.test_session, self.test_name, device_id, free_heap, free_psram, min_free_heap, uptime, heap_usage, memory_efficiency))
 
     def handle_alert(self, cursor, data, timestamp, version):
         """Processar alertas"""
@@ -394,15 +462,18 @@ class ScientificMonitor:
         # Calcular tempo de resposta (simulado)
         response_time = difference * 10  # Heurística baseada na diferença
         
+        # Atualizar métricas da sessão
+        self.session_metrics['alerts_count'] += 1
+        
         cursor.execute('''
             INSERT INTO alerts 
-            (device_id, difference_percent, alert_type, response_time_ms)
-            VALUES (?, ?, ?, ?)
-        ''', (device_id, difference, alert_type, response_time))
+            (test_session_id, test_name, device_id, difference_percent, alert_type, response_time_ms)
+            VALUES (?, ?, ?, ?, ?, ?)
+        ''', (self.test_session, self.test_name, device_id, difference, alert_type, response_time))
         
         self.calculate_metrics(version, 'alert', 1)
         
-        print(f"🚨 ALERTA {timestamp} - {device_id}: Diferença {difference:.1f}% ({data.get('size', 0)} bytes) [{version.upper()}]")
+        print(f"🚨 ALERTA {timestamp} - {device_id}: Diferença {difference:.1f}% ({data.get('size', 0)} bytes) [{version.upper()}] [Sessão: {self.test_session}]")
 
     def handle_image(self, cursor, data, timestamp, version, image_dir):
         """Processar imagens recebidas"""
@@ -419,19 +490,23 @@ class ScientificMonitor:
         network_latency = 50 + (image_size / 10000)  # Simulação de latência
         compression_ratio = (width * height * 3) / image_size if image_size > 0 else 0
         
+        # Atualizar métricas da sessão
+        self.session_metrics['images_count'] += 1
+        self.session_metrics['total_bytes'] += image_size
+        
         # Salvar imagem se presente
         filename = None
         if 'image' in data:
             try:
                 image_data = base64.b64decode(data['image'])
                 
-                # Nome do arquivo com informações detalhadas
+                # Nome do arquivo com informações detalhadas incluindo sessão
                 date_str = datetime.now().strftime("%Y%m%d_%H%M%S")
                 reason_clean = reason.replace(" ", "_").upper()
                 diff_str = f"{difference:.1f}PCT" if difference > 0 else "0PCT"
                 size_kb = image_size // 1024
                 
-                filename = f"{date_str}_{device_id}_{reason_clean}_{diff_str}_{size_kb}KB_{version.upper()}.jpg"
+                filename = f"{date_str}_{device_id}_{reason_clean}_{diff_str}_{size_kb}KB_{version.upper()}_{self.test_session}.jpg"
                 filepath = os.path.join(image_dir, filename)
                 
                 with open(filepath, 'wb') as f:
@@ -441,23 +516,27 @@ class ScientificMonitor:
                 print(f"❌ Erro ao salvar imagem: {e}")
                 filename = None
         
-        # Inserir no banco de dados
+        # Inserir no banco de dados com campos de sessão
         cursor.execute('''
             INSERT INTO images 
-            (device_id, reason, difference_percent, image_size, width, height, format, filename, 
+            (test_session_id, test_name, device_id, reason, difference_percent, image_size, width, height, format, filename, 
              processing_time_ms, network_latency_ms, compression_ratio)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-        ''', (device_id, reason, difference, image_size, width, height, format_val, filename,
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        ''', (self.test_session, self.test_name, device_id, reason, difference, image_size, width, height, format_val, filename,
               processing_time, network_latency, compression_ratio))
         
         # Log detalhado
         if reason.lower() in ['first_capture', 'reference_established']:
-            print(f"📷 {timestamp} - Primeira captura do sistema ({image_size:,} bytes) {width}x{height} [{version.upper()}]")
+            print(f"📷 {timestamp} - Primeira captura do sistema ({image_size:,} bytes) {width}x{height} [{version.upper()}] [Sessão: {self.test_session}]")
         else:
-            print(f"📷 {timestamp} - {reason} ({image_size:,} bytes) {width}x{height} [{version.upper()}]")
+            print(f"📷 {timestamp} - {reason} ({image_size:,} bytes) {width}x{height} [{version.upper()}] [Sessão: {self.test_session}]")
         
         if filename:
             print(f"✅ {timestamp} - Imagem salva: {filename} ({image_size:,} bytes)")
+        
+        # Atualizar sessão a cada 10 imagens
+        if self.session_metrics['images_count'] % 10 == 0:
+            self.update_test_session()
 
     def print_realtime_statistics(self):
         """Imprimir estatísticas em tempo real"""
@@ -501,6 +580,56 @@ class ScientificMonitor:
         print("📡 Desconectado do broker MQTT")
         print("✅ Sistema parado com sucesso")
 
+    def register_test_session(self):
+        """Registrar sessão de teste no banco de dados"""
+        version_to_use = self.forced_version or self.current_version
+        db_name = self.get_database_for_version(version_to_use)
+        
+        conn = sqlite3.connect(db_name)
+        cursor = conn.cursor()
+        
+        try:
+            cursor.execute('''
+                INSERT OR REPLACE INTO test_sessions 
+                (session_id, test_name, version, start_time, total_images, total_bytes, notes)
+                VALUES (?, ?, ?, ?, ?, ?, ?)
+            ''', (self.test_session, self.test_name, version_to_use, 
+                  self.session_start_time.isoformat(), 0, 0, "Sessão iniciada"))
+            
+            conn.commit()
+            print(f"📝 Sessão registrada: {self.test_session} ({self.test_name})")
+            
+        except sqlite3.Error as e:
+            print(f"⚠️  Erro ao registrar sessão: {e}")
+        
+        conn.close()
+
+    def update_test_session(self):
+        """Atualizar estatísticas da sessão de teste"""
+        version_to_use = self.forced_version or self.current_version
+        db_name = self.get_database_for_version(version_to_use)
+        
+        conn = sqlite3.connect(db_name)
+        cursor = conn.cursor()
+        
+        try:
+            duration_minutes = int((datetime.now() - self.session_start_time).total_seconds() / 60)
+            
+            cursor.execute('''
+                UPDATE test_sessions 
+                SET end_time = ?, duration_minutes = ?, total_images = ?, total_bytes = ?
+                WHERE session_id = ?
+            ''', (datetime.now().isoformat(), duration_minutes, 
+                  self.session_metrics['images_count'], self.session_metrics['total_bytes'],
+                  self.test_session))
+            
+            conn.commit()
+            
+        except sqlite3.Error as e:
+            print(f"⚠️  Erro ao atualizar sessão: {e}")
+        
+        conn.close()
+
 def signal_handler(sig, frame):
     """Handler para interrupção do sistema"""
     print("\n🛑 Interrupção detectada...")
@@ -508,11 +637,25 @@ def signal_handler(sig, frame):
     sys.exit(0)
 
 if __name__ == "__main__":
+    # Parser de argumentos
+    parser = argparse.ArgumentParser(description='Monitor Científico ESP32-CAM')
+    parser.add_argument('--version', '-v', choices=['intelligent', 'simple'], 
+                        help='Forçar versão específica (intelligent ou simple)')
+    parser.add_argument('--session', '-s', type=str,
+                        help='ID da sessão de teste (ex: baseline_static_001)')
+    parser.add_argument('--test-name', '-t', type=str,
+                        help='Nome do teste (ex: "Baseline Estático 10min")')
+    args = parser.parse_args()
+    
     # Configurar handler de sinal
     signal.signal(signal.SIGINT, signal_handler)
     
-    # Criar e executar monitor
-    monitor = ScientificMonitor()
+    # Criar e executar monitor com parâmetros de sessão
+    monitor = ScientificMonitor(
+        forced_version=args.version,
+        test_session=args.session,
+        test_name=args.test_name
+    )
     
     try:
         monitor.run()

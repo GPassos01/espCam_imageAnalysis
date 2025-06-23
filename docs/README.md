@@ -5,49 +5,49 @@ Documentação completa do projeto de monitoramento de enchentes com ESP32-CAM d
 ## 📋 **Documentos Principais**
 
 ### 🏗️ **Arquitetura e Especificações**
-- **[📖 Documentação Técnica](DOCUMENTACAO_TECNICA.md)**  
+- **[📖 Documentação Técnica](technical_guide.md)**  
   Arquitetura completa, algoritmos, especificações técnicas e métricas de performance
 
 ### 🔧 **Hardware e Instalação**
-- **[🔌 Manual ESP32-CAM](ESP32-CAM_README.md)**  
+- **[🔌 Manual ESP32-CAM](hardware_guide.md)**  
   Hardware, pinout, configurações, troubleshooting e especificações da placa
 
-- **[⚙️ Guia de Instalação](INSTALACAO.md)**  
+- **[⚙️ Guia de Instalação](installation.md)**  
   Setup completo: ESP-IDF, dependências, compilação e deploy
 
 ### 📡 **Comunicação e Protocolos**
-- **[📶 API MQTT](API_MQTT.md)**  
+- **[📶 API MQTT](mqtt_api.md)**  
   Protocolo de comunicação, tópicos, formato de mensagens e integração
 
 ### 🔬 **Pesquisa Científica**
-- **[🧪 Cenários de Teste Científicos](CENARIOS_TESTE_CIENTIFICOS.md)**  
+- **[🧪 Cenários de Teste de Laboratório](testing_guide.md)**  
   Protocolos para coleta de dados científicos e comparação de versões
 
-- **[📊 Otimizações 8MB PSRAM](OTIMIZACOES_8MB_PSRAM.md)**  
+- **[📊 Otimizações 8MB PSRAM](memory_optimization.md)**  
   Descobertas técnicas sobre configuração premium com 8MB de PSRAM
 
 ### 🐛 **Problemas e Soluções**
-- **[🌿 Problema Imagens Esverdeadas](PROBLEMA_IMAGENS_ESVERDEADAS.md)**  
+- **[🌿 Problema Imagens Esverdeadas](camera_troubleshooting.md)**  
   Análise técnica e solução para o problema de tint verde intermitente
 
-- **[⚠️ Limitação Técnica PSRAM](PSRAM_LIMITACAO_TECNICA.md)**  
+- **[⚠️ Limitação Técnica PSRAM](psram_limitations.md)**  
   Descoberta sobre limitação de mapeamento de PSRAM no ESP32
 
 ## 📁 **Estrutura da Documentação**
 
 ```
 docs/
-├── README.md                           # Este índice
+├── README.md                      # Este índice
 │
-├── 📖 DOCUMENTACAO_TECNICA.md          # Arquitetura completa
-├── 🔌 ESP32-CAM_README.md              # Manual de hardware  
-├── ⚙️ INSTALACAO.md                    # Guia de instalação
-├── 📶 API_MQTT.md                      # Protocolo MQTT
+├── 📖 technical_guide.md          # Arquitetura completa
+├── 🔌 hardware_guide.md           # Manual de hardware  
+├── ⚙️ installation.md             # Guia de instalação
+├── 📶 mqtt_api.md                 # Protocolo MQTT
 │
-├── 🧪 CENARIOS_TESTE_CIENTIFICOS.md    # Protocolos científicos
-├── 📊 OTIMIZACOES_8MB_PSRAM.md         # Otimizações técnicas
-├── 🌿 PROBLEMA_IMAGENS_ESVERDEADAS.md  # Solução de problemas
-├── ⚠️ PSRAM_LIMITACAO_TECNICA.md       # Limitações técnicas
+├── 🧪 testing_guide.md            # Protocolos científicos
+├── 📊 memory_optimization.md      # Otimizações técnicas
+├── 🌿 camera_troubleshooting.md   # Solução de problemas
+├── ⚠️ psram_limitations.md        # Limitações técnicas
 │
 └── 📄 Projeto_IC_Gabriel_Passos.pdf    # Documento original IC
 ```
@@ -55,39 +55,39 @@ docs/
 ## 🎯 **Guia de Navegação Rápida**
 
 ### **Para Começar**
-1. 📖 [Documentação Técnica](DOCUMENTACAO_TECNICA.md) - Visão geral do sistema
-2. ⚙️ [Guia de Instalação](INSTALACAO.md) - Setup passo a passo
-3. 🔌 [Manual ESP32-CAM](ESP32-CAM_README.md) - Hardware e conexões
+1. 📖 [Documentação Técnica](technical_guide.md) - Visão geral do sistema
+2. ⚙️ [Guia de Instalação](installation.md) - Setup passo a passo
+3. 🔌 [Manual ESP32-CAM](hardware_guide.md) - Hardware e conexões
 
 ### **Para Desenvolvimento**
-- **Hardware**: [Manual ESP32-CAM](ESP32-CAM_README.md)
-- **Software**: [Documentação Técnica](DOCUMENTACAO_TECNICA.md)
-- **Comunicação**: [API MQTT](API_MQTT.md)
+- **Hardware**: [Manual ESP32-CAM](hardware_guide.md)
+- **Software**: [Documentação Técnica](technical_guide.md)
+- **Comunicação**: [API MQTT](mqtt_api.md)
 
 ### **Para Pesquisa Científica**
-- **Testes**: [Cenários Científicos](CENARIOS_TESTE_CIENTIFICOS.md)
-- **Otimizações**: [8MB PSRAM](OTIMIZACOES_8MB_PSRAM.md)
-- **Problemas**: [Imagens Esverdeadas](PROBLEMA_IMAGENS_ESVERDEADAS.md)
+- **Testes**: [Cenários de Laboratório](testing_guide.md)
+- **Otimizações**: [8MB PSRAM](memory_optimization.md)
+- **Problemas**: [Imagens Esverdeadas](camera_troubleshooting.md)
 
 ## 🔍 **Busca por Problema**
 
 | Problema | Documento | Seção |
 |----------|-----------|-------|
-| **"Camera probe failed"** | [ESP32-CAM](ESP32-CAM_README.md) | Troubleshooting |
-| **WiFi não conecta** | [Instalação](INSTALACAO.md) | Problemas Comuns |
-| **MQTT timeout** | [API MQTT](API_MQTT.md) | Debug |
-| **Compilação falha** | [Instalação](INSTALACAO.md) | ESP-IDF |
-| **Imagens verdes** | [Imagens Esverdeadas](PROBLEMA_IMAGENS_ESVERDEADAS.md) | Solução |
-| **Pouca memória** | [8MB PSRAM](OTIMIZACOES_8MB_PSRAM.md) | Otimizações |
+| **"Camera probe failed"** | [ESP32-CAM](hardware_guide.md) | Troubleshooting |
+| **WiFi não conecta** | [Instalação](installation.md) | Problemas Comuns |
+| **MQTT timeout** | [API MQTT](mqtt_api.md) | Debug |
+| **Compilação falha** | [Instalação](installation.md) | ESP-IDF |
+| **Imagens verdes** | [Imagens Esverdeadas](camera_troubleshooting.md) | Solução |
+| **Pouca memória** | [8MB PSRAM](memory_optimization.md) | Otimizações |
 
 ## 🔬 **Descobertas Técnicas Importantes**
 
-### **8MB PSRAM Confirmado**
-O ESP32-CAM usado possui **8MB de PSRAM** (configuração premium), permitindo:
+### **8MB PSRAM Físico (4MB Utilizável)**
+O ESP32-CAM usado possui **8MB de PSRAM física**, mas apenas **4MB são utilizáveis** devido a limitações do ESP32:
 - Resolução HVGA (480x320) com qualidade premium
 - Buffer histórico de 3 imagens
 - Análise avançada com múltiplas referências
-- Apenas 13.6% de utilização da PSRAM total
+- Apenas 13.6% de utilização da PSRAM utilizável
 
 ### **Problema de Imagens Esverdeadas Solucionado**
 Sistema completo de detecção e correção automática:
@@ -103,7 +103,7 @@ Embora o chip tenha 8MB físicos, o ESP32 mapeia apenas 4MB utilizáveis devido 
 
 | Métrica | Valor | Observação |
 |---------|-------|------------|
-| **Resolução** | HVGA 480x320 | Otimizada para 8MB PSRAM |
+| **Resolução** | HVGA 480x320 | Otimizada para 4MB PSRAM utilizável |
 | **Qualidade JPEG** | 5 (premium) | Melhor qualidade visual |
 | **Uso de PSRAM** | 13.6% (490KB) | Muito eficiente |
 | **Taxa de detecção** | 97% | Movimentos grandes |

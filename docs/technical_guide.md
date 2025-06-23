@@ -12,10 +12,10 @@
 Sistema embarcado para monitoramento contínuo de níveis fluviais utilizando processamento local de imagens. Detecta mudanças através da análise comparativa de frames JPEG capturados por ESP32-CAM, otimizado para ambientes com recursos limitados.
 
 ### 1.2 Objetivos Técnicos
-- Reduzir consumo de dados móveis em 95% vs. streaming contínuo
+- Reduzir consumo de dados móveis em > 95% vs. streaming contínuo
 - Detectar mudanças significativas com latência < 2s
 - Operar com disponibilidade > 99%
-- Manter consumo energético < 1.5W médio
+- Manter uso de memoria da placa < 90% média
 
 ### 1.3 Arquitetura em Camadas
 
@@ -134,7 +134,7 @@ CPU:
 
 Memória:
   - Heap: 180KB/320KB (56%)
-  - PSRAM: 2.4MB/8MB (30%) - Configuração premium
+  - PSRAM: 490KB/4MB (13.6%) - 8MB física, 4MB utilizável
   - Stack: 8KB (monitoring_task)
 
 Energia:
@@ -146,7 +146,7 @@ Energia:
 
 ### 4.2 Pinout Utilizado
 
-Consulte [Manual ESP32-CAM](ESP32-CAM_README.md#conexões-da-câmera-ov2640) para pinout completo.
+Consulte [Manual ESP32-CAM](hardware_guide.md#conexões-da-câmera-ov2640) para pinout completo.
 
 ---
 
@@ -195,6 +195,12 @@ CREATE INDEX idx_timestamp ON table(timestamp);
 3. **Connection pooling**: Para MQTT
 4. **Async I/O**: Non-blocking operations
 
+### 6.4 Memória
+1. **PSRAM otimizada**: Uso eficiente dos 4MB disponíveis
+2. **Buffer histórico**: 3 imagens HVGA
+3. **Qualidade JPEG**: 5 (premium) para melhor nitidez
+4. **Resolução HVGA**: Sweet spot para qualidade vs recursos
+
 ---
 
 ## 7. Métricas de Performance
@@ -224,12 +230,12 @@ CREATE INDEX idx_timestamp ON table(timestamp);
 - Algoritmo sensível a mudanças de iluminação
 - Detecção global apenas (não localizada)
 - Dependência de infraestrutura WiFi
-- Resolução VGA otimizada para 8MB PSRAM
+- Resolução HVGA otimizada para 4MB PSRAM utilizável
 
 ### 8.2 Trade-offs de Design
 - **Simplicidade vs. Precisão**: Algoritmo simples mas robusto
 - **Latência vs. Consumo**: 15s otimiza bateria
-- **Resolução vs. Performance**: VGA com 8MB PSRAM
+- **Resolução vs. Performance**: HVGA com 4MB PSRAM utilizável
 - **Local vs. Cloud**: Processamento embarcado
 
 ---
@@ -249,7 +255,7 @@ W IMG_MONITOR: Heap baixa: 45KB
 ### 9.2 Monitoramento de Saúde
 
 - Heap livre > 50KB
-- PSRAM livre > 2MB (de 8MB total)
+- PSRAM livre > 2MB (de 4MB utilizáveis)
 - WiFi RSSI > -70dBm
 - MQTT reconnects < 5/hora
 - Uptime > 24h

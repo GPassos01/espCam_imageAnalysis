@@ -64,10 +64,12 @@ float calculate_image_difference(camera_fb_t* frame1, camera_fb_t* frame2) {
         return 0.0f;
     }
     
-    // Configurações otimizadas para HVGA
-    const int BLOCK_SIZE = 16;           // Blocos de 16x16 pixels
-    const int SAMPLE_RATE = 4;           // Analisar 1 a cada 4 pixels
-    const int BLOCK_DIFF_THRESHOLD = 40; // Threshold ajustado para HVGA
+    // Configurações melhoradas para detecção robusta
+    const int BLOCK_SIZE = 32;           // Blocos maiores para estabilidade
+    const int SAMPLE_RATE = 6;           // Amostragem menos densa
+    const int BLOCK_DIFF_THRESHOLD = 60; // Threshold mais alto para filtrar ruído
+    const int NOISE_FLOOR = 15;          // Piso de ruído base
+    const int MIN_SIGNIFICANT_BLOCKS = 3; // Mínimo de blocos para considerar mudança
     
     int blocks_x = frame1->width / BLOCK_SIZE;
     int blocks_y = frame1->height / BLOCK_SIZE;
@@ -120,9 +122,16 @@ float calculate_image_difference(camera_fb_t* frame1, camera_fb_t* frame2) {
                 }
             }
             
-            // Calcular diferença média do bloco
+            // Calcular diferença média do bloco com filtro melhorado
             if (pixels_compared > 0) {
                 int avg_diff = block_diff_sum / pixels_compared;
+                
+                // Aplicar piso de ruído - ignorar diferenças muito pequenas
+                if (avg_diff <= NOISE_FLOOR) {
+                    avg_diff = 0;
+                }
+                
+                // Verificar se a diferença é significativa
                 if (avg_diff > BLOCK_DIFF_THRESHOLD) {
                     changed_blocks++;
                 }
@@ -134,15 +143,29 @@ float calculate_image_difference(camera_fb_t* frame1, camera_fb_t* frame2) {
     free(rgb565_buf1);
     free(rgb565_buf2);
     
+    // Filtro de ruído melhorado - verificar blocos mínimos
+    if (changed_blocks < MIN_SIGNIFICANT_BLOCKS) {
+        ESP_LOGD(TAG, "Blocos alterados (%d) abaixo do mínimo (%d) - considerado ruído", 
+                 changed_blocks, MIN_SIGNIFICANT_BLOCKS);
+        return 0.0f;
+    }
+    
     // Calcular porcentagem de mudança
     float change_percentage = (float)changed_blocks / (float)total_blocks * 100.0f;
     
     ESP_LOGD(TAG, "Blocos analisados: %d, mudados: %d, mudança: %.1f%%",
              total_blocks, changed_blocks, change_percentage);
     
-    // Aplicar filtro de ruído (ajustado para HVGA)
-    if (change_percentage < 2.0f) {
-        return 0.0f; // Ignorar mudanças menores que 2%
+    // Aplicar filtro de ruído aprimorado
+    if (change_percentage < 3.0f) {
+        ESP_LOGD(TAG, "Mudança %.1f%% considerada ruído (< 3.0%%)", change_percentage);
+        return 0.0f; // Ignorar mudanças menores que 3%
+    }
+    
+    // Suavizar pequenas flutuações
+    if (change_percentage < 8.0f) {
+        change_percentage *= 0.8f; // Reduzir sensibilidade para mudanças pequenas
+        ESP_LOGD(TAG, "Mudança pequena suavizada para: %.1f%%", change_percentage);
     }
     
     return change_percentage;

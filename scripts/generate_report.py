@@ -407,6 +407,161 @@ class ScientificReportGenerator:
         
         print(f"✅ Métricas salvas em: {metrics_path}")
 
+    def compare_test_sessions(self, session1_id, session2_id, version1="simple", version2="intelligent"):
+        """Comparar duas sessões específicas de teste"""
+        print(f"🔍 Comparando sessões de teste...")
+        print(f"   📊 Sessão 1: {session1_id} ({version1})")
+        print(f"   📊 Sessão 2: {session2_id} ({version2})")
+        
+        # Obter dados das sessões
+        db1 = DB_SIMPLE if version1 == "simple" else DB_INTELLIGENT
+        db2 = DB_SIMPLE if version2 == "simple" else DB_INTELLIGENT
+        
+        data1 = self.get_session_data(db1, session1_id)
+        data2 = self.get_session_data(db2, session2_id)
+        
+        if not data1 or not data2:
+            print("❌ Não foi possível obter dados de uma ou ambas as sessões")
+            return None
+        
+        # Calcular comparações
+        comparison = {
+            "session1": {
+                "id": session1_id,
+                "version": version1,
+                "images": data1["total_images"],
+                "total_kb": data1["total_kb"],
+                "avg_size": data1["avg_size"],
+                "duration_min": data1["duration_min"]
+            },
+            "session2": {
+                "id": session2_id,
+                "version": version2,
+                "images": data2["total_images"],
+                "total_kb": data2["total_kb"],
+                "avg_size": data2["avg_size"],
+                "duration_min": data2["duration_min"]
+            },
+            "comparison": {
+                "image_reduction_percent": ((data2["total_images"] - data1["total_images"]) / data2["total_images"] * 100) if data2["total_images"] > 0 else 0,
+                "data_reduction_percent": ((data2["total_kb"] - data1["total_kb"]) / data2["total_kb"] * 100) if data2["total_kb"] > 0 else 0,
+                "efficiency_gain": (data1["total_images"] / data1["total_kb"]) / (data2["total_images"] / data2["total_kb"]) if data2["total_kb"] > 0 and data1["total_kb"] > 0 else 1
+            }
+        }
+        
+        # Mostrar resultados
+        print("\n📊 RESULTADOS DA COMPARAÇÃO:")
+        print("=" * 50)
+        print(f"📷 Imagens enviadas:")
+        print(f"   {version1}: {data1['total_images']:,} imagens")
+        print(f"   {version2}: {data2['total_images']:,} imagens")
+        print(f"   Diferença: {comparison['comparison']['image_reduction_percent']:+.1f}%")
+        
+        print(f"\n📊 Volume de dados:")
+        print(f"   {version1}: {data1['total_kb']:.1f} KB")
+        print(f"   {version2}: {data2['total_kb']:.1f} KB") 
+        print(f"   Economia: {comparison['comparison']['data_reduction_percent']:+.1f}%")
+        
+        return comparison
+
+    def get_session_data(self, db_path, session_id):
+        """Obter dados de uma sessão específica"""
+        conn = self.connect_database(db_path)
+        if not conn:
+            return None
+        
+        try:
+            cursor = conn.cursor()
+            
+            # Obter dados da sessão
+            cursor.execute("""
+                SELECT 
+                    COUNT(*) as total_images,
+                    SUM(image_size)/1024.0 as total_kb,
+                    AVG(image_size) as avg_size,
+                    MIN(timestamp) as start_time,
+                    MAX(timestamp) as end_time
+                FROM images 
+                WHERE test_session_id = ? AND image_size > 0
+            """, (session_id,))
+            
+            result = cursor.fetchone()
+            conn.close()
+            
+            if not result or result[0] == 0:
+                return None
+            
+            # Calcular duração
+            if result[3] and result[4]:
+                from datetime import datetime
+                start = datetime.fromisoformat(result[3])
+                end = datetime.fromisoformat(result[4])
+                duration_min = (end - start).total_seconds() / 60
+            else:
+                duration_min = 0
+            
+            return {
+                "total_images": result[0] or 0,
+                "total_kb": result[1] or 0,
+                "avg_size": result[2] or 0,
+                "start_time": result[3],
+                "end_time": result[4],
+                "duration_min": duration_min
+            }
+            
+        except Exception as e:
+            print(f"❌ Erro ao obter dados da sessão: {e}")
+            conn.close()
+            return None
+
+    def list_available_sessions(self):
+        """Listar sessões disponíveis para comparação"""
+        print("📋 Sessões disponíveis para comparação:")
+        
+        sessions = {"simple": [], "intelligent": []}
+        
+        for version, db_path in [("simple", DB_SIMPLE), ("intelligent", DB_INTELLIGENT)]:
+            conn = self.connect_database(db_path)
+            if conn:
+                try:
+                    cursor = conn.cursor()
+                    cursor.execute("""
+                        SELECT DISTINCT test_session_id, test_name, COUNT(*) as images,
+                               MIN(timestamp) as start_time, MAX(timestamp) as end_time
+                        FROM images 
+                        WHERE test_session_id IS NOT NULL AND test_session_id != ''
+                        GROUP BY test_session_id, test_name
+                        ORDER BY start_time DESC
+                    """)
+                    
+                    results = cursor.fetchall()
+                    for row in results:
+                        sessions[version].append({
+                            "session_id": row[0],
+                            "test_name": row[1],
+                            "images": row[2],
+                            "start_time": row[3],
+                            "end_time": row[4]
+                        })
+                    
+                    conn.close()
+                except:
+                    conn.close()
+        
+        # Mostrar sessões
+        for version in ["simple", "intelligent"]:
+            print(f"\n🔧 Versão {version.upper()}:")
+            if sessions[version]:
+                for session in sessions[version]:
+                    print(f"   📊 {session['session_id']}")
+                    print(f"      📝 {session['test_name']}")
+                    print(f"      📷 {session['images']} imagens")
+                    print(f"      ⏰ {session['start_time']} → {session['end_time']}")
+            else:
+                print("   📭 Nenhuma sessão encontrada")
+        
+        return sessions
+
     def run_full_analysis(self):
         """Executar análise completa"""
         print("🚀 Iniciando Análise Científica Completa")
@@ -428,5 +583,47 @@ class ScientificReportGenerator:
         print("🎯 Use estes dados para fundamentar sua publicação")
 
 if __name__ == "__main__":
+    import sys
+    
     generator = ScientificReportGenerator()
-    generator.run_full_analysis()
+    
+    # Menu interativo se executado sem argumentos
+    if len(sys.argv) == 1:
+        print("🔬 GERADOR DE RELATÓRIOS CIENTÍFICOS")
+        print("=" * 40)
+        print("1) Análise completa (gráficos + relatórios)")
+        print("2) Listar sessões disponíveis")
+        print("3) Comparar duas sessões específicas")
+        print("4) Apenas gerar gráficos")
+        print("0) Sair")
+        
+        choice = input("\n🎯 Escolha uma opção: ")
+        
+        if choice == "1":
+            generator.run_full_analysis()
+        elif choice == "2":
+            generator.list_available_sessions()
+        elif choice == "3":
+            sessions = generator.list_available_sessions()
+            if any(sessions.values()):
+                print("\n🔍 COMPARAÇÃO DE SESSÕES")
+                session1 = input("ID da primeira sessão: ").strip()
+                version1 = input("Versão da primeira sessão (simple/intelligent): ").strip() or "simple"
+                session2 = input("ID da segunda sessão: ").strip()
+                version2 = input("Versão da segunda sessão (simple/intelligent): ").strip() or "intelligent"
+                
+                if session1 and session2:
+                    generator.compare_test_sessions(session1, session2, version1, version2)
+                else:
+                    print("❌ IDs de sessão são obrigatórios")
+            else:
+                print("❌ Nenhuma sessão disponível para comparação")
+        elif choice == "4":
+            generator.generate_comparison_charts()
+        elif choice == "0":
+            print("👋 Saindo...")
+        else:
+            print("❌ Opção inválida")
+    else:
+        # Execução direta para compatibilidade
+        generator.run_full_analysis()

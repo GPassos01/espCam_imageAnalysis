@@ -318,4 +318,4 @@ pip install -r requirements_ic.txt
 3. Ajustar thresholds conforme necessário
 4. Configurar backup automático do banco de dados
 
-Para mais detalhes técnicos, consulte a [Documentação Técnica](DOCUMENTACAO_TECNICA.md). 
+Para mais detalhes técnicos, consulte a [Documentação Técnica](technical_guide.md). 

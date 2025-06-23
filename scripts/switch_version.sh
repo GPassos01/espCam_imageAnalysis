@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# Script para Alternar entre Versões do ESP32-CAM
-# Gabriel Passos - UNESP 2025
+# Script para alternar entre versões do firmware ESP32-CAM
+# Versões: INTELLIGENT (com comparação) e SIMPLE (sem comparação)
 
 set -e
 
@@ -12,170 +12,132 @@ YELLOW='\033[1;33m'
 BLUE='\033[0;34m'
 NC='\033[0m' # No Color
 
+# Diretório do projeto
+PROJECT_DIR="$(cd "$(dirname "$0")/.." && pwd)"
+ESP32_MAIN_DIR="$PROJECT_DIR/esp32/main"
+
 echo -e "${BLUE}========================================${NC}"
 echo -e "${BLUE}🔄 Alternador de Versões ESP32-CAM${NC}"
 echo -e "${BLUE}Gabriel Passos - UNESP 2025${NC}"
 echo -e "${BLUE}========================================${NC}"
 
-# Verificar se estamos no diretório correto
-if [ -f "../esp32/main/main.c" ] && [ -f "../esp32/main/main_simple.c" ]; then
-    # Executado de dentro da pasta scripts/
-    cd ..
-elif [ ! -f "esp32/main/main.c" ] || [ ! -f "esp32/main/main_simple.c" ]; then
-    # Não está nem na raiz nem em scripts/
-    echo -e "${RED}❌ Erro: Execute este script a partir da pasta raiz do projeto${NC}"
-    echo -e "${YELLOW}💡 Use: ./scripts/switch_version.sh${NC}"
-    echo -e "${YELLOW}Estrutura esperada:${NC}"
-    echo -e "${YELLOW}  esp32/main/main.c (versão inteligente)${NC}"
-    echo -e "${YELLOW}  esp32/main/main_simple.c (versão simples)${NC}"
+# Verificar arquivo necessário
+if [ ! -f "$ESP32_MAIN_DIR/main_simple.c" ]; then
+    echo -e "${RED}❌ Erro: Arquivo main_simple.c não encontrado${NC}"
+    echo -e "${RED}   Nota: main.c é a versão inteligente principal${NC}"
     exit 1
 fi
 
 # Detectar versão atual
-current_version="unknown"
-if grep -q "IMG_MONITOR_SIMPLE" esp32/main/main.c 2>/dev/null; then
-    current_version="simple"
-elif grep -q "IMG_MONITOR" esp32/main/main.c 2>/dev/null; then
-    current_version="intelligent"
-fi
+detect_current_version() {
+    if [ -f "$ESP32_MAIN_DIR/ACTIVE_VERSION.txt" ]; then
+        cat "$ESP32_MAIN_DIR/ACTIVE_VERSION.txt"
+    else
+        # main.c é sempre a versão inteligente (principal)
+        if grep -q "calculate_stabilized_difference" "$ESP32_MAIN_DIR/main.c" 2>/dev/null; then
+            echo "INTELLIGENT"
+        else
+            echo "SIMPLE"
+        fi
+    fi
+}
+
+CURRENT_VERSION=$(detect_current_version)
 
 echo -e "${BLUE}📋 Status Atual:${NC}"
-echo -e "   Versão ativa: ${current_version}"
+echo -e "   Versão ativa: ${GREEN}$CURRENT_VERSION${NC}"
 
 # Menu de opções
 echo -e "\n${YELLOW}🔄 Escolha a versão:${NC}"
-echo -e "   ${GREEN}1)${NC} Versão INTELIGENTE (com comparação de imagens)"
-echo -e "   ${GREEN}2)${NC} Versão SIMPLES (envia todas as imagens)"
+echo -e "   ${GREEN}1)${NC} Versão INTELIGENTE (detecção robusta - PRINCIPAL)"
+echo -e "   ${GREEN}2)${NC} Versão SIMPLES (envia todas as imagens - para testes)"
 echo -e "   ${GREEN}3)${NC} Ver diferenças entre versões"
 echo -e "   ${GREEN}4)${NC} Status atual"
 echo -e "   ${GREEN}0)${NC} Sair"
 
-read -p "🎯 Escolha uma opção: " choice
+read -p "Escolha: " choice
 
 case $choice in
     1)
-        if [ "$current_version" = "intelligent" ]; then
+        if [ "$CURRENT_VERSION" = "INTELLIGENT" ]; then
             echo -e "${YELLOW}⚠️  Versão INTELIGENTE já está ativa${NC}"
         else
-            echo -e "${YELLOW}🔄 Alternando para versão INTELIGENTE...${NC}"
-            
-            # Backup da versão atual
-            cp esp32/main/main.c esp32/main/main_backup.c
-            
-            # Verificar se main_intelligent.c existe, senão usar main.c original
-            if [ -f "esp32/main/main_intelligent.c" ]; then
-                cp esp32/main/main_intelligent.c esp32/main/main.c
-            else
-                # Se não existe, assumir que main.c já é a versão inteligente
-                echo -e "${GREEN}✅ main.c já contém a versão inteligente${NC}"
+            echo -e "${YELLOW}🔄 Restaurando versão INTELIGENTE (principal)...${NC}"
+            # Backup da versão simples se estiver ativa
+            if [ -f "$ESP32_MAIN_DIR/main.c" ]; then
+                cp "$ESP32_MAIN_DIR/main.c" "$ESP32_MAIN_DIR/main_simple_backup.c"
             fi
-            
-            echo -e "${GREEN}✅ Versão INTELIGENTE ativada${NC}"
+            # Restaurar versão inteligente original (se houver backup)
+            if [ -f "$ESP32_MAIN_DIR/main_intelligent_backup.c" ]; then
+                cp "$ESP32_MAIN_DIR/main_intelligent_backup.c" "$ESP32_MAIN_DIR/main.c"
+            fi
+            echo "INTELLIGENT" > "$ESP32_MAIN_DIR/ACTIVE_VERSION.txt"
+            echo -e "${GREEN}✅ Versão INTELIGENTE restaurada${NC}"
             echo -e "${BLUE}📋 Características:${NC}"
-            echo -e "   - Comparação pixel a pixel"
-            echo -e "   - Detecção de mudanças (3%)"
-            echo -e "   - Alertas críticos (12%)"
-            echo -e "   - Análise avançada com PSRAM"
-            echo -e "   - Envio seletivo de imagens"
+            echo -e "   - Detecção robusta com validação temporal"
+            echo -e "   - Filtro de ruído multi-camada"
+            echo -e "   - Thresholds: 8% mudança | 15% alerta"
+            echo -e "   - Economia de dados ~90%"
+            echo -e "   - Sistema de referência estática"
         fi
         ;;
     2)
-        if [ "$current_version" = "simple" ]; then
+        if [ "$CURRENT_VERSION" = "SIMPLE" ]; then
             echo -e "${YELLOW}⚠️  Versão SIMPLES já está ativa${NC}"
         else
             echo -e "${YELLOW}🔄 Alternando para versão SIMPLES...${NC}"
-            
-            # Backup da versão atual
-            cp esp32/main/main.c esp32/main/main_backup.c
-            
-            # Copiar versão simples
-            cp esp32/main/main_simple.c esp32/main/main.c
-            
+            # Backup da versão inteligente principal
+            cp "$ESP32_MAIN_DIR/main.c" "$ESP32_MAIN_DIR/main_intelligent_backup.c"
+            # Ativar versão simples
+            cp "$ESP32_MAIN_DIR/main_simple.c" "$ESP32_MAIN_DIR/main.c"
+            echo "SIMPLE" > "$ESP32_MAIN_DIR/ACTIVE_VERSION.txt"
             echo -e "${GREEN}✅ Versão SIMPLES ativada${NC}"
             echo -e "${BLUE}📋 Características:${NC}"
             echo -e "   - SEM comparação de imagens"
             echo -e "   - Envia TODAS as fotos (100%)"
             echo -e "   - Menor uso de CPU"
             echo -e "   - Maior tráfego de rede"
-            echo -e "   - Ideal para baseline de testes"
+            echo -e "   - Ideal para baseline de testes científicos"
         fi
         ;;
     3)
-        echo -e "${BLUE}📊 === DIFERENÇAS ENTRE VERSÕES ===${NC}"
-        echo -e "\n${GREEN}🧠 VERSÃO INTELIGENTE:${NC}"
-        echo -e "   ✅ Comparação de imagens pixel a pixel"
-        echo -e "   ✅ Detecção de mudanças (threshold 3%)"
-        echo -e "   ✅ Alertas críticos (threshold 12%)"
-        echo -e "   ✅ Análise avançada com buffer histórico"
-        echo -e "   ✅ Referências múltiplas (dia/noite)"
-        echo -e "   ✅ Detecção de anomalias"
-        echo -e "   ✅ Envio seletivo (~10-20% das imagens)"
-        echo -e "   ✅ Economia de banda e armazenamento"
-        echo -e "   ⚠️  Maior uso de CPU e PSRAM"
+        echo -e "\n${BLUE}📊 Diferenças entre versões:${NC}"
+        echo -e "\n${GREEN}INTELIGENTE (PRINCIPAL):${NC}"
+        echo -e "   ✅ Algoritmo de detecção robusta RGB565"
+        echo -e "   ✅ Análise por blocos 32x32 otimizados"
+        echo -e "   ✅ Validação temporal com 3 frames consecutivos"
+        echo -e "   ✅ Filtro de ruído multi-camada"
+        echo -e "   ✅ Referência estática para estabilidade"
+        echo -e "   ✅ Suavização IIR contra picos isolados"
+        echo -e "   📊 Uso de dados: ~1.2-1.8 KB/s (otimizado)"
         
-        echo -e "\n${YELLOW}📷 VERSÃO SIMPLES:${NC}"
-        echo -e "   ❌ SEM comparação de imagens"
-        echo -e "   ❌ SEM detecção de mudanças"
-        echo -e "   ❌ SEM análise avançada"
-        echo -e "   ✅ Envia TODAS as imagens (100%)"
-        echo -e "   ✅ Menor uso de CPU"
-        echo -e "   ✅ Menor uso de PSRAM"
-        echo -e "   ✅ Processamento mais rápido"
-        echo -e "   ⚠️  Muito mais tráfego de rede"
-        echo -e "   ⚠️  Maior uso de armazenamento"
-        
-        echo -e "\n${BLUE}🎯 USO RECOMENDADO:${NC}"
-        echo -e "   INTELIGENTE: Produção, monitoramento real"
-        echo -e "   SIMPLES: Testes, baseline, debug"
+        echo -e "\n${YELLOW}SIMPLES:${NC}"
+        echo -e "   ❌ Sem comparação"
+        echo -e "   ❌ Sem análise"
+        echo -e "   ✅ Implementação direta"
+        echo -e "   ✅ Menor complexidade"
+        echo -e "   📊 Uso de dados: ~5-10 KB/s"
         ;;
     4)
-        echo -e "${BLUE}📋 === STATUS ATUAL ===${NC}"
-        
-        # Informações detalhadas da versão atual
-        if [ "$current_version" = "intelligent" ]; then
-            echo -e "   Versão: ${GREEN}INTELIGENTE${NC}"
-            echo -e "   Arquivo: main.c (com comparação)"
-            echo -e "   TAG: IMG_MONITOR"
-            
-            # Verificar configurações específicas
-            if grep -q "calculate_image_difference" esp32/main/main.c; then
-                echo -e "   ✅ Comparação de imagens: ATIVA"
-            fi
-            if grep -q "advanced_analysis_init" esp32/main/main.c; then
-                echo -e "   ✅ Análise avançada: ATIVA"
-            fi
-            
-        elif [ "$current_version" = "simple" ]; then
-            echo -e "   Versão: ${YELLOW}SIMPLES${NC}"
-            echo -e "   Arquivo: main.c (sem comparação)"
-            echo -e "   TAG: IMG_MONITOR_SIMPLE"
-            echo -e "   ✅ Envio total: ATIVO"
-            echo -e "   ❌ Comparação: DESABILITADA"
-            
-        else
-            echo -e "   Versão: ${RED}DESCONHECIDA${NC}"
-            echo -e "   ⚠️  Não foi possível detectar a versão"
-        fi
-        
-        # Verificar se há backup
-        if [ -f "esp32/main/main_backup.c" ]; then
-            echo -e "   💾 Backup disponível: main_backup.c"
-        fi
+        echo -e "\n${BLUE}📋 Status detalhado:${NC}"
+        echo -e "   Versão ativa: ${GREEN}$CURRENT_VERSION${NC}"
+        echo -e "   Arquivo main.c: $(ls -lh $ESP32_MAIN_DIR/main.c | awk '{print $5}')"
+        echo -e "   Última modificação: $(date -r $ESP32_MAIN_DIR/main.c '+%d/%m/%Y %H:%M:%S')"
         ;;
     0)
         echo -e "${GREEN}👋 Saindo...${NC}"
         exit 0
         ;;
     *)
-        echo -e "${RED}❌ Opção inválida!${NC}"
+        echo -e "${RED}❌ Opção inválida${NC}"
         exit 1
         ;;
 esac
 
-echo -e "\n${BLUE}🚀 Próximos passos:${NC}"
-echo -e "   ${GREEN}1.${NC} Compile: ${YELLOW}cd esp32 && idf.py build${NC}"
-echo -e "   ${GREEN}2.${NC} Flash: ${YELLOW}idf.py flash monitor${NC}"
-echo -e "   ${GREEN}3.${NC} Execute testes comparativos"
+echo -e "\n${GREEN}🚀 Próximos passos:${NC}"
+echo -e "   1. Compile: ${YELLOW}cd esp32 && idf.py build${NC}"
+echo -e "   2. Flash: ${YELLOW}idf.py flash monitor${NC}"
+echo -e "   3. Execute testes comparativos"
 
 echo -e "\n${BLUE}========================================${NC}"
 echo -e "${GREEN}✅ Operação concluída!${NC}"

@@ -1,72 +1,77 @@
-# 📊 Dados Científicos ESP32-CAM
+# 📊 Data Directory - Scientific Data Storage
 
-Esta pasta contém todos os dados coletados pelos experimentos científicos do sistema ESP32-CAM.
+This directory contains all scientific data collected from the ESP32-CAM monitoring system.
 
-## 📁 **Estrutura de Diretórios**
+## 📁 Directory Structure
 
 ```
 data/
-├── databases/                  # 🗄️ Bancos de dados SQLite
-│   ├── monitoring_intelligent.db  # Dados da versão inteligente
-│   └── monitoring_simple.db      # Dados da versão simples
-├── images/                    # 📸 Imagens capturadas
-│   ├── intelligent/          # Versão inteligente (com comparação)
-│   └── simple/               # Versão simples (todas as imagens)
-└── reports/                  # 📊 Relatórios científicos
-    ├── plots/                # Gráficos gerados
-    ├── scientific_metrics.json
-    └── scientific_summary.txt
+├── databases/          # SQLite databases (separated by version)
+│   ├── monitoring_intelligent.db    # Intelligent version data
+│   └── monitoring_simple.db         # Simple version data
+├── images/             # Captured images (organized by version)
+│   ├── intelligent/    # Images from intelligent version
+│   └── simple/         # Images from simple version
+└── reports/            # Generated scientific reports and charts
+    ├── analysis_*.html # Statistical analysis reports
+    ├── charts_*.png    # Generated comparison charts
+    └── metrics_*.json  # Raw metrics for further analysis
 ```
 
-## 🔬 **Tipos de Dados**
+## 🔬 Database Schema
 
-### Bancos de Dados (`databases/`)
-- **monitoring_intelligent.db**: Dados da versão inteligente com análise
-- **monitoring_simple.db**: Dados da versão simples (baseline)
-- **Estrutura**: SQLite com tabelas para imagens, alertas, sistema e rede
-- **Detecção automática**: Sistema identifica versão pelos dados recebidos
+### Tables in both databases:
+- **monitoring_data**: Continuous monitoring data with detection metrics
+- **system_status**: ESP32-CAM system health and resource usage
+- **network_traffic**: MQTT and WiFi traffic statistics
+- **images**: Image capture metadata and references
+- **alerts**: Significant change alerts and notifications
 
-### Imagens (`images/`)
-- **Intelligent**: Apenas imagens com mudanças detectadas (eficiência ~82%)
-- **Simple**: Todas as imagens capturadas (100% das capturas)
-- **Formato**: JPEG HVGA (480x320) com qualidade 5
-- **Nomenclatura**: `image_YYYYMMDD_HHMMSS.jpg`
+## 📈 Data Collection
 
-### Relatórios (`reports/`)
-- **Métricas JSON**: Dados estruturados para análise
-- **Resumo TXT**: Relatório legível para artigos
-- **Gráficos PNG**: Visualizações científicas comparativas
+- **Automatic separation**: Data is automatically sorted by version (intelligent/simple)
+- **Scientific methodology**: Two versions run in parallel for comparison
+- **Continuous logging**: 24/7 data collection for statistical analysis
+- **Image organization**: Images stored with timestamps and metadata
 
-## 📈 **Bancos de Dados**
+## 🧹 Data Cleanup
 
-Os bancos SQLite ficam organizados em `data/databases/`:
-- `monitoring_intelligent.db` - Dados da versão inteligente
-- `monitoring_simple.db` - Dados da versão simples
-
-**Estrutura das tabelas:**
-- `monitoring_data` - Dados principais (imagens, sistema, rede)
-- `images` - Metadados das imagens
-- `alerts` - Alertas gerados pelo sistema
-- `system_status` - Status do hardware
-- `network_traffic` - Métricas de rede
-
-## 🧹 **Limpeza e Backup**
-
-Para limpar dados:
-```bash
-./scripts/esp32cam_manager.sh  # Opção 7 (Limpar dados)
-```
-
-Para backup:
-```bash
-./scripts/run_scientific_tests.sh  # Opção 5 (Backup)
-```
-
-## 📊 **Geração de Relatórios**
+⚠️ **Note**: This directory may be cleaned by scripts for fresh data collection.
+Always backup important data before running cleanup scripts:
 
 ```bash
-cd server
-python3 scientific_report.py
+# Backup current data
+cp -r data/ backup_$(date +%Y%m%d_%H%M%S)/
+
+# Or use the provided backup script
+./scripts/backup_data.sh
 ```
 
-Os relatórios são gerados automaticamente em `data/reports/`. 
+## 📊 Data Analysis
+
+Use the generated reports in `reports/` directory:
+- **HTML files**: Interactive analysis with charts
+- **PNG files**: Static charts for documentation
+- **JSON files**: Raw metrics for custom analysis
+
+## 🔍 Accessing Data
+
+### View databases:
+```bash
+# Intelligent version data
+sqlite3 data/databases/monitoring_intelligent.db
+
+# Simple version data  
+sqlite3 data/databases/monitoring_simple.db
+```
+
+### Generate reports:
+```bash
+cd scripts
+python3 generate_report.py
+```
+
+---
+
+**Purpose**: Scientific data storage and analysis for ESP32-CAM research project  
+**Maintained by**: ESP32-CAM monitoring system and analysis scripts 

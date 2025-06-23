@@ -413,5 +413,5 @@ if (smart_capture_with_correction(&fb) == ESP_OK) {
 ---
 
 **Implementado por:** Gabriel Passos - UNESP 2025  
-**Status:** ✅ Solucionado e testado  
+**Status:** Solucionado e testado  
 **Versão:** 1.0 - Configurações otimizadas 

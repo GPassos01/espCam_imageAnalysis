@@ -14,15 +14,15 @@
 
 ## 📋 Resumo
 
-Sistema embarcado de monitoramento contínuo do nível de rios utilizando ESP32-CAM com processamento local de imagens. O projeto implementa um algoritmo de detecção de mudanças baseado em análise comparativa de frames JPEG, otimizado para ambientes com recursos limitados e conectividade intermitente.
+Sistema embarcado de monitoramento contínuo do nível de rios utilizando ESP32-CAM com processamento local de imagens. O projeto implementa um algoritmo inteligente de detecção de mudanças visuais, otimizado para ambientes com recursos limitados e conectividade intermitente.
 
 ### 🎯 Características Principais
 
 - **Captura**: Imagens HVGA (480x320) a cada 15 segundos
-- **Análise**: Algoritmo de comparação por tamanho JPEG
+- **Análise**: Algoritmo inteligente de detecção de mudanças
 - **Economia**: Transmissão apenas quando detecta mudanças (>3%)
 - **Alertas**: Notificação automática para mudanças significativas (>12%)
-- **Configuração**: ESP32-CAM com 8MB PSRAM (premium)
+- **Configuração**: ESP32-CAM com 8MB PSRAM física (4MB utilizável)
 
 ## 📁 Estrutura do Projeto
 
@@ -31,8 +31,8 @@ ESP32-IC_Project/
 ├── esp32/              # 🔧 Firmware ESP32-CAM (C/ESP-IDF)
 ├── server/             # 🐍 Monitor Python + SQLite
 ├── scripts/            # 🛠️ Scripts de automação e testes
-├── data/               # 📊 Dados científicos coletados
-├── logs/               # 📋 Logs do sistema
+├── data/               # 📊 Dados científicos coletados (bancos SQLite + imagens)
+├── logs/               # 📋 Logs do sistema e debug
 └── docs/               # 📚 Documentação técnica completa
 ```
 
@@ -42,7 +42,7 @@ ESP32-IC_Project/
 
 ### Pré-requisitos
 
-- ESP-IDF v5.0+ ([Guia de Instalação](docs/INSTALACAO.md#esp-idf))
+- ESP-IDF v5.0+ ([Guia de Instalação](docs/installation.md#esp-idf))
 - Python 3.8+ com pip
 - Hardware: ESP32-CAM AI-Thinker + FTDI
 
@@ -63,13 +63,13 @@ cd scripts
 # Opção 6: Flash ESP32-CAM
 ```
 
-Para instruções detalhadas, consulte o [Guia de Instalação](docs/INSTALACAO.md).
+Para instruções detalhadas, consulte o [Guia de Instalação](docs/installation.md).
 
 ## 📊 Métricas do Sistema
 
 | Métrica | Valor | Descrição |
 |---------|-------|-----------|
-| **Resolução** | HVGA 480x320 | Otimizada para 8MB PSRAM |
+| **Resolução** | HVGA 480x320 | Otimizada para 4MB PSRAM |
 | **Qualidade JPEG** | 5 (premium) | Melhor qualidade visual |
 | **Economia de Dados** | 82% | vs versão simples |
 | **Taxa de Detecção** | 97% | Movimentos grandes |
@@ -94,7 +94,7 @@ ESP32-CAM ──MQTT──> Broker ──MQTT──> Python Server
 ### **Executar Sistema**
 ```bash
 # Servidor de monitoramento
-cd server && python3 ic_monitor.py
+cd server && python3 mqtt_data_collector.py
 
 # Testes científicos
 ./scripts/run_scientific_tests.sh
@@ -102,11 +102,11 @@ cd server && python3 ic_monitor.py
 
 ## 📚 **Documentação**
 
-- [📖 Documentação Técnica](docs/DOCUMENTACAO_TECNICA.md) - Arquitetura completa
-- [🔌 Manual ESP32-CAM](docs/ESP32-CAM_README.md) - Hardware e setup
-- [⚙️ Guia de Instalação](docs/INSTALACAO.md) - Passo a passo
-- [📶 API MQTT](docs/API_MQTT.md) - Protocolo de comunicação
-- [🧪 Testes Científicos](docs/CENARIOS_TESTE_CIENTIFICOS.md) - Metodologia
+- [📖 Documentação Técnica](docs/technical_guide.md) - Arquitetura completa
+- [🔌 Manual ESP32-CAM](docs/hardware_guide.md) - Hardware e setup
+- [⚙️ Guia de Instalação](docs/installation.md) - Passo a passo
+- [📶 API MQTT](docs/mqtt_api.md) - Protocolo de comunicação
+- [🧪 Testes de Laboratório](docs/testing_guide.md) - Metodologia
 
 ## 🔬 **Pesquisa Científica**
 

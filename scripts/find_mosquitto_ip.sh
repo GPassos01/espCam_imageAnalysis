@@ -132,16 +132,16 @@ update_config_files() {
     fi
     
     # Atualizar servidor científico
-    if [ -f "server/ic_monitor.py" ]; then
+    if [ -f "server/mqtt_data_collector.py" ]; then
         # Backup do arquivo original
-        cp server/ic_monitor.py server/ic_monitor.py.backup
+        cp server/mqtt_data_collector.py server/mqtt_data_collector.py.backup
         
         # Atualizar MQTT_BROKER
-        sed -i "s|MQTT_BROKER = .*|MQTT_BROKER = \"$mqtt_host\"  # Auto-detectado|g" server/ic_monitor.py
+        sed -i "s|MQTT_BROKER = .*|MQTT_BROKER = \"$mqtt_host\"  # Auto-detectado|g" server/mqtt_data_collector.py
         
-        echo -e "${GREEN}✅ server/ic_monitor.py atualizado${NC}"
+        echo -e "${GREEN}✅ server/mqtt_data_collector.py atualizado${NC}"
     else
-        echo -e "${YELLOW}⚠️  server/ic_monitor.py não encontrado${NC}"
+        echo -e "${YELLOW}⚠️  server/mqtt_data_collector.py não encontrado${NC}"
     fi
     
     # Criar arquivo de configuração para referência
@@ -156,7 +156,7 @@ MQTT_BROKER_URI=mqtt://$mqtt_host:$mqtt_port
 # Para ESP32 (config.h):
 #define MQTT_BROKER_URI  "mqtt://$mqtt_host:$mqtt_port"
 
-# Para Python (ic_monitor.py):
+# Para Python (mqtt_data_collector.py):
 MQTT_BROKER = "$mqtt_host"
 MQTT_PORT = $mqtt_port
 EOF
@@ -188,28 +188,35 @@ setup_local_mosquitto() {
     # Backup da configuração original
     sudo cp /etc/mosquitto/mosquitto.conf /etc/mosquitto/mosquitto.conf.backup 2>/dev/null || true
     
-    # Criar configuração básica
-    sudo tee /etc/mosquitto/conf.d/esp32cam.conf > /dev/null << EOF
-# Configuração para ESP32-CAM
-# Gerado automaticamente em $(date)
+    # Verificar se já existe configuração personalizada
+    if [ -f "/etc/mosquitto/conf.d/esp32cam.conf" ]; then
+        echo -e "${YELLOW}🔄 Removendo configuração anterior...${NC}"
+        sudo rm -f /etc/mosquitto/conf.d/esp32cam.conf
+    fi
+    
+    # Verificar se o arquivo principal já tem as configurações necessárias
+    if ! grep -q "listener 1883 0.0.0.0" /etc/mosquitto/mosquitto.conf 2>/dev/null; then
+        echo -e "${YELLOW}📝 Adicionando configurações ao arquivo principal...${NC}"
+        
+        # Adicionar configurações ao arquivo principal (sem duplicar log_dest)
+        sudo tee -a /etc/mosquitto/mosquitto.conf > /dev/null << EOF
 
-# Permitir conexões de qualquer IP
+# Configurações ESP32-CAM - Adicionadas automaticamente
+# Gerado em: $(date)
 listener 1883 0.0.0.0
-
-# Permitir conexões anônimas (para desenvolvimento)
 allow_anonymous true
-
-# Log de conexões
-log_type error
-log_type warning
-log_type notice
-log_type information
-log_dest file /var/log/mosquitto/mosquitto.log
 EOF
+        echo -e "${GREEN}✅ Configurações adicionadas ao mosquitto.conf${NC}"
+    else
+        echo -e "${GREEN}✅ Configurações já existem${NC}"
+    fi
     
     # Reiniciar serviço
     echo -e "${YELLOW}🔄 Reiniciando Mosquitto...${NC}"
     sudo systemctl restart mosquitto
+    
+    # Aguardar um momento para o serviço inicializar
+    sleep 2
     
     # Verificar se está rodando
     if systemctl is-active --quiet mosquitto; then
@@ -217,6 +224,8 @@ EOF
         return 0
     else
         echo -e "${RED}❌ Falha ao configurar Mosquitto${NC}"
+        echo -e "${YELLOW}💡 Verificando logs...${NC}"
+        sudo journalctl -u mosquitto --no-pager -n 5
         return 1
     fi
 }

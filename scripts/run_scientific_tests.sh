@@ -5,6 +5,9 @@
 
 set -e
 
+# Salvar diretório raiz do projeto
+PROJECT_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+
 # Cores para output
 RED='\033[0;31m'
 GREEN='\033[0;32m'
@@ -19,10 +22,10 @@ echo -e "${BLUE}Gabriel Passos - UNESP 2025${NC}"
 echo -e "${BLUE}========================================${NC}"
 
 # Verificar se estamos no diretório correto
-if [ -f "../esp32/main/main.c" ] && [ -f "../server/ic_monitor.py" ]; then
+if [ -f "../esp32/main/main.c" ] && [ -f "../server/mqtt_data_collector.py" ]; then
     # Executado de dentro da pasta scripts/
     cd ..
-elif [ ! -f "esp32/main/main.c" ] || [ ! -f "server/ic_monitor.py" ]; then
+elif [ ! -f "esp32/main/main.c" ] || [ ! -f "server/mqtt_data_collector.py" ]; then
     # Não está nem na raiz nem em scripts/
     echo -e "${RED}❌ Erro: Execute este script a partir da pasta raiz do projeto${NC}"
     echo -e "${YELLOW}💡 Use: ./scripts/run_scientific_tests.sh${NC}"
@@ -31,7 +34,7 @@ fi
 
 # Função para verificar se o servidor está rodando
 check_server() {
-    if pgrep -f "ic_monitor.py" > /dev/null; then
+    if pgrep -f "mqtt_data_collector.py" > /dev/null; then
         return 0
     else
         return 1
@@ -40,7 +43,14 @@ check_server() {
 
 # Função para iniciar servidor de monitoramento
 start_monitoring_server() {
+    local version=$1
+    local test_name=$2
+    local session_id=$3
+    
     echo -e "${YELLOW}📡 Iniciando servidor de monitoramento científico...${NC}"
+    
+    # Criar diretórios necessários
+    mkdir -p logs
     
     cd server
     
@@ -50,8 +60,29 @@ start_monitoring_server() {
         pip3 install paho-mqtt sqlite3 || echo "Algumas dependências podem já estar instaladas"
     fi
     
-    # Iniciar servidor em background
-    nohup python3 ic_monitor.py > ../logs/monitor.log 2>&1 &
+    # Gerar ID de sessão se não fornecido
+    if [ -z "$session_id" ]; then
+        session_id="${version}_$(date +%Y%m%d_%H%M%S)"
+    fi
+    
+    # Iniciar servidor em background com parâmetros de sessão
+    if [ -n "$version" ]; then
+        echo -e "${BLUE}🔒 Iniciando monitor com versão forçada: $version${NC}"
+        echo -e "${BLUE}🎯 Sessão de teste: $session_id${NC}"
+        echo -e "${BLUE}📝 Nome do teste: $test_name${NC}"
+        
+        nohup python3 mqtt_data_collector.py \
+            --version "$version" \
+            --session "$session_id" \
+            --test-name "$test_name" \
+            > ../logs/monitor_debug.log 2>&1 &
+    else
+        echo -e "${BLUE}🔍 Iniciando monitor com detecção automática${NC}"
+        nohup python3 mqtt_data_collector.py \
+            --session "$session_id" \
+            --test-name "$test_name" \
+            > ../logs/monitor_debug.log 2>&1 &
+    fi
     SERVER_PID=$!
     
     cd ..
@@ -61,7 +92,9 @@ start_monitoring_server() {
     
     if check_server; then
         echo -e "${GREEN}✅ Servidor de monitoramento iniciado (PID: $SERVER_PID)${NC}"
+        echo -e "${GREEN}📝 Sessão: $session_id${NC}"
         echo $SERVER_PID > .server_pid
+        echo $session_id > .current_session
         return 0
     else
         echo -e "${RED}❌ Falha ao iniciar servidor de monitoramento${NC}"
@@ -80,7 +113,7 @@ stop_monitoring_server() {
     fi
     
     # Garantir que todos os processos sejam mortos
-    pkill -f "ic_monitor.py" 2>/dev/null || true
+    pkill -f "mqtt_data_collector.py" 2>/dev/null || true
 }
 
 # Função para compilar e flash versão específica
@@ -174,20 +207,23 @@ run_test() {
 generate_reports() {
     echo -e "${YELLOW}📊 Gerando relatórios científicos...${NC}"
     
+    # Sempre executar do diretório raiz
+    cd "$PROJECT_ROOT"
+    
     # Verificar se existem dados nos bancos
     if [ -f "data/databases/monitoring_intelligent.db" ] || [ -f "data/databases/monitoring_simple.db" ]; then
         # Gerar relatórios
-        if cd scripts && python3 scientific_report.py; then
+        if python3 scripts/generate_report.py; then
             echo -e "${GREEN}✅ Relatórios gerados com sucesso${NC}"
             
             # Mostrar arquivos gerados
-            if [ -d "../data/reports" ]; then
+            if [ -d "data/reports" ]; then
                 echo -e "${BLUE}📁 Arquivos gerados:${NC}"
-                ls -la ../data/reports/
+                ls -la data/reports/
                 
-                if [ -d "../data/reports/plots" ]; then
+                if [ -d "data/reports/plots" ]; then
                     echo -e "${BLUE}📈 Gráficos gerados:${NC}"
-                    ls -la ../data/reports/plots/
+                    ls -la data/reports/plots/
                 fi
             fi
         else
@@ -195,11 +231,8 @@ generate_reports() {
         fi
     else
         echo -e "${YELLOW}⚠️  Nenhum dado coletado. Gerando relatório com dados simulados...${NC}"
-        cd scripts && python3 scientific_report.py
+        python3 scripts/generate_report.py
     fi
-    
-    # Voltar para pasta raiz
-    cd ..
 }
 
 # Função para backup dos dados
@@ -284,14 +317,15 @@ run_complete_tests() {
     # Criar diretórios
     mkdir -p logs
     
-    # Iniciar servidor de monitoramento
-    if ! start_monitoring_server; then
+    # Teste da versão inteligente
+    echo -e "\n${BLUE}🧠 === TESTANDO VERSÃO INTELIGENTE ===${NC}"
+    
+    # Iniciar servidor para versão inteligente
+    if ! start_monitoring_server "intelligent" "Baseline Estático" "intelligent_baseline_static"; then
         echo -e "${RED}❌ Falha ao iniciar monitoramento. Abortando testes.${NC}"
         return 1
     fi
     
-    # Teste da versão inteligente
-    echo -e "\n${BLUE}🧠 === TESTANDO VERSÃO INTELIGENTE ===${NC}"
     if deploy_version "intelligent"; then
         run_test "intelligent" "Baseline Estático" 10
         echo -e "${BLUE}📝 Anote quaisquer observações sobre o teste...${NC}"
@@ -302,8 +336,18 @@ run_complete_tests() {
         read -p "Pressione ENTER para continuar..."
     fi
     
+    # Parar servidor da versão inteligente
+    stop_monitoring_server
+    
     # Teste da versão simples
     echo -e "\n${BLUE}📷 === TESTANDO VERSÃO SIMPLES ===${NC}"
+    
+    # Iniciar servidor para versão simples
+    if ! start_monitoring_server "simple" "Baseline Estático" "simple_baseline_static"; then
+        echo -e "${RED}❌ Falha ao iniciar monitoramento. Abortando testes.${NC}"
+        return 1
+    fi
+    
     if deploy_version "simple"; then
         run_test "simple" "Baseline Estático" 10
         echo -e "${BLUE}📝 Anote quaisquer observações sobre o teste...${NC}"
@@ -330,54 +374,147 @@ run_individual_test() {
     
     echo -e "${BLUE}🧪 === TESTE INDIVIDUAL: VERSÃO $version ===${NC}"
     
-    mkdir -p logs
+    # Gerar ID único para a sessão
+    local timestamp=$(date +%Y%m%d_%H%M%S)
+    local session_id="${version}_individual_${timestamp}"
     
-    if ! start_monitoring_server; then
+    # Iniciar servidor de monitoramento com sessão específica
+    if ! start_monitoring_server "$version" "Teste Individual - Versão $version" "$session_id"; then
         echo -e "${RED}❌ Falha ao iniciar monitoramento${NC}"
         return 1
     fi
     
-    if deploy_version "$version"; then
-        echo -e "${YELLOW}🔬 Escolha o tipo de teste:${NC}"
-        echo -e "   1) Baseline Estático (10 min)"
-        echo -e "   2) Movimento Controlado (10 min)"
-        echo -e "   3) Cenário Real (30 min)"
-        
-        read -p "Escolha: " test_type
-        
-        case $test_type in
-            1)
-                run_test "$version" "Baseline Estático" 10
-                ;;
-            2)
-                run_test "$version" "Movimento Controlado" 10
-                ;;
-            3)
-                run_test "$version" "Cenário Real" 30
-                ;;
-            *)
-                echo -e "${RED}❌ Opção inválida${NC}"
-                ;;
-        esac
+    # Alternar para a versão desejada
+    if ! deploy_version "$version"; then
+        echo -e "${RED}❌ Falha ao alternar versão${NC}"
+        return 1
     fi
     
+    # Menu de testes
+    echo -e "${YELLOW}🔬 Escolha o tipo de teste:${NC}"
+    echo "   1) Baseline Estático (10 min)"
+    echo "   2) Movimento Controlado (10 min)"
+    echo "   3) Cenário Real (30 min)"
+    read -p "Escolha: " test_choice
+    
+    case $test_choice in
+        1)
+            local test_name="Baseline Estático ($version)"
+            local duration=10
+            ;;
+        2)
+            local test_name="Movimento Controlado ($version)"
+            local duration=10
+            ;;
+        3)
+            local test_name="Cenário Real ($version)"
+            local duration=30
+            ;;
+        *)
+            echo -e "${RED}❌ Opção inválida${NC}"
+            return 1
+            ;;
+    esac
+    
+    # Atualizar sessão com nome do teste específico
+    session_id="${version}_$(echo "$test_name" | tr ' ' '_' | tr '[:upper:]' '[:lower:]')_${timestamp}"
+    echo $session_id > .current_session
+    
+    echo -e "${BLUE}🧪 === INICIANDO TESTE: $test_name ===${NC}"
+    echo -e "${BLUE}⏱️  Duração: $duration minutos${NC}"
+    echo -e "${BLUE}🎯 Sessão: $session_id${NC}"
+    echo -e "${BLUE}📊 Coletando dados...${NC}"
+    
+    # Aguardar estabilização do sistema
+    echo -e "${YELLOW}⏳ Aguardando estabilização do sistema (30s)...${NC}"
+    sleep 30
+    
+    # Executar teste
+    echo -e "${GREEN}🚀 Teste iniciado! Monitorando por $duration minutos...${NC}"
+    
+    # Loop de monitoramento com feedback
+    local remaining=$duration
+    while [ $remaining -gt 0 ]; do
+        echo -e "${YELLOW}⏱️  Tempo restante: $(printf "%02d:%02d" $((remaining/60)) $((remaining%60)))${NC}"
+        
+        # Verificar se o servidor ainda está rodando
+        if ! check_server; then
+            echo -e "${RED}❌ Servidor de monitoramento parou! Reiniciando...${NC}"
+            if ! start_monitoring_server "$version" "$test_name" "$session_id"; then
+                echo -e "${RED}❌ Falha crítica no monitoramento${NC}"
+                return 1
+            fi
+        fi
+        
+        sleep 60
+        remaining=$((remaining - 1))
+    done
+    
+    echo -e "${GREEN}✅ Teste concluído!${NC}"
+    echo -e "${BLUE}📊 Dados coletados na sessão: $session_id${NC}"
+    
+    # Parar servidor
     stop_monitoring_server
-    generate_reports
+    
+    # Oferecer gerar relatório
+    echo -e "${YELLOW}📈 Deseja gerar relatório desta sessão? (s/N)${NC}"
+    read -p "Resposta: " generate_report
+    if [[ $generate_report =~ ^[Ss]$ ]]; then
+        echo -e "${BLUE}📊 Gerando relatório da sessão...${NC}"
+        if [ -f "../scripts/test_session_manager.py" ]; then
+            python3 ../scripts/test_session_manager.py --export --version "$version" --minutes "$duration" --output "relatorio_${session_id}.json"
+        else
+            echo -e "${YELLOW}⚠️  Script de relatório não encontrado${NC}"
+        fi
+    fi
+    
+    return 0
 }
 
 # Função para limpar dados anteriores
 clean_previous_data() {
     echo -e "${YELLOW}⚠️  Esta operação irá apagar todos os dados coletados anteriormente${NC}"
+    echo -e "${BLUE}ℹ️  Os READMEs das pastas serão preservados${NC}"
     read -p "Tem certeza? (s/N): " confirm
     
     if [[ $confirm == "s" || $confirm == "S" ]]; then
         echo -e "${YELLOW}🧹 Limpando dados anteriores...${NC}"
         
-        rm -f data/databases/monitoring_*.db
-        rm -rf data/
-        rm -rf logs/
+        # Limpar apenas os dados, mantendo a estrutura de diretórios e READMEs
+        rm -f data/databases/*.db 2>/dev/null || true
+        rm -f data/images/*/*.jpg 2>/dev/null || true
+        rm -f data/images/*/*.jpeg 2>/dev/null || true
+        rm -f data/images/*/*.png 2>/dev/null || true
+        rm -f data/reports/*.pdf 2>/dev/null || true
+        rm -f data/reports/*.html 2>/dev/null || true
+        rm -f data/reports/*.json 2>/dev/null || true
+        rm -f data/reports/plots/*.png 2>/dev/null || true
+        rm -f data/reports/plots/*.jpg 2>/dev/null || true
         
-        echo -e "${GREEN}✅ Dados limpos${NC}"
+        # Limpar logs mantendo READMEs
+        find logs/ -name "*.log" -delete 2>/dev/null || true
+        find logs/ -name "*.txt" -delete 2>/dev/null || true
+        
+        # Limpar arquivos de sessão temporários
+        rm -f .current_session 2>/dev/null || true
+        rm -f .server_pid 2>/dev/null || true
+        
+        # Recriar estrutura de diretórios se necessário
+        mkdir -p data/databases
+        mkdir -p data/images/intelligent
+        mkdir -p data/images/simple
+        mkdir -p data/reports/plots
+        mkdir -p logs
+        
+        echo -e "${GREEN}✅ Dados limpos (estrutura de diretórios e READMEs preservados)${NC}"
+        
+        # Verificar se READMEs ainda existem
+        if [ -f "data/README.md" ]; then
+            echo -e "${GREEN}✅ README da pasta data preservado${NC}"
+        fi
+        if [ -f "logs/README.md" ]; then
+            echo -e "${GREEN}✅ README da pasta logs preservado${NC}"
+        fi
     else
         echo -e "${BLUE}ℹ️  Operação cancelada${NC}"
     fi

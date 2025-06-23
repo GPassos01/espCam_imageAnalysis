@@ -75,8 +75,8 @@ elif grep -q "IMG_MONITOR" main/main.c 2>/dev/null; then
 fi
 
 echo -e "${BLUE}📋 Versão atual detectada: ${current_version}${NC}"
-
-# Limpar build anterior se existir
+    
+    # Limpar build anterior se existir
 if [ -d "build" ]; then
     echo -e "${YELLOW}🧹 Limpando build anterior...${NC}"
     rm -rf build
@@ -127,11 +127,11 @@ if [ $? -eq 0 ]; then
     mkdir -p data/databases
     
     # Verificar arquivos críticos
-    local critical_files=(
+    critical_files=(
         "esp32/main/main.c"
         "esp32/main/config.h"
-        "server/ic_monitor.py"
-        "scripts/scientific_report.py"
+        "server/mqtt_data_collector.py"
+        "scripts/generate_report.py"
     )
     
     missing_files=()
@@ -154,9 +154,9 @@ if [ $? -eq 0 ]; then
     echo -e "${GREEN}════════════════════════════════════════${NC}"
     echo -e "${GREEN}📋 PRÓXIMOS PASSOS:${NC}"
     echo -e "${GREEN}   1. Flash: idf.py flash monitor${NC}"
-    echo -e "${GREEN}   2. Testes: ./scripts/run_scientific_tests.sh${NC}"
-    echo -e "${GREEN}   3. Alternar versões: ./scripts/switch_version.sh${NC}"
-    echo -e "${GREEN}   4. Configurar MQTT: ./scripts/find_mosquitto_ip.sh${NC}"
+    echo -e "${GREEN}   2. Configurar MQTT: ./scripts/find_mosquitto_ip.sh${NC}"
+    echo -e "${GREEN}   3. Gerar relatório: python3 scripts/generate_report.py${NC}"
+    echo -e "${GREEN}   4. Monitorar sistema: python3 server/mqtt_data_collector.py${NC}"
     echo -e "${GREEN}════════════════════════════════════════${NC}"
     
 else
@@ -167,4 +167,4 @@ else
     echo -e "${YELLOW}   - Verifique as configurações no config.h${NC}"
     echo -e "${YELLOW}   - Consulte a documentação em docs/${NC}"
     exit 1
-fi 
+fi

@@ -27,7 +27,8 @@ cd scripts/
 - **`switch_version.sh`** - Alternar entre versão inteligente e simples
 - **`find_mosquitto_ip.sh`** - Auto-configuração de MQTT
 - **`run_scientific_tests.sh`** - Testes científicos automatizados
-- **`scientific_report.py`** - Gerador de relatórios científicos
+- **`generate_report.py`** - Gerador de relatórios científicos
+- **`backup_readmes.sh`** - Backup e restauração de READMEs
 
 ## 🎯 Fluxo de Trabalho Recomendado
 
@@ -71,7 +72,7 @@ cd scripts/
 ```bash
 # Gerar relatórios e gráficos
 cd scripts
-python3 scientific_report.py
+python3 generate_report.py
 
 # OU via manager (após testes)
 ./scripts/esp32cam_manager.sh  # Opção 5 → Opção 4
@@ -101,6 +102,19 @@ pwd
 cd ..
 ```
 
+### ❌ "READMEs desapareceram após limpeza"
+**Solução:** Use o script de backup de READMEs
+```bash
+# Backup antes da limpeza
+./scripts/backup_readmes.sh backup
+
+# Executar limpeza
+./scripts/esp32cam_manager.sh  # Opção 10
+
+# Restaurar se necessário
+./scripts/backup_readmes.sh restore
+```
+
 ### ❌ "ESP-IDF não encontrado"
 **Solução:** Configure o ESP-IDF
 ```bash
@@ -123,7 +137,8 @@ pip3 install paho-mqtt matplotlib
 | `switch_version.sh` | Alternar versões, backup automático |
 | `find_mosquitto_ip.sh` | Auto-detecção MQTT, configuração automática |
 | `run_scientific_tests.sh` | Testes automatizados, coleta de dados |
-| `scientific_report.py` | Relatórios científicos, gráficos, métricas JSON |
+| `generate_report.py` | Relatórios científicos, gráficos, métricas JSON |
+| `backup_readmes.sh` | Backup/restauração de READMEs das pastas |
 
 ## 🎉 Sistema Otimizado
 

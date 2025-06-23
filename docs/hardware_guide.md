@@ -18,7 +18,7 @@ Manual técnico do módulo ESP32-CAM AI-Thinker utilizado no sistema de monitora
 |------------|---------------|----------|
 | **Microcontrolador** | ESP32-S | Dual Core Xtensa LX6 @ 240MHz |
 | **Memória RAM** | 520KB SRAM | ~320KB disponível para aplicação |
-| **Memória PSRAM** | 8MB | Configuração premium para buffers avançados |
+| **Memória PSRAM** | 8MB física | 4MB utilizável (limitação ESP32) |
 | **Flash** | 4MB SPI | Particionável |
 | **Câmera** | OV2640 | 2MP CMOS, até 1600x1200 |
 | **Interface Câmera** | DVP | 8-bit parallel |
@@ -121,7 +121,7 @@ Manual técnico do módulo ESP32-CAM AI-Thinker utilizado no sistema de monitora
 | XGA | 1024x768 | 15 | Não usado |
 | SVGA | 800x600 | 30 | Não usado |
 | VGA | 640x480 | 30 | Não usado |
-| **VGA** | **640x480** | **30** | **✓ Usado (com 8MB PSRAM)** |
+| **HVGA** | **480x320** | **30** | **✓ Usado (otimizado)** |
 | **QVGA** | **320x240** | **30** | **Disponível** |
 | QQVGA | 160x120 | 30 | Não usado |
 
@@ -276,9 +276,9 @@ screen /dev/ttyUSB0 115200
 
 ---
 
-Para instalação e configuração de software, consulte o [Guia de Instalação](INSTALACAO.md).  
-Para protocolo de comunicação, veja [API MQTT](API_MQTT.md).
+Para instalação e configuração de software, consulte o [Guia de Instalação](installation.md).  
+Para protocolo de comunicação, veja [API MQTT](mqtt_api.md).
 
 **Autor:** Gabriel Passos de Oliveira  
 **Email:** gabriel.passos@unesp.br  
-**IGCE/UNESP** - Janeiro 2025 
+**IGCE/UNESP** - Junho 2025 

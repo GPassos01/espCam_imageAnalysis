@@ -1,15 +1,14 @@
 /**
- * Sistema de Monitoramento ESP32-CAM - Versão Otimizada
+ * Sistema de Monitoramento ESP32-CAM - Versão Simples (Sem Comparação)
  * 
- * Funcionalidades principais:
+ * Funcionalidades básicas:
  * - Captura fotos a cada 15 segundos (HVGA 480x320)
- * - Compara imagens pixel a pixel com decodificação JPEG
- * - Detecta mudanças (3%) e alertas (12%)
- * - Envia dados via MQTT com reconexão automática
- * - Gerencia memória PSRAM para análise avançada
+ * - Envia TODAS as imagens via MQTT
+ * - Dados de monitoramento básico
  * - Sistema anti-esverdeado inteligente
+ * - WiFi sniffer para monitoramento de tráfego
  * 
- * @version 2.0 - Otimizada para testes finais
+ * @version 2.0 - Versão de comparação para testes
  * @author Gabriel Passos - UNESP 2025
  */
 
@@ -30,16 +29,14 @@
 #include "esp_heap_caps.h"
 
 // Módulos do projeto
-#include "model/compare.h"
 #include "model/mqtt_send.h"
 #include "model/init_net.h"
 #include "model/init_hw.h"
 #include "model/wifi_sniffer.h"
 #include "model/chip_info.h"
-#include "model/advanced_analysis.h"
 #include "config.h"
 
-static const char *TAG = "IMG_MONITOR";
+static const char *TAG = "IMG_MONITOR_SIMPLE";
 
 // Configuração da câmera
 static camera_config_t camera_config = {
@@ -74,10 +71,6 @@ static camera_config_t camera_config = {
 static uint32_t total_bytes_sent = 0;
 static uint32_t total_photos_sent = 0;
 static uint32_t capture_count = 0;
-static camera_fb_t *previous_frame = NULL;
-static camera_fb_t *reference_frame = NULL;
-static uint32_t frames_since_reference = 0;
-static float cumulative_change = 0.0f;
 
 // Handler de eventos MQTT
 static void mqtt_event_handler(void *handler_args, esp_event_base_t base, 
@@ -96,16 +89,6 @@ static void mqtt_event_handler(void *handler_args, esp_event_base_t base,
     }
 }
 
-// Função auxiliar para liberar frame de referência
-static void free_reference_frame(camera_fb_t *frame) {
-    if (frame) {
-        if (frame->buf) {
-            heap_caps_free(frame->buf);
-        }
-        heap_caps_free(frame);
-    }
-}
-
 // Inicializar câmera
 static esp_err_t init_camera(void)
 {
@@ -119,7 +102,7 @@ static esp_err_t init_camera(void)
 }
 
 // Enviar imagem via MQTT
-static void send_image_via_mqtt(camera_fb_t *fb, const char* reason, float difference)
+static void send_image_via_mqtt(camera_fb_t *fb, const char* reason)
 {
     if (!fb) {
         ESP_LOGW(TAG, "Frame inválido, não é possível enviar imagem");
@@ -132,7 +115,7 @@ static void send_image_via_mqtt(camera_fb_t *fb, const char* reason, float diffe
     
     char topic[128];
     snprintf(topic, sizeof(topic), "%s/%s", MQTT_TOPIC_BASE, MQTT_TOPIC_IMAGE);
-    esp_err_t err = mqtt_send_image_with_info(fb, topic, reason, difference);
+    esp_err_t err = mqtt_send_image_with_info(fb, topic, reason, 0.0f);
     
     if (err == ESP_OK) {
         total_bytes_sent += fb->len;
@@ -147,8 +130,8 @@ static void send_image_via_mqtt(camera_fb_t *fb, const char* reason, float diffe
     }
 }
 
-// Capturar e analisar foto
-static void capture_and_analyze_photo(void)
+// Capturar e enviar foto (versão simples)
+static void capture_and_send_photo(void)
 {
     ESP_LOGI(TAG, "📸 Capturando foto...");
     
@@ -174,173 +157,40 @@ static void capture_and_analyze_photo(void)
     ESP_LOGI(TAG, "📷 Foto capturada: %zu bytes (%zux%zu)", 
              fb->len, fb->width, fb->height);
 
-    float difference = 0.0f;
-    float ref_difference = 0.0f;
-    bool is_alert = false;
-    bool send_image = false;
-    const char* reason = "periodic";
-
-    // Comparação com frame anterior
-    if (previous_frame) {
-        difference = calculate_image_difference(fb, previous_frame);
-        ESP_LOGI(TAG, "🔍 Diferença do anterior: %.1f%%", difference);
-        
-        // Comparação com frame de referência estável
-        if (reference_frame) {
-            ref_difference = calculate_image_difference(fb, reference_frame);
-            ESP_LOGI(TAG, "📊 Diferença da referência: %.1f%%", ref_difference);
-            
-            cumulative_change += difference;
-            frames_since_reference++;
-            
-            // Alerta baseado na diferença da referência
-            if (ref_difference >= ALERT_THRESHOLD) {
-                is_alert = true;
-                send_image = true;
-                reason = "significant_change";
-                ESP_LOGW(TAG, "\n🚨 ALERTA: Mudança significativa (%.1f%%)\n", ref_difference);
-            }
-            else if (difference >= CHANGE_THRESHOLD) {
-                ESP_LOGI(TAG, "📊 Mudança detectada: %.1f%%", difference);
-                send_image = false;
-            }
-            
-            // Atualizar referência em condições específicas
-            bool should_update_reference = false;
-            
-            if (is_alert) {
-                should_update_reference = true;
-                ESP_LOGI(TAG, "🔄 Atualizando referência após alerta");
-            }
-            else if (frames_since_reference >= 20) { // 5 minutos
-                if (ref_difference < CHANGE_THRESHOLD) {
-                    should_update_reference = true;
-                    ESP_LOGI(TAG, "🔄 Atualizando referência periódica");
-                }
-            }
-            else if (cumulative_change > ALERT_THRESHOLD && ref_difference < CHANGE_THRESHOLD) {
-                should_update_reference = true;
-                ESP_LOGI(TAG, "🔄 Atualizando referência - voltou ao normal");
-            }
-            
-            if (should_update_reference) {
-                free_reference_frame(reference_frame);
-                reference_frame = (camera_fb_t*)heap_caps_malloc(sizeof(camera_fb_t), MALLOC_CAP_SPIRAM);
-                if (reference_frame) {
-                    reference_frame->buf = (uint8_t*)heap_caps_malloc(fb->len, MALLOC_CAP_SPIRAM);
-                    if (reference_frame->buf) {
-                        memcpy(reference_frame->buf, fb->buf, fb->len);
-                        reference_frame->len = fb->len;
-                        reference_frame->width = fb->width;
-                        reference_frame->height = fb->height;
-                        reference_frame->format = fb->format;
-                        reference_frame->timestamp = fb->timestamp;
-                    }
-                }
-                frames_since_reference = 0;
-                cumulative_change = 0.0f;
-            }
-            
-        } else {
-            // Primeira referência
-            reference_frame = (camera_fb_t*)heap_caps_malloc(sizeof(camera_fb_t), MALLOC_CAP_SPIRAM);
-            if (reference_frame) {
-                reference_frame->buf = (uint8_t*)heap_caps_malloc(fb->len, MALLOC_CAP_SPIRAM);
-                if (reference_frame->buf) {
-                    memcpy(reference_frame->buf, fb->buf, fb->len);
-                    reference_frame->len = fb->len;
-                    reference_frame->width = fb->width;
-                    reference_frame->height = fb->height;
-                    reference_frame->format = fb->format;
-                    reference_frame->timestamp = fb->timestamp;
-                    ESP_LOGI(TAG, "📷 Frame de referência inicial estabelecido");
-                    send_image = true;
-                    reason = "reference_established";
-                }
-            }
-        }
-    } else {
-        ESP_LOGI(TAG, "📷 Primeira captura");
-        send_image = true;
+    // Determinar motivo do envio
+    const char* reason;
+    if (capture_count == 1) {
         reason = "first_capture";
-        
-        // Estabelece referência inicial
-        reference_frame = (camera_fb_t*)heap_caps_malloc(sizeof(camera_fb_t), MALLOC_CAP_SPIRAM);
-        if (reference_frame) {
-            reference_frame->buf = (uint8_t*)heap_caps_malloc(fb->len, MALLOC_CAP_SPIRAM);
-            if (reference_frame->buf) {
-                memcpy(reference_frame->buf, fb->buf, fb->len);
-                reference_frame->len = fb->len;
-                reference_frame->width = fb->width;
-                reference_frame->height = fb->height;
-                reference_frame->format = fb->format;
-                reference_frame->timestamp = fb->timestamp;
-            }
-        }
+    } else if (capture_count % 4 == 0) {
+        reason = "periodic_sample";
+    } else {
+        reason = "periodic";
     }
     
-    // Enviar dados de monitoramento
-    mqtt_send_monitoring_data(ref_difference > 0 ? ref_difference : difference, 
-                             fb->len, fb->width, fb->height, fb->format, DEVICE_ID);
+    // SEMPRE enviar imagem (sem comparação)
+    send_image_via_mqtt(fb, reason);
     
-    // Adicionar ao histórico se análise avançada estiver ativa
-    if (ENABLE_HISTORY_BUFFER) {
-        add_to_history(fb, ref_difference > 0 ? ref_difference : difference);
-        
-        // Análise temporal a cada 5 capturas
-        if (frames_since_reference % 5 == 0 && frames_since_reference > 0) {
-            temporal_analysis_t temporal;
-            if (perform_temporal_analysis(&temporal) == ESP_OK) {
-                ESP_LOGI(TAG, "📈 Análise: Estabilidade=%.2f, Tendência=%.3f", 
-                         temporal.stability_index, temporal.trend_slope);
-                
-                if (detect_anomaly_pattern()) {
-                    ESP_LOGW(TAG, "🚨 Padrão anômalo detectado!");
-                    send_image = true;
-                    reason = "anomaly_detected";
-                }
-            }
-        }
-        
-        // Atualizar referências múltiplas
-        time_t now;
-        struct tm timeinfo;
-        time(&now);
-        localtime_r(&now, &timeinfo);
-        update_multi_references(fb, timeinfo.tm_hour, 0);
-    }
+    // Enviar dados básicos de monitoramento
+    mqtt_send_monitoring_data(0.0f, fb->len, fb->width, fb->height, fb->format, DEVICE_ID);
     
     // Enviar status do sistema
     mqtt_send_monitoring(esp_get_free_heap_size(), 
                         heap_caps_get_free_size(MALLOC_CAP_SPIRAM), 
                         esp_timer_get_time() / 1000000);
     
-    if (is_alert) {
-        mqtt_send_alert(ref_difference, NULL);
-    }
-    
-    if (send_image) {
-        send_image_via_mqtt(fb, reason, ref_difference > 0 ? ref_difference : difference);
-    }
-    
-    // Atualizar frame anterior
-    if (previous_frame && previous_frame != reference_frame) {
-        esp_camera_fb_return(previous_frame);
-    }
-    previous_frame = fb;
+    // Liberar frame
+    esp_camera_fb_return(fb);
 }
 
 // Imprimir estatísticas
 static void print_statistics(void)
 {
-    ESP_LOGI(TAG, "\n\n📈 === ESTATÍSTICAS DE MONITORAMENTO ===");
-    ESP_LOGI(TAG, "📷 Fotos: %lu enviadas / %lu processadas", total_photos_sent, capture_count);
+    ESP_LOGI(TAG, "\n\n📈 === ESTATÍSTICAS DE MONITORAMENTO SIMPLES ===");
+    ESP_LOGI(TAG, "📷 Fotos: %lu enviadas / %lu processadas (100%% taxa de envio)", total_photos_sent, capture_count);
     ESP_LOGI(TAG, "📡 Dados: %.2f KB transmitidos", (float)total_bytes_sent / 1024.0);
     
     if (total_photos_sent > 0) {
         ESP_LOGI(TAG, "📊 Média: %lu bytes/foto", total_bytes_sent / total_photos_sent);
-        ESP_LOGI(TAG, "📊 Taxa envio: %.1f%%", 
-                 ((float)total_photos_sent / capture_count) * 100.0f);
     }
     
     size_t free_heap = esp_get_free_heap_size();
@@ -348,11 +198,7 @@ static void print_statistics(void)
     
     ESP_LOGI(TAG, "💾 Heap: %zu KB livre", free_heap / 1024);
     ESP_LOGI(TAG, "💾 PSRAM: %zu KB livre", free_psram / 1024);
-    
-    if (ENABLE_HISTORY_BUFFER) {
-        ESP_LOGI(TAG, "🧠 Estabilidade: %.2f", calculate_stability_index());
-        print_memory_efficiency_report();
-    }
+    ESP_LOGI(TAG, "🔄 Modo: ENVIO TOTAL (sem comparação de imagens)");
     
     if (SNIFFER_ENABLED && wifi_sniffer_is_active()) {
         wifi_sniffer_print_stats();
@@ -364,7 +210,7 @@ static void print_statistics(void)
 // Task principal de monitoramento
 static void monitoring_task(void *pvParameter)
 {
-    ESP_LOGI(TAG, "\n\n🚀 Iniciando task de monitoramento");
+    ESP_LOGI(TAG, "\n\n🚀 Iniciando task de monitoramento SIMPLES");
     
     TickType_t last_capture = 0;
     TickType_t last_stats = 0;
@@ -376,7 +222,7 @@ static void monitoring_task(void *pvParameter)
         // Captura a cada 15 segundos
         if ((now - last_capture) >= pdMS_TO_TICKS(CAPTURE_INTERVAL_MS)) {
             if (mqtt_is_connected()) {
-                capture_and_analyze_photo();
+                capture_and_send_photo();
             } else {
                 ESP_LOGW(TAG, "MQTT desconectado, pulando captura");
             }
@@ -407,8 +253,8 @@ static void monitoring_task(void *pvParameter)
 void app_main(void)
 {
     ESP_LOGI(TAG, "========================================");
-    ESP_LOGI(TAG, "🔍 Sistema de Monitoramento ESP32-CAM");
-    ESP_LOGI(TAG, "📊 Detecção Inteligente de Mudanças");
+    ESP_LOGI(TAG, "🔍 Sistema ESP32-CAM - VERSÃO SIMPLES");
+    ESP_LOGI(TAG, "📊 Envio Total (sem comparação)");
     ESP_LOGI(TAG, "Gabriel Passos - UNESP 2025");
     ESP_LOGI(TAG, "========================================");
     
@@ -453,20 +299,12 @@ void app_main(void)
     ESP_LOGI(TAG, "✅ MQTT conectado!");
     
     // Configurações finais
-    ESP_LOGI(TAG, "🔍 Configuração:");
+    ESP_LOGI(TAG, "🔍 Configuração SIMPLES:");
     ESP_LOGI(TAG, "   - Resolução: HVGA 480x320 (qualidade premium)");
     ESP_LOGI(TAG, "   - JPEG Quality: %d", JPEG_QUALITY);
-    ESP_LOGI(TAG, "   - Mudança: %.1f%% | Alerta: %.1f%%", CHANGE_THRESHOLD, ALERT_THRESHOLD);
+    ESP_LOGI(TAG, "   - Modo: ENVIO TOTAL (100%% das imagens)");
     ESP_LOGI(TAG, "   - Intervalo: %d segundos", CAPTURE_INTERVAL_MS / 1000);
-    
-    // Inicializar análise avançada
-    if (ENABLE_HISTORY_BUFFER) {
-        if (advanced_analysis_init() == ESP_OK) {
-            ESP_LOGI(TAG, "🧠 Análise avançada ativada");
-        } else {
-            ESP_LOGW(TAG, "⚠️  Análise avançada desabilitada");
-        }
-    }
+    ESP_LOGI(TAG, "   - Comparação: DESABILITADA");
 
     // Inicializar WiFi sniffer
     if (SNIFFER_ENABLED) {
@@ -479,6 +317,6 @@ void app_main(void)
     }
 
     // Iniciar monitoramento
-    xTaskCreate(monitoring_task, "monitoring_task", 8192, NULL, 5, NULL);
-    ESP_LOGI(TAG, "✅ Sistema iniciado!");
-}
+    xTaskCreate(monitoring_task, "monitoring_task_simple", 8192, NULL, 5, NULL);
+    ESP_LOGI(TAG, "✅ Sistema SIMPLES iniciado!");
+} 

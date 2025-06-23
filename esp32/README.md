@@ -86,12 +86,12 @@ idf.py flash monitor
 
 ## 📊 **Especificações Técnicas**
 
-### **Memória (8MB PSRAM)**
-- **Buffer principal**: 300KB (3 imagens HVGA)
-- **Referências múltiplas**: 400KB (4 contextos)
+### **Memória (8MB PSRAM física, 4MB utilizável)**
+- **Buffer principal**: 210KB (3 imagens HVGA)
+- **Referências múltiplas**: 280KB (4 contextos)
 - **Análise avançada**: 200KB (algoritmos)
-- **Memória livre**: ~3MB disponível
-- **Utilização**: 13.6% da PSRAM total
+- **Memória livre**: ~3.2MB disponível
+- **Utilização**: 13.6% da PSRAM utilizável
 
 ### **Performance**
 - **Intervalo de captura**: 15 segundos
@@ -195,7 +195,7 @@ idf.py monitor | grep "INIT_HW"
 
 ### **Logs de Saúde**
 ```
-I MAIN: 📊 Sistema - Heap: 156KB, PSRAM: 6.8MB livre
+I MAIN: 📊 Sistema - Heap: 156KB, PSRAM: 3.2MB livre
 I COMPARE: 📈 Detecção - Mudança: 5.2%, Alerta: NÃO
 I MQTT: 📡 Envio - Sucesso: 1.2KB em 187ms
 ```
@@ -215,13 +215,13 @@ I MQTT: 📡 Envio - Sucesso: 1.2KB em 187ms
 
 ## 📚 **Documentação Relacionada**
 
-- [Manual ESP32-CAM](../docs/ESP32-CAM_README.md) - Hardware e pinout
-- [API MQTT](../docs/API_MQTT.md) - Protocolo de comunicação
-- [Guia de Instalação](../docs/INSTALACAO.md) - Setup completo
-- [Documentação Técnica](../docs/DOCUMENTACAO_TECNICA.md) - Arquitetura
+- [Manual ESP32-CAM](../docs/hardware_guide.md) - Hardware e pinout
+- [API MQTT](../docs/mqtt_api.md) - Protocolo de comunicação
+- [Guia de Instalação](../docs/installation.md) - Setup completo
+- [Documentação Técnica](../docs/technical_guide.md) - Arquitetura
 
 ---
 
 **Desenvolvido por:** Gabriel Passos - UNESP 2025  
 **Framework:** ESP-IDF v5.0+  
-**Hardware:** ESP32-CAM AI-Thinker (8MB PSRAM) 
+**Hardware:** ESP32-CAM AI-Thinker (8MB PSRAM física, 4MB utilizável) 

@@ -92,7 +92,7 @@ else:
     fi
     
     # Servidor científico
-    if pgrep -f "ic_monitor.py" > /dev/null; then
+    if pgrep -f "mqtt_data_collector.py" > /dev/null; then
         echo -e "   ✅ Monitor científico: Rodando"
     else
         echo -e "   ⚠️  Monitor científico: Parado"
@@ -232,9 +232,9 @@ run_scientific_tests() {
 
 # Função 6: Monitor científico
 toggle_scientific_monitor() {
-    if pgrep -f "ic_monitor.py" > /dev/null; then
+    if pgrep -f "mqtt_data_collector.py" > /dev/null; then
         echo -e "${YELLOW}🛑 Parando monitor científico...${NC}"
-        pkill -f "ic_monitor.py" || true
+        pkill -f "mqtt_data_collector.py" || true
         echo -e "${GREEN}✅ Monitor parado${NC}"
     else
         echo -e "${YELLOW}🚀 Iniciando monitor científico...${NC}"
@@ -246,11 +246,20 @@ toggle_scientific_monitor() {
             pip3 install paho-mqtt
         }
         
-        # Iniciar em background
-        nohup python3 ic_monitor.py > ../logs/monitor.log 2>&1 &
+        # Detectar versão atual para passar ao monitor
+        current_version=$(detect_current_version)
+        
+        # Iniciar em background com versão forçada
+        if [ "$current_version" != "unknown" ]; then
+            echo -e "${BLUE}🔒 Iniciando monitor com versão: $current_version${NC}"
+            nohup python3 mqtt_data_collector.py --version "$current_version" > ../logs/monitor.log 2>&1 &
+        else
+            echo -e "${BLUE}🔍 Iniciando monitor com detecção automática${NC}"
+            nohup python3 mqtt_data_collector.py > ../logs/monitor.log 2>&1 &
+        fi
         sleep 3
         
-        if pgrep -f "ic_monitor.py" > /dev/null; then
+        if pgrep -f "mqtt_data_collector.py" > /dev/null; then
             echo -e "${GREEN}✅ Monitor científico iniciado${NC}"
             echo -e "${BLUE}📊 Logs em: logs/monitor.log${NC}"
         else
@@ -267,7 +276,8 @@ generate_reports() {
     
     if [ -f "data/databases/monitoring_intelligent.db" ] || [ -f "data/databases/monitoring_simple.db" ]; then
         cd scripts
-        python3 scientific_report.py
+        echo -e "${YELLOW}📊 Gerando relatórios científicos...${NC}"
+        python3 generate_report.py
         cd ..
         echo -e "${GREEN}✅ Relatórios gerados${NC}"
         
@@ -332,18 +342,26 @@ clean_data() {
         echo -e "${YELLOW}🧹 Limpando dados...${NC}"
         
         # Parar monitor se estiver rodando
-        pkill -f "ic_monitor.py" 2>/dev/null || true
+        pkill -f "mqtt_data_collector.py" 2>/dev/null || true
+        
+        # Backup dos READMEs se existirem
+        if [ -f "data/README.md" ]; then
+            cp "data/README.md" "/tmp/data_readme_backup.md"
+        fi
+        if [ -f "logs/README.md" ]; then
+            cp "logs/README.md" "/tmp/logs_readme_backup.md"
+        fi
         
         # Limpar bancos
         rm -f data/databases/monitoring_*.db
         echo -e "${GREEN}✅ Bancos de dados removidos${NC}"
         
-        # Limpar dados
-        rm -rf data/
+        # Limpar dados específicos mantendo estrutura
+        rm -rf data/databases data/images data/reports
         echo -e "${GREEN}✅ Dados removidos${NC}"
         
-        # Limpar logs
-        rm -rf logs/
+        # Limpar logs específicos
+        rm -f logs/*.log logs/*.txt
         echo -e "${GREEN}✅ Logs removidos${NC}"
         
         # Recriar estrutura básica
@@ -353,7 +371,19 @@ clean_data() {
         mkdir -p data/reports
         mkdir -p data/databases
         
-        echo -e "${GREEN}✅ Limpeza concluída${NC}"
+        # Restaurar READMEs se existiam
+        if [ -f "/tmp/data_readme_backup.md" ]; then
+            cp "/tmp/data_readme_backup.md" "data/README.md"
+            rm "/tmp/data_readme_backup.md"
+            echo -e "${GREEN}✅ README da pasta data preservado${NC}"
+        fi
+        if [ -f "/tmp/logs_readme_backup.md" ]; then
+            cp "/tmp/logs_readme_backup.md" "logs/README.md"
+            rm "/tmp/logs_readme_backup.md"
+            echo -e "${GREEN}✅ README da pasta logs preservado${NC}"
+        fi
+        
+        echo -e "${GREEN}✅ Limpeza concluída (READMEs preservados)${NC}"
     else
         echo -e "${BLUE}ℹ️  Operação cancelada${NC}"
     fi
