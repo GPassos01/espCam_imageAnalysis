@@ -19,7 +19,7 @@ Este guia detalha o processo completo de instalação e configuração do sistem
 - Sistema operacional: Linux, macOS ou Windows (WSL)
 - Git
 - Python 3.8+ com pip
-- Ferramentas de build (make, cmake, ninja)
+- Dependencias SO: make, cmake, ninja, libusb-1.0-0, pip, venv
 
 ### Hardware
 - ESP32-CAM AI-Thinker
@@ -50,6 +50,10 @@ cd esp-idf
 
 # 5. Verificar instalação
 idf.py --version
+
+# 6. Criar alias (opcioal)
+#inclua o seguinte comando no final do arquivo ~/.bashrc
+alias get_idf='. $HOME/esp/esp-idf/export.sh'
 ```
 
 ### Windows
