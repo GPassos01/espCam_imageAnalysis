@@ -1,164 +1,166 @@
-# 📚 Documentação Técnica - Sistema ESP32-CAM
+# 📚 Documentação ESP32-CAM Flood Monitor
 
-Documentação completa do projeto de monitoramento de enchentes com ESP32-CAM desenvolvido para Iniciação Científica na UNESP.
+Bem-vindo à documentação completa do sistema de monitoramento fluvial inteligente ESP32-CAM!
 
-## 📋 **Documentos Principais**
+## 🎯 Sobre Este Projeto
 
-### 🏗️ **Arquitetura e Especificações**
-- **[📖 Documentação Técnica](technical_guide.md)**  
-  Arquitetura completa, algoritmos, especificações técnicas e métricas de performance
+O ESP32-CAM Flood Monitor é um sistema científico de monitoramento que detecta mudanças visuais em ambientes fluviais usando análise inteligente de imagens. Este projeto implementa duas versões para comparação científica: uma versão inteligente com análise local avançada e uma versão simples como baseline.
 
-### 🔧 **Hardware e Instalação**
-- **[🔌 Manual ESP32-CAM](hardware_guide.md)**  
-  Hardware, pinout, configurações, troubleshooting e especificações da placa
+## 📖 Guias de Documentação
 
-- **[⚙️ Guia de Instalação](installation.md)**  
-  Setup completo: ESP-IDF, dependências, compilação e deploy
+### 🚀 Primeiros Passos
+- **[Guia de Instalação](installation.md)** - Setup completo do ambiente de desenvolvimento
+- **[Configuração Rápida](quickstart.md)** - Como começar rapidamente
+- **[Hardware Setup](hardware.md)** - Configuração de hardware detalhada
 
-### 📡 **Comunicação e Protocolos**
-- **[📶 API MQTT](mqtt_api.md)**  
-  Protocolo de comunicação, tópicos, formato de mensagens e integração
+### ⚙️ Configuração
+- **[Configuração Avançada](configuration.md)** - Todas as opções de configuração
+- **[Protocolo MQTT](mqtt-protocol.md)** - Especificação do protocolo de comunicação
+- **[Parâmetros do Sistema](parameters.md)** - Ajuste fino dos parâmetros
 
-### 🔬 **Pesquisa Científica**
-- **[🧪 Cenários de Teste de Laboratório](testing_guide.md)**  
-  Protocolos para coleta de dados científicos e comparação de versões
+### 🔬 Aspectos Técnicos
+- **[Análise de Imagens](image-analysis.md)** - Como funciona o algoritmo de detecção
+- **[Arquitetura do Sistema](architecture.md)** - Visão geral da arquitetura
+- **[API Reference](api.md)** - Referência completa da API
 
-- **[📊 Otimizações 8MB PSRAM](memory_optimization.md)**  
-  Descobertas técnicas sobre configuração premium com 8MB de PSRAM
+### 🛠️ Desenvolvimento
+- **[Guia do Desenvolvedor](development.md)** - Como contribuir para o projeto
+- **[Testes](testing.md)** - Como executar e criar testes
+- **[Performance](performance.md)** - Otimização e benchmarks
 
-### 🐛 **Problemas e Soluções**
-- **[🌿 Problema Imagens Esverdeadas](camera_troubleshooting.md)**  
-  Análise técnica e solução para o problema de tint verde intermitente
+### 🚨 Suporte
+- **[Troubleshooting](troubleshooting.md)** - Solução de problemas comuns
+- **[FAQ](faq.md)** - Perguntas frequentes
+- **[Suporte](../SUPPORT.md)** - Como obter ajuda
 
-- **[⚠️ Limitação Técnica PSRAM](psram_limitations.md)**  
-  Descoberta sobre limitação de mapeamento de PSRAM no ESP32
-
-## 📁 **Estrutura da Documentação**
+## 🏗️ Estrutura da Documentação
 
 ```
 docs/
-├── README.md                      # Este índice
-│
-├── 📖 technical_guide.md          # Arquitetura completa
-├── 🔌 hardware_guide.md           # Manual de hardware  
-├── ⚙️ installation.md             # Guia de instalação
-├── 📶 mqtt_api.md                 # Protocolo MQTT
-│
-├── 🧪 testing_guide.md            # Protocolos científicos
-├── 📊 memory_optimization.md      # Otimizações técnicas
-├── 🌿 camera_troubleshooting.md   # Solução de problemas
-├── ⚠️ psram_limitations.md        # Limitações técnicas
-│
-└── 📄 Projeto_IC_Gabriel_Passos.pdf    # Documento original IC
+├── README.md                 # Este arquivo
+├── installation.md           # Guia de instalação completo
+├── quickstart.md            # Início rápido
+├── configuration.md         # Configuração avançada
+├── hardware.md              # Setup de hardware
+├── image-analysis.md        # Detalhes do algoritmo
+├── mqtt-protocol.md         # Protocolo MQTT
+├── api.md                   # Referência da API
+├── architecture.md          # Arquitetura do sistema
+├── development.md           # Guia do desenvolvedor
+├── testing.md               # Testes
+├── troubleshooting.md       # Solução de problemas
+├── faq.md                   # Perguntas frequentes
+├── performance.md           # Performance e otimização
+├── parameters.md            # Parâmetros do sistema
+└── images/                  # Imagens da documentação
+    ├── architecture.png
+    ├── hardware-setup.jpg
+    └── ...
 ```
 
-## 🎯 **Guia de Navegação Rápida**
+## 🎯 Caminhos de Leitura Recomendados
 
-### **Para Começar**
-1. 📖 [Documentação Técnica](technical_guide.md) - Visão geral do sistema
-2. ⚙️ [Guia de Instalação](installation.md) - Setup passo a passo
-3. 🔌 [Manual ESP32-CAM](hardware_guide.md) - Hardware e conexões
+### Para Iniciantes
+1. 📖 [Guia de Instalação](installation.md)
+2. 🚀 [Configuração Rápida](quickstart.md)
+3. 🔧 [Hardware Setup](hardware.md)
+4. ❓ [FAQ](faq.md)
 
-### **Para Desenvolvimento**
-- **Hardware**: [Manual ESP32-CAM](hardware_guide.md)
-- **Software**: [Documentação Técnica](technical_guide.md)
-- **Comunicação**: [API MQTT](mqtt_api.md)
+### Para Desenvolvedores
+1. 🏗️ [Arquitetura do Sistema](architecture.md)
+2. 🔬 [Análise de Imagens](image-analysis.md)
+3. 🛠️ [Guia do Desenvolvedor](development.md)
+4. 📊 [API Reference](api.md)
 
-### **Para Pesquisa Científica**
-- **Testes**: [Cenários de Laboratório](testing_guide.md)
-- **Otimizações**: [8MB PSRAM](memory_optimization.md)
-- **Problemas**: [Imagens Esverdeadas](camera_troubleshooting.md)
+### Para Pesquisadores
+1. 🔬 [Análise de Imagens](image-analysis.md)
+2. 📈 [Performance](performance.md)
+3. ⚙️ [Parâmetros do Sistema](parameters.md)
+4. 🧪 [Testes](testing.md)
 
-## 🔍 **Busca por Problema**
+### Para Administradores de Sistema
+1. ⚙️ [Configuração Avançada](configuration.md)
+2. 📡 [Protocolo MQTT](mqtt-protocol.md)
+3. 🚨 [Troubleshooting](troubleshooting.md)
+4. 📈 [Performance](performance.md)
 
-| Problema | Documento | Seção |
-|----------|-----------|-------|
-| **"Camera probe failed"** | [ESP32-CAM](hardware_guide.md) | Troubleshooting |
-| **WiFi não conecta** | [Instalação](installation.md) | Problemas Comuns |
-| **MQTT timeout** | [API MQTT](mqtt_api.md) | Debug |
-| **Compilação falha** | [Instalação](installation.md) | ESP-IDF |
-| **Imagens verdes** | [Imagens Esverdeadas](camera_troubleshooting.md) | Solução |
-| **Pouca memória** | [8MB PSRAM](memory_optimization.md) | Otimizações |
+## 🔄 Versionamento da Documentação
 
-## 🔬 **Descobertas Técnicas Importantes**
+Esta documentação é versionada junto com o código:
 
-### **8MB PSRAM Físico (4MB Utilizável)**
-O ESP32-CAM usado possui **8MB de PSRAM física**, mas apenas **4MB são utilizáveis** devido a limitações do ESP32:
-- Resolução HVGA (480x320) com qualidade premium
-- Buffer histórico de 3 imagens
-- Análise avançada com múltiplas referências
-- Apenas 13.6% de utilização da PSRAM utilizável
+- **v1.0.x** - Documentação atual (estável)
+- **develop** - Documentação em desenvolvimento
 
-### **Problema de Imagens Esverdeadas Solucionado**
-Sistema completo de detecção e correção automática:
-- Taxa de sucesso: >99%
-- Detecção por análise de tamanho JPEG
-- Correção automática com warm-up inteligente
-- Configurações adaptativas por horário
+## 🤝 Contribuindo para a Documentação
 
-### **Limitação de Mapeamento PSRAM**
-Embora o chip tenha 8MB físicos, o ESP32 mapeia apenas 4MB utilizáveis devido a limitações de endereçamento. Nosso sistema opera dentro desta limitação com excelente eficiência.
+Adoramos contribuições para melhorar nossa documentação! Veja como você pode ajudar:
 
-## 📊 **Métricas do Sistema**
+### 📝 Tipos de Contribuição
+- Correção de erros de digitação
+- Esclarecimento de instruções confusas
+- Adição de exemplos práticos
+- Tradução para outros idiomas
+- Melhoria de diagramas e imagens
 
-| Métrica | Valor | Observação |
-|---------|-------|------------|
-| **Resolução** | HVGA 480x320 | Otimizada para 4MB PSRAM utilizável |
-| **Qualidade JPEG** | 5 (premium) | Melhor qualidade visual |
-| **Uso de PSRAM** | 13.6% (490KB) | Muito eficiente |
-| **Taxa de detecção** | 97% | Movimentos grandes |
-| **Economia de dados** | 82% | vs versão simples |
-| **Falsos positivos** | <8% | Ambiente controlado |
+### 🛠️ Como Contribuir
+1. Fork o repositório
+2. Crie uma branch para sua contribuição
+3. Faça suas alterações na pasta `docs/`
+4. Teste suas alterações
+5. Envie um Pull Request
 
-## 📈 **Evolução do Projeto**
+### 📋 Padrões da Documentação
+- Use Markdown padrão
+- Inclua emojis para melhor legibilidade
+- Adicione links internos entre documentos
+- Use exemplos de código sempre que possível
+- Mantenha a linguagem clara e acessível
 
-### **Versão 1.0** - Sistema Base
-- Resolução QVGA, comparação simples
-- 4MB PSRAM assumido
-- Problema de imagens verdes não resolvido
+## 🌍 Idiomas Disponíveis
 
-### **Versão 2.0** - Descoberta 8MB PSRAM
-- Confirmação técnica de 8MB PSRAM
-- Upgrade para resolução VGA
-- Implementação de análise avançada
+- 🇧🇷 **Português** - Documentação completa (principal)
+- 🇺🇸 **English** - Documentação parcial
+- 🇪🇸 **Español** - Planejado para futuras versões
 
-### **Versão 3.0** - Otimização HVGA (Atual)
-- Resolução HVGA otimizada (sweet spot)
-- Qualidade JPEG premium (5)
-- Sistema anti-esverdeado completo
-- Eficiência máxima: melhor qualidade + menos recursos
+## 📞 Suporte à Documentação
 
-## 🎓 **Para Estudantes e Pesquisadores**
+Se você:
+- Não encontrou a informação que procurava
+- Achou algo confuso ou incorreto
+- Tem sugestões de melhoria
 
-### **Conceitos Abordados**
-- **Visão Computacional**: Algoritmos de detecção de mudanças
-- **Sistemas Embarcados**: ESP32, PSRAM, otimização de recursos
-- **IoT**: MQTT, WiFi, transmissão de dados
-- **Análise Científica**: Coleta de dados, estatística, comparação
+Entre em contato:
+- 🐛 [Abra uma issue](https://github.com/seu-usuario/esp32-cam-flood-monitor/issues)
+- 📧 Email: gabriel.passos@unesp.br
+- 💬 [Discussions no GitHub](https://github.com/seu-usuario/esp32-cam-flood-monitor/discussions)
 
-### **Metodologia Científica**
-- Duas versões para comparação (intelligent vs simple)
-- Protocolos de teste reproduzíveis
-- Coleta automatizada de métricas
-- Análise estatística com intervalos de confiança
+## 🔗 Links Úteis
 
-### **Contribuições Técnicas**
-- Algoritmo eficiente de detecção por tamanho JPEG
-- Sistema de correção automática de imagens esverdeadas
-- Otimização de memória para ESP32-CAM
-- Protocolo científico para IoT embarcado
+### Recursos Externos
+- 📖 [ESP-IDF Programming Guide](https://docs.espressif.com/projects/esp-idf/)
+- 📡 [MQTT.org](https://mqtt.org/) - Especificação oficial MQTT
+- 🐍 [Python MQTT Client](https://pypi.org/project/paho-mqtt/)
+- 🏞️ [OpenCV Documentation](https://docs.opencv.org/)
 
-## 📝 **Histórico de Atualizações**
+### Repositórios Relacionados
+- 🔧 [ESP32-Camera Component](https://github.com/espressif/esp32-camera)
+- 🖼️ [Image Processing Examples](https://github.com/espressif/esp32-camera/tree/master/examples)
 
-- **v3.0** (Junho 2025): Sistema HVGA otimizado, anti-esverdeado
-- **v2.0** (Maio 2025): Descoberta 8MB PSRAM, análise avançada
-- **v1.0** (Janeiro 2025): Sistema base, documentação inicial
+### Comunidade
+- 💬 [ESP32 Forum](https://esp32.com/)
+- 🔬 [Research Community](https://www.researchgate.net/)
 
 ---
 
-**Projeto de Iniciação Científica**  
-**Autor:** Gabriel Passos de Oliveira  
-**Orientador:** Prof. Dr. Caetano Mazzoni Ranieri  
-**IGCE/UNESP - 2025**
+## 📊 Estatísticas da Documentação
 
-**Objetivo:** Sistema embarcado de monitoramento fluvial com processamento local de imagens para detecção eficiente de mudanças visuais.
+- **Total de Páginas:** 15+
+- **Última Atualização:** Janeiro 2025
+- **Idioma Principal:** Português (BR)
+- **Nível de Dificuldade:** Iniciante a Avançado
+
+---
+
+> 💡 **Dica:** Use o índice no topo de cada página para navegar rapidamente entre as seções. Todos os documentos estão interligados para facilitar a navegação!
+
+**Comece aqui:** [Guia de Instalação](installation.md) →

@@ -1,133 +1,289 @@
-# 📸 Sistema de Monitoramento de Enchentes ESP32-CAM
+# 🌊 ESP32-CAM Flood Monitor
 
-[![ESP-IDF](https://img.shields.io/badge/ESP--IDF-v5.0+-blue.svg)](https://github.com/espressif/esp-idf)
-[![Python](https://img.shields.io/badge/Python-3.8+-green.svg)](https://www.python.org/)
-[![License](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+<div align="center">
 
-## Sistema de Detecção de Mudanças Visuais para Monitoramento Fluvial
-**Projeto de Iniciação Científica - IGCE/UNESP**  
-**Autor:** Gabriel Passos de Oliveira  
-**Orientador:** Prof. Dr. Caetano Mazzoni Ranieri  
-**Período:** 2025
+[![MIT License](https://img.shields.io/badge/License-MIT-green.svg)](https://choosealicense.com/licenses/mit/)
+[![ESP-IDF](https://img.shields.io/badge/ESP--IDF-v5.0+-blue.svg)](https://docs.espressif.com/projects/esp-idf/en/stable/)
+[![Python](https://img.shields.io/badge/Python-3.9+-blue.svg)](https://www.python.org/)
+[![MQTT](https://img.shields.io/badge/MQTT-5.0-orange.svg)](https://mqtt.org/)
+[![Contributions Welcome](https://img.shields.io/badge/contributions-welcome-brightgreen.svg?style=flat)](CONTRIBUTING.md)
+
+*Sistema científico de monitoramento fluvial inteligente usando ESP32-CAM para detecção automática de mudanças visuais em rios*
+
+[🚀 Início Rápido](#-início-rápido) • [📖 Documentação](#-documentação) • [🤝 Contribuir](#-como-contribuir) • [📬 Suporte](#-suporte)
+
+</div>
 
 ---
 
-## 📋 Resumo
+## 📋 Índice
 
-Sistema embarcado de monitoramento contínuo do nível de rios utilizando ESP32-CAM com processamento local de imagens. O projeto implementa um algoritmo inteligente de detecção de mudanças visuais, otimizado para ambientes com recursos limitados e conectividade intermitente.
+- [Sobre o Projeto](#-sobre-o-projeto)
+- [Funcionalidades](#-funcionalidades)
+- [Estrutura do Projeto](#-estrutura-do-projeto)
+- [Tecnologias Utilizadas](#-tecnologias-utilizadas)
+- [Início Rápido](#-início-rápido)
+- [Instalação](#-instalação)
+- [Uso](#-uso)
+- [Arquitetura](#-arquitetura)
+- [Documentação](#-documentação)
+- [Como Contribuir](#-como-contribuir)
+- [Roadmap](#-roadmap)
+- [Licença](#-licença)
+- [Contato](#-contato)
+- [Agradecimentos](#-agradecimentos)
 
-### 🎯 Características Principais
+## 🎯 Sobre o Projeto
 
-- **Captura**: Imagens HVGA (480x320) a cada 15 segundos
-- **Análise**: Algoritmo inteligente de detecção de mudanças
-- **Economia**: Transmissão apenas quando detecta mudanças (>3%)
-- **Alertas**: Notificação automática para mudanças significativas (>12%)
-- **Configuração**: ESP32-CAM com 8MB PSRAM física (4MB utilizável)
+O **ESP32-CAM Flood Monitor** é um sistema de monitoramento científico desenvolvido para detectar mudanças visuais em ambientes fluviais usando análise inteligente de imagens. O projeto implementa duas versões para comparação científica:
 
-## 📁 Estrutura do Projeto
+### 🧠 Versão Inteligente
+- **Análise local avançada** com algoritmo RGB565 otimizado
+- **4 tipos de referência**: diurna, noturna, tempo claro e tempo ruim
+- **Detecção inteligente** com blocos 32x32 pixels
+- **Transmissão seletiva** baseada em mudanças significativas
+
+### 📷 Versão Simples (Baseline)
+- **Captura contínua** a cada 15 segundos
+- **Transmissão total** de todas as imagens
+- **Dados básicos** de monitoramento
+
+### 🎯 Aplicações
+- 🌊 **Monitoramento de enchentes** em tempo real
+- 🏞️ **Análise de mudanças ambientais** em rios
+- 📊 **Pesquisa científica** em hidrologia
+- 🚨 **Sistemas de alerta** para comunidades ribeirinhas
+
+## ✨ Funcionalidades
+
+### 🔬 Análise Avançada de Imagens
+- [x] Algoritmo RGB565 otimizado para análise em tempo real
+- [x] Sistema de referências múltiplas (dia/noite/clima)
+- [x] Detecção de mudanças por blocos 32x32 pixels
+- [x] Filtros anti-ruído e correção automática
+
+### 📡 Conectividade e Transmissão
+- [x] WiFi com reconexão automática
+- [x] MQTT 5.0 para transmissão de dados
+- [x] Protocolo otimizado para baixo consumo
+- [x] Buffer circular para dados históricos
+
+### 🔧 Recursos de Hardware
+- [x] Suporte completo para 8MB PSRAM
+- [x] Resolução HVGA (480x320) otimizada
+- [x] Sistema anti-esverdeado inteligente
+- [x] Monitoramento de recursos (CPU, memória, temperatura)
+
+### 📊 Monitoramento e Análise
+- [x] Dashboard web em tempo real
+- [x] Banco de dados SQLite para armazenamento
+- [x] Logs detalhados de eventos
+- [x] Métricas de desempenho científico
+
+## 🏗️ Estrutura do Projeto
+
+Esta estrutura segue as [melhores práticas para repositórios GitHub](https://medium.com/code-factory-berlin/github-repository-structure-best-practices-248e6effc405):
 
 ```
-ESP32-IC_Project/
-├── esp32/              # 🔧 Firmware ESP32-CAM (C/ESP-IDF)
-├── server/             # 🐍 Monitor Python + SQLite
-├── scripts/            # 🛠️ Scripts de automação e testes
-├── data/               # 📊 Dados científicos coletados (bancos SQLite + imagens)
-├── logs/               # 📋 Logs do sistema e debug
-└── docs/               # 📚 Documentação técnica completa
+esp32-cam-flood-monitor/
+├── 📁 src/                          # 💻 Código fonte principal
+│   ├── firmware/                    # 🔧 Firmware ESP32-CAM (C/ESP-IDF)
+│   │   ├── main/                    # Código principal
+│   │   ├── components/              # Componentes customizados
+│   │   └── sdkconfig               # Configurações ESP-IDF
+│   └── server/                      # 🐍 Servidor Python
+│       ├── mqtt_data_collector.py   # Coletor principal MQTT
+│       ├── database/               # Módulos de banco de dados
+│       ├── web/                    # Interface web
+│       └── analysis/               # Análise de dados
+├── 📁 tests/                        # 🧪 Testes automatizados
+│   ├── firmware/                   # Testes do firmware
+│   ├── server/                     # Testes do servidor
+│   └── integration/                # Testes de integração
+├── 📁 examples/                     # 📖 Exemplos de uso
+│   ├── basic_setup/                # Setup básico para iniciantes
+│   ├── advanced_config/            # Configuração avançada
+│   └── scientific_analysis/        # Análise científica
+├── 📁 tools/                        # 🛠️ Ferramentas de desenvolvimento
+│   ├── build/                      # Scripts de build
+│   ├── development/                # Ferramentas de dev
+│   ├── deployment/                 # Scripts de deploy
+│   └── analysis/                   # Análise científica
+├── 📁 config/                       # ⚙️ Arquivos de configuração
+│   ├── mqtt/                       # Configurações MQTT
+│   ├── wifi/                       # Configurações WiFi
+│   └── templates/                  # Templates de config
+├── 📁 assets/                       # 🎨 Recursos estáticos
+│   ├── images/                     # Imagens da documentação
+│   ├── diagrams/                   # Diagramas de arquitetura
+│   └── videos/                     # Vídeos demonstrativos
+├── 📁 build/                        # 🔨 Scripts de build/CI
+│   ├── firmware/                   # Build do firmware
+│   └── docker/                     # Containers Docker
+├── 📁 docs/                         # 📚 Documentação completa
+│   ├── installation.md             # Guia de instalação
+│   ├── configuration.md            # Configuração avançada
+│   ├── api.md                      # Referência da API
+│   └── faq.md                      # Perguntas frequentes
+├── 📁 .github/                      # 🤖 GitHub específico
+│   ├── workflows/                  # GitHub Actions
+│   ├── ISSUE_TEMPLATE/             # Templates de issues
+│   └── pull_request_template.md    # Template de PR
+├── 📁 data/                         # 📊 Dados científicos
+├── 📁 logs/                         # 📋 Logs do sistema
+├── 📄 README.md                     # Este arquivo
+├── 📄 LICENSE                       # Licença MIT
+├── 📄 CONTRIBUTING.md               # Guia de contribuição
+├── 📄 CODE_OF_CONDUCT.md            # Código de conduta
+├── 📄 CHANGELOG.md                  # Histórico de mudanças
+├── 📄 SECURITY.md                   # Políticas de segurança
+└── 📄 SUPPORT.md                    # Guia de suporte
 ```
 
-**Cada pasta possui seu próprio README com detalhes específicos.**
+## 🛠️ Tecnologias Utilizadas
+
+### Firmware (ESP32-CAM)
+- **ESP-IDF v5.0+** - Framework oficial Espressif
+- **FreeRTOS** - Sistema operacional em tempo real
+- **MQTT** - Protocolo de comunicação IoT
+- **JPEG** - Compressão de imagens otimizada
+
+### Servidor e Análise
+- **Python 3.9+** - Linguagem principal do servidor
+- **MQTT Client** - Cliente MQTT para recepção de dados
+- **SQLite** - Banco de dados local
+- **Matplotlib/Pandas** - Análise e visualização
+
+### Ferramentas de Desenvolvimento
+- **PlatformIO** / **ESP-IDF** - Desenvolvimento do firmware
+- **Git** - Controle de versão
+- **GitHub Actions** - CI/CD automático
 
 ## 🚀 Início Rápido
 
 ### Pré-requisitos
 
-- ESP-IDF v5.0+ ([Guia de Instalação](docs/installation.md#esp-idf))
-- Python 3.8+ com pip
-- Hardware: ESP32-CAM AI-Thinker + FTDI
+```bash
+# Hardware necessário
+- ESP32-CAM (recomendado: AI-Thinker)
+- Cartão MicroSD (opcional)
+- Fonte de alimentação 5V/3A
+- Cabo FTDI para programação
 
-### Instalação Básica
+# Software necessário
+- ESP-IDF v5.0+ ou PlatformIO
+- Python 3.9+
+- Git
+```
+
+### Instalação Rápida
 
 ```bash
 # 1. Clone o repositório
-git clone https://github.com/usuario/ESP32-IC_Project.git
-cd ESP32-IC_Project
+git clone https://github.com/seu-usuario/esp32-cam-flood-monitor.git
+cd esp32-cam-flood-monitor
 
-# 2. Use o script de configuração
-cd scripts
-./setup.sh
+# 2. Configure o ESP-IDF
+. $IDF_PATH/export.sh
 
-# Opção 1: Verificar dependências
-# Opção 2: Configurar projeto
-# Opção 5: Compilar firmware
-# Opção 6: Flash ESP32-CAM
+# 3. Configure o projeto
+cd src/firmware
+cp config/templates/config.example.h main/config.h
+# Edite config.h com suas configurações WiFi/MQTT
+
+# 4. Compile e faça upload
+idf.py build
+idf.py -p /dev/ttyUSB0 flash monitor
+
+# 5. Configure o servidor (terminal separado)
+cd ../server
+pip install -r requirements.txt
+python mqtt_data_collector.py
 ```
 
-Para instruções detalhadas, consulte o [Guia de Instalação](docs/installation.md).
+## 📖 Documentação
 
-## 📊 Métricas do Sistema
+### 📚 Documentação Completa
+- **[Guia de Instalação](docs/installation.md)** - Instalação detalhada passo a passo
+- **[Configuração](docs/configuration.md)** - Configuração avançada do sistema
+- **[API Reference](docs/api.md)** - Referência completa da API
+- **[Análise de Imagens](docs/image-analysis.md)** - Detalhes do algoritmo de análise
+- **[Troubleshooting](docs/troubleshooting.md)** - Solução de problemas comuns
 
-| Métrica | Valor | Descrição |
-|---------|-------|-----------|
-| **Resolução** | HVGA 480x320 | Otimizada para 4MB PSRAM |
-| **Qualidade JPEG** | 5 (premium) | Melhor qualidade visual |
-| **Economia de Dados** | 82% | vs versão simples |
-| **Taxa de Detecção** | 97% | Movimentos grandes |
-| **Uso de PSRAM** | 13.6% | Muito eficiente |
+### 🔧 Guias Técnicos
+- **[Protocolo MQTT](docs/mqtt-protocol.md)** - Especificação do protocolo
+- **[Hardware Setup](docs/hardware.md)** - Configuração de hardware
+- **[Performance Tuning](docs/performance.md)** - Otimização de performance
 
-## 📡 **Arquitetura**
+## 🏗️ Arquitetura
 
 ```
-ESP32-CAM ──MQTT──> Broker ──MQTT──> Python Server
-    │                                      │
-    └── Análise Local                      └── SQLite DB
+┌─────────────────┐    MQTT     ┌──────────────────┐    SQLite    ┌─────────────────┐
+│   ESP32-CAM     │ ──────────► │   MQTT Broker    │ ───────────► │   Data Storage  │
+│                 │             │   (Mosquitto)    │              │   (SQLite DB)   │
+│ • Captura       │             └──────────────────┘              └─────────────────┘
+│ • Análise       │                      │                                  │
+│ • Transmissão   │                      ▼                                  ▼
+└─────────────────┘             ┌──────────────────┐              ┌─────────────────┐
+                                │  Data Collector  │              │   Web Dashboard │
+                                │   (Python)       │              │   (Flask/HTML)  │
+                                └──────────────────┘              └─────────────────┘
 ```
 
-## 🚀 **Uso Rápido**
+## 🤝 Como Contribuir
 
-### **Configuração Inicial**
-```bash
-# Script automatizado
-./scripts/setup.sh
-```
+Adoramos contribuições! Por favor, leia nosso [Guia de Contribuição](CONTRIBUTING.md) para detalhes sobre nosso código de conduta e o processo para enviar pull requests.
 
-### **Executar Sistema**
-```bash
-# Servidor de monitoramento
-cd server && python3 mqtt_data_collector.py
+### 🐛 Reportando Bugs
+Use os [templates de issue](.github/ISSUE_TEMPLATE/) para reportar bugs ou solicitar funcionalidades.
 
-# Testes científicos
-./scripts/run_scientific_tests.sh
-```
+### 💡 Sugestões de Melhorias
+1. Faça fork do projeto
+2. Crie sua feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit suas mudanças (`git commit -m 'Add some AmazingFeature'`)
+4. Push para a branch (`git push origin feature/AmazingFeature`)
+5. Abra um Pull Request
 
-## 📚 **Documentação**
+## 🗺️ Roadmap
 
-- [📖 Documentação Técnica](docs/technical_guide.md) - Arquitetura completa
-- [🔌 Manual ESP32-CAM](docs/hardware_guide.md) - Hardware e setup
-- [⚙️ Guia de Instalação](docs/installation.md) - Passo a passo
-- [📶 API MQTT](docs/mqtt_api.md) - Protocolo de comunicação
-- [🧪 Testes de Laboratório](docs/testing_guide.md) - Metodologia
+### v2.0.0 (Próxima Release)
+- [ ] **Análise ML/IA** - Implementação de modelos de machine learning
+- [ ] **Multi-sensor** - Suporte para sensores adicionais (temperatura, umidade)
+- [ ] **Cloud Integration** - Integração com AWS IoT/Google Cloud
+- [ ] **Mobile App** - Aplicativo móvel para monitoramento
 
-## 🔬 **Pesquisa Científica**
+### v1.1.0 (Em Desenvolvimento)
+- [ ] **Dashboard Web** - Interface web responsiva
+- [ ] **Alertas configuráveis** - Sistema de notificações personalizáveis
+- [ ] **API REST** - API completa para integração externa
+- [ ] **Backup automático** - Sistema de backup de dados
 
-Este projeto implementa uma **metodologia científica robusta** com:
-- **Duas versões** para comparação (inteligente vs simples)
-- **Coleta automatizada** de métricas
-- **Análise estatística** com intervalos de confiança
-- **Reprodutibilidade** garantida por protocolos documentados
+Veja a [lista completa de issues](https://github.com/seu-usuario/esp32-cam-flood-monitor/issues) para propostas de funcionalidades e bugs conhecidos.
 
-## 📄 **Licença**
+## 📄 Licença
 
-MIT License - veja [LICENSE](LICENSE)
+Distribuído sob a Licença MIT. Veja `LICENSE` para mais informações.
 
-## 👥 **Contato**
+## 📬 Contato
 
-**Gabriel Passos de Oliveira**  
-📧 gabriel.passos@unesp.br  
-🏛️ Instituto de Geociências e Ciências Exatas - IGCE/UNESP  
-📍 Rio Claro, SP - Brasil
+**Gabriel Passos** - gabriel.passos@unesp.br
+
+**Link do Projeto:** [https://github.com/seu-usuario/esp32-cam-flood-monitor](https://github.com/seu-usuario/esp32-cam-flood-monitor)
+
+## 🙏 Agradecimentos
+
+* [ESP-IDF](https://docs.espressif.com/projects/esp-idf/) - Framework oficial Espressif
+* [MQTT.org](https://mqtt.org/) - Protocolo de comunicação IoT
+* [Choose an Open Source License](https://choosealicense.com) - Guia de licenças
+* [Img Shields](https://shields.io) - Badges para README
+* [Best-README-Template](https://github.com/othneildrew/Best-README-Template) - Template base
 
 ---
 
-**Projeto de Iniciação Científica - UNESP 2025**  
-*Sistema embarcado de monitoramento fluvial com processamento local de imagens*
+<div align="center">
+  
+**⭐ Se este projeto foi útil, considere dar uma estrela!**
+
+[![Star History Chart](https://api.star-history.com/svg?repos=seu-usuario/esp32-cam-flood-monitor&type=Date)](https://star-history.com/#seu-usuario/esp32-cam-flood-monitor&Date)
+
+</div>

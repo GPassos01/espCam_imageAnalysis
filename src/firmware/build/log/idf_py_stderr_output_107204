@@ -1,0 +1,312 @@
+In file included from /home/steps/projetos/espCam_imageAnalysis/esp32/main/model/chip_info.c:5:
+/home/steps/projetos/espCam_imageAnalysis/esp32/main/model/chip_info.c: In function 'print_chip_info':
+/home/steps/projetos/espCam_imageAnalysis/esp32/main/model/chip_info.c:60:82: error: format '%zu' expects argument of type 'size_t', but argument 6 has type 'long unsigned int' [-Werror=format=]
+   60 |     ESP_LOGI(TAG, "   Heap Total: ~%zu KB", esp_get_free_heap_size() / 1024 + 100); // Estimativa
+      |                                                                                  ^
+/home/steps/esp/esp-idf/components/log/include/esp_log.h:308:59: note: in definition of macro 'LOG_FORMAT'
+  308 | #define LOG_FORMAT(letter, format)  LOG_COLOR_ ## letter #letter " (%" PRIu32 ") %s: " format LOG_RESET_COLOR "\n"
+      |                                                           ^~~~~~
+/home/steps/esp/esp-idf/components/log/include/esp_log.h:464:41: note: in expansion of macro 'ESP_LOG_LEVEL'
+  464 |         if ( LOG_LOCAL_LEVEL >= level ) ESP_LOG_LEVEL(level, tag, format, ##__VA_ARGS__); \
+      |                                         ^~~~~~~~~~~~~
+/home/steps/esp/esp-idf/components/log/include/esp_log.h:368:38: note: in expansion of macro 'ESP_LOG_LEVEL_LOCAL'
+  368 | #define ESP_LOGI( tag, format, ... ) ESP_LOG_LEVEL_LOCAL(ESP_LOG_INFO,    tag, format, ##__VA_ARGS__)
+      |                                      ^~~~~~~~~~~~~~~~~~~
+/home/steps/projetos/espCam_imageAnalysis/esp32/main/model/chip_info.c:60:5: note: in expansion of macro 'ESP_LOGI'
+   60 |     ESP_LOGI(TAG, "   Heap Total: ~%zu KB", esp_get_free_heap_size() / 1024 + 100); // Estimativa
+      |     ^~~~~~~~
+/home/steps/projetos/espCam_imageAnalysis/esp32/main/model/chip_info.c:60:1: error: format '%zu' expects argument of type 'size_t', but argument 6 has type 'long unsigned int' [-Werror=format=]
+   60 |     ESP_LOGI(TAG, "   Heap Total: ~%zu KB", esp_get_free_heap_size() / 1024 + 100); // Estimativa
+      | ^   ~~~~~~~
+/home/steps/esp/esp-idf/components/log/include/esp_log.h:308:59: note: in definition of macro 'LOG_FORMAT'
+  308 | #define LOG_FORMAT(letter, format)  LOG_COLOR_ ## letter #letter " (%" PRIu32 ") %s: " format LOG_RESET_COLOR "\n"
+      |                                                           ^~~~~~
+/home/steps/esp/esp-idf/components/log/include/esp_log.h:464:41: note: in expansion of macro 'ESP_LOG_LEVEL'
+  464 |         if ( LOG_LOCAL_LEVEL >= level ) ESP_LOG_LEVEL(level, tag, format, ##__VA_ARGS__); \
+      |                                         ^~~~~~~~~~~~~
+/home/steps/esp/esp-idf/components/log/include/esp_log.h:368:38: note: in expansion of macro 'ESP_LOG_LEVEL_LOCAL'
+  368 | #define ESP_LOGI( tag, format, ... ) ESP_LOG_LEVEL_LOCAL(ESP_LOG_INFO,    tag, format, ##__VA_ARGS__)
+      |                                      ^~~~~~~~~~~~~~~~~~~
+/home/steps/projetos/espCam_imageAnalysis/esp32/main/model/chip_info.c:60:5: note: in expansion of macro 'ESP_LOGI'
+   60 |     ESP_LOGI(TAG, "   Heap Total: ~%zu KB", esp_get_free_heap_size() / 1024 + 100); // Estimativa
+      |     ^~~~~~~~
+/home/steps/projetos/espCam_imageAnalysis/esp32/main/model/chip_info.c:60:1: error: format '%zu' expects argument of type 'size_t', but argument 6 has type 'long unsigned int' [-Werror=format=]
+   60 |     ESP_LOGI(TAG, "   Heap Total: ~%zu KB", esp_get_free_heap_size() / 1024 + 100); // Estimativa
+      | ^   ~~~~~~~
+/home/steps/esp/esp-idf/components/log/include/esp_log.h:308:59: note: in definition of macro 'LOG_FORMAT'
+  308 | #define LOG_FORMAT(letter, format)  LOG_COLOR_ ## letter #letter " (%" PRIu32 ") %s: " format LOG_RESET_COLOR "\n"
+      |                                                           ^~~~~~
+/home/steps/esp/esp-idf/components/log/include/esp_log.h:464:41: note: in expansion of macro 'ESP_LOG_LEVEL'
+  464 |         if ( LOG_LOCAL_LEVEL >= level ) ESP_LOG_LEVEL(level, tag, format, ##__VA_ARGS__); \
+      |                                         ^~~~~~~~~~~~~
+/home/steps/esp/esp-idf/components/log/include/esp_log.h:368:38: note: in expansion of macro 'ESP_LOG_LEVEL_LOCAL'
+  368 | #define ESP_LOGI( tag, format, ... ) ESP_LOG_LEVEL_LOCAL(ESP_LOG_INFO,    tag, format, ##__VA_ARGS__)
+      |                                      ^~~~~~~~~~~~~~~~~~~
+/home/steps/projetos/espCam_imageAnalysis/esp32/main/model/chip_info.c:60:5: note: in expansion of macro 'ESP_LOGI'
+   60 |     ESP_LOGI(TAG, "   Heap Total: ~%zu KB", esp_get_free_heap_size() / 1024 + 100); // Estimativa
+      |     ^~~~~~~~
+/home/steps/projetos/espCam_imageAnalysis/esp32/main/model/chip_info.c:60:1: error: format '%zu' expects argument of type 'size_t', but argument 6 has type 'long unsigned int' [-Werror=format=]
+   60 |     ESP_LOGI(TAG, "   Heap Total: ~%zu KB", esp_get_free_heap_size() / 1024 + 100); // Estimativa
+      | ^   ~~~~~~~
+/home/steps/esp/esp-idf/components/log/include/esp_log.h:308:59: note: in definition of macro 'LOG_FORMAT'
+  308 | #define LOG_FORMAT(letter, format)  LOG_COLOR_ ## letter #letter " (%" PRIu32 ") %s: " format LOG_RESET_COLOR "\n"
+      |                                                           ^~~~~~
+/home/steps/esp/esp-idf/components/log/include/esp_log.h:464:41: note: in expansion of macro 'ESP_LOG_LEVEL'
+  464 |         if ( LOG_LOCAL_LEVEL >= level ) ESP_LOG_LEVEL(level, tag, format, ##__VA_ARGS__); \
+      |                                         ^~~~~~~~~~~~~
+/home/steps/esp/esp-idf/components/log/include/esp_log.h:368:38: note: in expansion of macro 'ESP_LOG_LEVEL_LOCAL'
+  368 | #define ESP_LOGI( tag, format, ... ) ESP_LOG_LEVEL_LOCAL(ESP_LOG_INFO,    tag, format, ##__VA_ARGS__)
+      |                                      ^~~~~~~~~~~~~~~~~~~
+/home/steps/projetos/espCam_imageAnalysis/esp32/main/model/chip_info.c:60:5: note: in expansion of macro 'ESP_LOGI'
+   60 |     ESP_LOGI(TAG, "   Heap Total: ~%zu KB", esp_get_free_heap_size() / 1024 + 100); // Estimativa
+      |     ^~~~~~~~
+/home/steps/projetos/espCam_imageAnalysis/esp32/main/model/chip_info.c:60:1: error: format '%zu' expects argument of type 'size_t', but argument 6 has type 'long unsigned int' [-Werror=format=]
+   60 |     ESP_LOGI(TAG, "   Heap Total: ~%zu KB", esp_get_free_heap_size() / 1024 + 100); // Estimativa
+      | ^   ~~~~~~~
+/home/steps/esp/esp-idf/components/log/include/esp_log.h:308:59: note: in definition of macro 'LOG_FORMAT'
+  308 | #define LOG_FORMAT(letter, format)  LOG_COLOR_ ## letter #letter " (%" PRIu32 ") %s: " format LOG_RESET_COLOR "\n"
+      |                                                           ^~~~~~
+/home/steps/esp/esp-idf/components/log/include/esp_log.h:464:41: note: in expansion of macro 'ESP_LOG_LEVEL'
+  464 |         if ( LOG_LOCAL_LEVEL >= level ) ESP_LOG_LEVEL(level, tag, format, ##__VA_ARGS__); \
+      |                                         ^~~~~~~~~~~~~
+/home/steps/esp/esp-idf/components/log/include/esp_log.h:368:38: note: in expansion of macro 'ESP_LOG_LEVEL_LOCAL'
+  368 | #define ESP_LOGI( tag, format, ... ) ESP_LOG_LEVEL_LOCAL(ESP_LOG_INFO,    tag, format, ##__VA_ARGS__)
+      |                                      ^~~~~~~~~~~~~~~~~~~
+/home/steps/projetos/espCam_imageAnalysis/esp32/main/model/chip_info.c:60:5: note: in expansion of macro 'ESP_LOGI'
+   60 |     ESP_LOGI(TAG, "   Heap Total: ~%zu KB", esp_get_free_heap_size() / 1024 + 100); // Estimativa
+      |     ^~~~~~~~
+/home/steps/projetos/espCam_imageAnalysis/esp32/main/model/chip_info.c:61:75: error: format '%zu' expects argument of type 'size_t', but argument 6 has type 'long unsigned int' [-Werror=format=]
+   61 |     ESP_LOGI(TAG, "   Heap Livre: %zu KB", esp_get_free_heap_size() / 1024);
+      |                                                                           ^
+/home/steps/esp/esp-idf/components/log/include/esp_log.h:308:59: note: in definition of macro 'LOG_FORMAT'
+  308 | #define LOG_FORMAT(letter, format)  LOG_COLOR_ ## letter #letter " (%" PRIu32 ") %s: " format LOG_RESET_COLOR "\n"
+      |                                                           ^~~~~~
+/home/steps/esp/esp-idf/components/log/include/esp_log.h:464:41: note: in expansion of macro 'ESP_LOG_LEVEL'
+  464 |         if ( LOG_LOCAL_LEVEL >= level ) ESP_LOG_LEVEL(level, tag, format, ##__VA_ARGS__); \
+      |                                         ^~~~~~~~~~~~~
+/home/steps/esp/esp-idf/components/log/include/esp_log.h:368:38: note: in expansion of macro 'ESP_LOG_LEVEL_LOCAL'
+  368 | #define ESP_LOGI( tag, format, ... ) ESP_LOG_LEVEL_LOCAL(ESP_LOG_INFO,    tag, format, ##__VA_ARGS__)
+      |                                      ^~~~~~~~~~~~~~~~~~~
+/home/steps/projetos/espCam_imageAnalysis/esp32/main/model/chip_info.c:61:5: note: in expansion of macro 'ESP_LOGI'
+   61 |     ESP_LOGI(TAG, "   Heap Livre: %zu KB", esp_get_free_heap_size() / 1024);
+      |     ^~~~~~~~
+/home/steps/projetos/espCam_imageAnalysis/esp32/main/model/chip_info.c:61:1: error: format '%zu' expects argument of type 'size_t', but argument 6 has type 'long unsigned int' [-Werror=format=]
+   61 |     ESP_LOGI(TAG, "   Heap Livre: %zu KB", esp_get_free_heap_size() / 1024);
+      | ^   ~~~~~~~
+/home/steps/esp/esp-idf/components/log/include/esp_log.h:308:59: note: in definition of macro 'LOG_FORMAT'
+  308 | #define LOG_FORMAT(letter, format)  LOG_COLOR_ ## letter #letter " (%" PRIu32 ") %s: " format LOG_RESET_COLOR "\n"
+      |                                                           ^~~~~~
+/home/steps/esp/esp-idf/components/log/include/esp_log.h:464:41: note: in expansion of macro 'ESP_LOG_LEVEL'
+  464 |         if ( LOG_LOCAL_LEVEL >= level ) ESP_LOG_LEVEL(level, tag, format, ##__VA_ARGS__); \
+      |                                         ^~~~~~~~~~~~~
+/home/steps/esp/esp-idf/components/log/include/esp_log.h:368:38: note: in expansion of macro 'ESP_LOG_LEVEL_LOCAL'
+  368 | #define ESP_LOGI( tag, format, ... ) ESP_LOG_LEVEL_LOCAL(ESP_LOG_INFO,    tag, format, ##__VA_ARGS__)
+      |                                      ^~~~~~~~~~~~~~~~~~~
+/home/steps/projetos/espCam_imageAnalysis/esp32/main/model/chip_info.c:61:5: note: in expansion of macro 'ESP_LOGI'
+   61 |     ESP_LOGI(TAG, "   Heap Livre: %zu KB", esp_get_free_heap_size() / 1024);
+      |     ^~~~~~~~
+/home/steps/projetos/espCam_imageAnalysis/esp32/main/model/chip_info.c:61:1: error: format '%zu' expects argument of type 'size_t', but argument 6 has type 'long unsigned int' [-Werror=format=]
+   61 |     ESP_LOGI(TAG, "   Heap Livre: %zu KB", esp_get_free_heap_size() / 1024);
+      | ^   ~~~~~~~
+/home/steps/esp/esp-idf/components/log/include/esp_log.h:308:59: note: in definition of macro 'LOG_FORMAT'
+  308 | #define LOG_FORMAT(letter, format)  LOG_COLOR_ ## letter #letter " (%" PRIu32 ") %s: " format LOG_RESET_COLOR "\n"
+      |                                                           ^~~~~~
+/home/steps/esp/esp-idf/components/log/include/esp_log.h:464:41: note: in expansion of macro 'ESP_LOG_LEVEL'
+  464 |         if ( LOG_LOCAL_LEVEL >= level ) ESP_LOG_LEVEL(level, tag, format, ##__VA_ARGS__); \
+      |                                         ^~~~~~~~~~~~~
+/home/steps/esp/esp-idf/components/log/include/esp_log.h:368:38: note: in expansion of macro 'ESP_LOG_LEVEL_LOCAL'
+  368 | #define ESP_LOGI( tag, format, ... ) ESP_LOG_LEVEL_LOCAL(ESP_LOG_INFO,    tag, format, ##__VA_ARGS__)
+      |                                      ^~~~~~~~~~~~~~~~~~~
+/home/steps/projetos/espCam_imageAnalysis/esp32/main/model/chip_info.c:61:5: note: in expansion of macro 'ESP_LOGI'
+   61 |     ESP_LOGI(TAG, "   Heap Livre: %zu KB", esp_get_free_heap_size() / 1024);
+      |     ^~~~~~~~
+/home/steps/projetos/espCam_imageAnalysis/esp32/main/model/chip_info.c:61:1: error: format '%zu' expects argument of type 'size_t', but argument 6 has type 'long unsigned int' [-Werror=format=]
+   61 |     ESP_LOGI(TAG, "   Heap Livre: %zu KB", esp_get_free_heap_size() / 1024);
+      | ^   ~~~~~~~
+/home/steps/esp/esp-idf/components/log/include/esp_log.h:308:59: note: in definition of macro 'LOG_FORMAT'
+  308 | #define LOG_FORMAT(letter, format)  LOG_COLOR_ ## letter #letter " (%" PRIu32 ") %s: " format LOG_RESET_COLOR "\n"
+      |                                                           ^~~~~~
+/home/steps/esp/esp-idf/components/log/include/esp_log.h:464:41: note: in expansion of macro 'ESP_LOG_LEVEL'
+  464 |         if ( LOG_LOCAL_LEVEL >= level ) ESP_LOG_LEVEL(level, tag, format, ##__VA_ARGS__); \
+      |                                         ^~~~~~~~~~~~~
+/home/steps/esp/esp-idf/components/log/include/esp_log.h:368:38: note: in expansion of macro 'ESP_LOG_LEVEL_LOCAL'
+  368 | #define ESP_LOGI( tag, format, ... ) ESP_LOG_LEVEL_LOCAL(ESP_LOG_INFO,    tag, format, ##__VA_ARGS__)
+      |                                      ^~~~~~~~~~~~~~~~~~~
+/home/steps/projetos/espCam_imageAnalysis/esp32/main/model/chip_info.c:61:5: note: in expansion of macro 'ESP_LOGI'
+   61 |     ESP_LOGI(TAG, "   Heap Livre: %zu KB", esp_get_free_heap_size() / 1024);
+      |     ^~~~~~~~
+/home/steps/projetos/espCam_imageAnalysis/esp32/main/model/chip_info.c:61:1: error: format '%zu' expects argument of type 'size_t', but argument 6 has type 'long unsigned int' [-Werror=format=]
+   61 |     ESP_LOGI(TAG, "   Heap Livre: %zu KB", esp_get_free_heap_size() / 1024);
+      | ^   ~~~~~~~
+/home/steps/esp/esp-idf/components/log/include/esp_log.h:308:59: note: in definition of macro 'LOG_FORMAT'
+  308 | #define LOG_FORMAT(letter, format)  LOG_COLOR_ ## letter #letter " (%" PRIu32 ") %s: " format LOG_RESET_COLOR "\n"
+      |                                                           ^~~~~~
+/home/steps/esp/esp-idf/components/log/include/esp_log.h:464:41: note: in expansion of macro 'ESP_LOG_LEVEL'
+  464 |         if ( LOG_LOCAL_LEVEL >= level ) ESP_LOG_LEVEL(level, tag, format, ##__VA_ARGS__); \
+      |                                         ^~~~~~~~~~~~~
+/home/steps/esp/esp-idf/components/log/include/esp_log.h:368:38: note: in expansion of macro 'ESP_LOG_LEVEL_LOCAL'
+  368 | #define ESP_LOGI( tag, format, ... ) ESP_LOG_LEVEL_LOCAL(ESP_LOG_INFO,    tag, format, ##__VA_ARGS__)
+      |                                      ^~~~~~~~~~~~~~~~~~~
+/home/steps/projetos/espCam_imageAnalysis/esp32/main/model/chip_info.c:61:5: note: in expansion of macro 'ESP_LOGI'
+   61 |     ESP_LOGI(TAG, "   Heap Livre: %zu KB", esp_get_free_heap_size() / 1024);
+      |     ^~~~~~~~
+/home/steps/projetos/espCam_imageAnalysis/esp32/main/model/chip_info.c:62:84: error: format '%zu' expects argument of type 'size_t', but argument 6 has type 'long unsigned int' [-Werror=format=]
+   62 |     ESP_LOGI(TAG, "   Heap Mínimo: %zu KB", esp_get_minimum_free_heap_size() / 1024);
+      |                                                                                    ^
+/home/steps/esp/esp-idf/components/log/include/esp_log.h:308:59: note: in definition of macro 'LOG_FORMAT'
+  308 | #define LOG_FORMAT(letter, format)  LOG_COLOR_ ## letter #letter " (%" PRIu32 ") %s: " format LOG_RESET_COLOR "\n"
+      |                                                           ^~~~~~
+/home/steps/esp/esp-idf/components/log/include/esp_log.h:464:41: note: in expansion of macro 'ESP_LOG_LEVEL'
+  464 |         if ( LOG_LOCAL_LEVEL >= level ) ESP_LOG_LEVEL(level, tag, format, ##__VA_ARGS__); \
+      |                                         ^~~~~~~~~~~~~
+/home/steps/esp/esp-idf/components/log/include/esp_log.h:368:38: note: in expansion of macro 'ESP_LOG_LEVEL_LOCAL'
+  368 | #define ESP_LOGI( tag, format, ... ) ESP_LOG_LEVEL_LOCAL(ESP_LOG_INFO,    tag, format, ##__VA_ARGS__)
+      |                                      ^~~~~~~~~~~~~~~~~~~
+/home/steps/projetos/espCam_imageAnalysis/esp32/main/model/chip_info.c:62:5: note: in expansion of macro 'ESP_LOGI'
+   62 |     ESP_LOGI(TAG, "   Heap Mínimo: %zu KB", esp_get_minimum_free_heap_size() / 1024);
+      |     ^~~~~~~~
+/home/steps/projetos/espCam_imageAnalysis/esp32/main/model/chip_info.c:62:1: error: format '%zu' expects argument of type 'size_t', but argument 6 has type 'long unsigned int' [-Werror=format=]
+   62 |     ESP_LOGI(TAG, "   Heap Mínimo: %zu KB", esp_get_minimum_free_heap_size() / 1024);
+      | ^   ~~~~~~~
+/home/steps/esp/esp-idf/components/log/include/esp_log.h:308:59: note: in definition of macro 'LOG_FORMAT'
+  308 | #define LOG_FORMAT(letter, format)  LOG_COLOR_ ## letter #letter " (%" PRIu32 ") %s: " format LOG_RESET_COLOR "\n"
+      |                                                           ^~~~~~
+/home/steps/esp/esp-idf/components/log/include/esp_log.h:464:41: note: in expansion of macro 'ESP_LOG_LEVEL'
+  464 |         if ( LOG_LOCAL_LEVEL >= level ) ESP_LOG_LEVEL(level, tag, format, ##__VA_ARGS__); \
+      |                                         ^~~~~~~~~~~~~
+/home/steps/esp/esp-idf/components/log/include/esp_log.h:368:38: note: in expansion of macro 'ESP_LOG_LEVEL_LOCAL'
+  368 | #define ESP_LOGI( tag, format, ... ) ESP_LOG_LEVEL_LOCAL(ESP_LOG_INFO,    tag, format, ##__VA_ARGS__)
+      |                                      ^~~~~~~~~~~~~~~~~~~
+/home/steps/projetos/espCam_imageAnalysis/esp32/main/model/chip_info.c:62:5: note: in expansion of macro 'ESP_LOGI'
+   62 |     ESP_LOGI(TAG, "   Heap Mínimo: %zu KB", esp_get_minimum_free_heap_size() / 1024);
+      |     ^~~~~~~~
+/home/steps/projetos/espCam_imageAnalysis/esp32/main/model/chip_info.c:62:1: error: format '%zu' expects argument of type 'size_t', but argument 6 has type 'long unsigned int' [-Werror=format=]
+   62 |     ESP_LOGI(TAG, "   Heap Mínimo: %zu KB", esp_get_minimum_free_heap_size() / 1024);
+      | ^   ~~~~~~~
+/home/steps/esp/esp-idf/components/log/include/esp_log.h:308:59: note: in definition of macro 'LOG_FORMAT'
+  308 | #define LOG_FORMAT(letter, format)  LOG_COLOR_ ## letter #letter " (%" PRIu32 ") %s: " format LOG_RESET_COLOR "\n"
+      |                                                           ^~~~~~
+/home/steps/esp/esp-idf/components/log/include/esp_log.h:464:41: note: in expansion of macro 'ESP_LOG_LEVEL'
+  464 |         if ( LOG_LOCAL_LEVEL >= level ) ESP_LOG_LEVEL(level, tag, format, ##__VA_ARGS__); \
+      |                                         ^~~~~~~~~~~~~
+/home/steps/esp/esp-idf/components/log/include/esp_log.h:368:38: note: in expansion of macro 'ESP_LOG_LEVEL_LOCAL'
+  368 | #define ESP_LOGI( tag, format, ... ) ESP_LOG_LEVEL_LOCAL(ESP_LOG_INFO,    tag, format, ##__VA_ARGS__)
+      |                                      ^~~~~~~~~~~~~~~~~~~
+/home/steps/projetos/espCam_imageAnalysis/esp32/main/model/chip_info.c:62:5: note: in expansion of macro 'ESP_LOGI'
+   62 |     ESP_LOGI(TAG, "   Heap Mínimo: %zu KB", esp_get_minimum_free_heap_size() / 1024);
+      |     ^~~~~~~~
+/home/steps/projetos/espCam_imageAnalysis/esp32/main/model/chip_info.c:62:1: error: format '%zu' expects argument of type 'size_t', but argument 6 has type 'long unsigned int' [-Werror=format=]
+   62 |     ESP_LOGI(TAG, "   Heap Mínimo: %zu KB", esp_get_minimum_free_heap_size() / 1024);
+      | ^   ~~~~~~~
+/home/steps/esp/esp-idf/components/log/include/esp_log.h:308:59: note: in definition of macro 'LOG_FORMAT'
+  308 | #define LOG_FORMAT(letter, format)  LOG_COLOR_ ## letter #letter " (%" PRIu32 ") %s: " format LOG_RESET_COLOR "\n"
+      |                                                           ^~~~~~
+/home/steps/esp/esp-idf/components/log/include/esp_log.h:464:41: note: in expansion of macro 'ESP_LOG_LEVEL'
+  464 |         if ( LOG_LOCAL_LEVEL >= level ) ESP_LOG_LEVEL(level, tag, format, ##__VA_ARGS__); \
+      |                                         ^~~~~~~~~~~~~
+/home/steps/esp/esp-idf/components/log/include/esp_log.h:368:38: note: in expansion of macro 'ESP_LOG_LEVEL_LOCAL'
+  368 | #define ESP_LOGI( tag, format, ... ) ESP_LOG_LEVEL_LOCAL(ESP_LOG_INFO,    tag, format, ##__VA_ARGS__)
+      |                                      ^~~~~~~~~~~~~~~~~~~
+/home/steps/projetos/espCam_imageAnalysis/esp32/main/model/chip_info.c:62:5: note: in expansion of macro 'ESP_LOGI'
+   62 |     ESP_LOGI(TAG, "   Heap Mínimo: %zu KB", esp_get_minimum_free_heap_size() / 1024);
+      |     ^~~~~~~~
+/home/steps/projetos/espCam_imageAnalysis/esp32/main/model/chip_info.c:62:1: error: format '%zu' expects argument of type 'size_t', but argument 6 has type 'long unsigned int' [-Werror=format=]
+   62 |     ESP_LOGI(TAG, "   Heap Mínimo: %zu KB", esp_get_minimum_free_heap_size() / 1024);
+      | ^   ~~~~~~~
+/home/steps/esp/esp-idf/components/log/include/esp_log.h:308:59: note: in definition of macro 'LOG_FORMAT'
+  308 | #define LOG_FORMAT(letter, format)  LOG_COLOR_ ## letter #letter " (%" PRIu32 ") %s: " format LOG_RESET_COLOR "\n"
+      |                                                           ^~~~~~
+/home/steps/esp/esp-idf/components/log/include/esp_log.h:464:41: note: in expansion of macro 'ESP_LOG_LEVEL'
+  464 |         if ( LOG_LOCAL_LEVEL >= level ) ESP_LOG_LEVEL(level, tag, format, ##__VA_ARGS__); \
+      |                                         ^~~~~~~~~~~~~
+/home/steps/esp/esp-idf/components/log/include/esp_log.h:368:38: note: in expansion of macro 'ESP_LOG_LEVEL_LOCAL'
+  368 | #define ESP_LOGI( tag, format, ... ) ESP_LOG_LEVEL_LOCAL(ESP_LOG_INFO,    tag, format, ##__VA_ARGS__)
+      |                                      ^~~~~~~~~~~~~~~~~~~
+/home/steps/projetos/espCam_imageAnalysis/esp32/main/model/chip_info.c:62:5: note: in expansion of macro 'ESP_LOGI'
+   62 |     ESP_LOGI(TAG, "   Heap Mínimo: %zu KB", esp_get_minimum_free_heap_size() / 1024);
+      |     ^~~~~~~~
+In file included from /home/steps/projetos/espCam_imageAnalysis/esp32/main/model/init_hw.c:9:
+/home/steps/projetos/espCam_imageAnalysis/esp32/main/model/init_hw.c: In function 'detect_green_tint':
+/home/steps/projetos/espCam_imageAnalysis/esp32/main/model/init_hw.c:274:47: error: format '%d' expects argument of type 'int', but argument 7 has type 'uint32_t' {aka 'long unsigned int'} [-Werror=format=]
+  274 |                  fb->len, avg_size, size_ratio);
+      |                                               ^
+/home/steps/esp/esp-idf/components/log/include/esp_log.h:308:59: note: in definition of macro 'LOG_FORMAT'
+  308 | #define LOG_FORMAT(letter, format)  LOG_COLOR_ ## letter #letter " (%" PRIu32 ") %s: " format LOG_RESET_COLOR "\n"
+      |                                                           ^~~~~~
+/home/steps/esp/esp-idf/components/log/include/esp_log.h:464:41: note: in expansion of macro 'ESP_LOG_LEVEL'
+  464 |         if ( LOG_LOCAL_LEVEL >= level ) ESP_LOG_LEVEL(level, tag, format, ##__VA_ARGS__); \
+      |                                         ^~~~~~~~~~~~~
+/home/steps/esp/esp-idf/components/log/include/esp_log.h:369:38: note: in expansion of macro 'ESP_LOG_LEVEL_LOCAL'
+  369 | #define ESP_LOGD( tag, format, ... ) ESP_LOG_LEVEL_LOCAL(ESP_LOG_DEBUG,   tag, format, ##__VA_ARGS__)
+      |                                      ^~~~~~~~~~~~~~~~~~~
+/home/steps/projetos/espCam_imageAnalysis/esp32/main/model/init_hw.c:273:9: note: in expansion of macro 'ESP_LOGD'
+  273 |         ESP_LOGD(TAG, "🔍 Possível tint detectado - Tamanho anômalo: %d vs %d (ratio: %.2f)",
+      |         ^~~~~~~~
+/home/steps/projetos/espCam_imageAnalysis/esp32/main/model/init_hw.c:274:1: error: format '%d' expects argument of type 'int', but argument 7 has type 'uint32_t' {aka 'long unsigned int'} [-Werror=format=]
+  274 |                  fb->len, avg_size, size_ratio);
+      | ^          
+/home/steps/esp/esp-idf/components/log/include/esp_log.h:308:59: note: in definition of macro 'LOG_FORMAT'
+  308 | #define LOG_FORMAT(letter, format)  LOG_COLOR_ ## letter #letter " (%" PRIu32 ") %s: " format LOG_RESET_COLOR "\n"
+      |                                                           ^~~~~~
+/home/steps/esp/esp-idf/components/log/include/esp_log.h:464:41: note: in expansion of macro 'ESP_LOG_LEVEL'
+  464 |         if ( LOG_LOCAL_LEVEL >= level ) ESP_LOG_LEVEL(level, tag, format, ##__VA_ARGS__); \
+      |                                         ^~~~~~~~~~~~~
+/home/steps/esp/esp-idf/components/log/include/esp_log.h:369:38: note: in expansion of macro 'ESP_LOG_LEVEL_LOCAL'
+  369 | #define ESP_LOGD( tag, format, ... ) ESP_LOG_LEVEL_LOCAL(ESP_LOG_DEBUG,   tag, format, ##__VA_ARGS__)
+      |                                      ^~~~~~~~~~~~~~~~~~~
+/home/steps/projetos/espCam_imageAnalysis/esp32/main/model/init_hw.c:273:9: note: in expansion of macro 'ESP_LOGD'
+  273 |         ESP_LOGD(TAG, "🔍 Possível tint detectado - Tamanho anômalo: %d vs %d (ratio: %.2f)",
+      |         ^~~~~~~~
+/home/steps/projetos/espCam_imageAnalysis/esp32/main/model/init_hw.c:274:1: error: format '%d' expects argument of type 'int', but argument 7 has type 'uint32_t' {aka 'long unsigned int'} [-Werror=format=]
+  274 |                  fb->len, avg_size, size_ratio);
+      | ^          
+/home/steps/esp/esp-idf/components/log/include/esp_log.h:308:59: note: in definition of macro 'LOG_FORMAT'
+  308 | #define LOG_FORMAT(letter, format)  LOG_COLOR_ ## letter #letter " (%" PRIu32 ") %s: " format LOG_RESET_COLOR "\n"
+      |                                                           ^~~~~~
+/home/steps/esp/esp-idf/components/log/include/esp_log.h:464:41: note: in expansion of macro 'ESP_LOG_LEVEL'
+  464 |         if ( LOG_LOCAL_LEVEL >= level ) ESP_LOG_LEVEL(level, tag, format, ##__VA_ARGS__); \
+      |                                         ^~~~~~~~~~~~~
+/home/steps/esp/esp-idf/components/log/include/esp_log.h:369:38: note: in expansion of macro 'ESP_LOG_LEVEL_LOCAL'
+  369 | #define ESP_LOGD( tag, format, ... ) ESP_LOG_LEVEL_LOCAL(ESP_LOG_DEBUG,   tag, format, ##__VA_ARGS__)
+      |                                      ^~~~~~~~~~~~~~~~~~~
+/home/steps/projetos/espCam_imageAnalysis/esp32/main/model/init_hw.c:273:9: note: in expansion of macro 'ESP_LOGD'
+  273 |         ESP_LOGD(TAG, "🔍 Possível tint detectado - Tamanho anômalo: %d vs %d (ratio: %.2f)",
+      |         ^~~~~~~~
+/home/steps/projetos/espCam_imageAnalysis/esp32/main/model/init_hw.c:274:1: error: format '%d' expects argument of type 'int', but argument 7 has type 'uint32_t' {aka 'long unsigned int'} [-Werror=format=]
+  274 |                  fb->len, avg_size, size_ratio);
+      | ^          
+/home/steps/esp/esp-idf/components/log/include/esp_log.h:308:59: note: in definition of macro 'LOG_FORMAT'
+  308 | #define LOG_FORMAT(letter, format)  LOG_COLOR_ ## letter #letter " (%" PRIu32 ") %s: " format LOG_RESET_COLOR "\n"
+      |                                                           ^~~~~~
+/home/steps/esp/esp-idf/components/log/include/esp_log.h:464:41: note: in expansion of macro 'ESP_LOG_LEVEL'
+  464 |         if ( LOG_LOCAL_LEVEL >= level ) ESP_LOG_LEVEL(level, tag, format, ##__VA_ARGS__); \
+      |                                         ^~~~~~~~~~~~~
+/home/steps/esp/esp-idf/components/log/include/esp_log.h:369:38: note: in expansion of macro 'ESP_LOG_LEVEL_LOCAL'
+  369 | #define ESP_LOGD( tag, format, ... ) ESP_LOG_LEVEL_LOCAL(ESP_LOG_DEBUG,   tag, format, ##__VA_ARGS__)
+      |                                      ^~~~~~~~~~~~~~~~~~~
+/home/steps/projetos/espCam_imageAnalysis/esp32/main/model/init_hw.c:273:9: note: in expansion of macro 'ESP_LOGD'
+  273 |         ESP_LOGD(TAG, "🔍 Possível tint detectado - Tamanho anômalo: %d vs %d (ratio: %.2f)",
+      |         ^~~~~~~~
+/home/steps/projetos/espCam_imageAnalysis/esp32/main/model/init_hw.c:274:1: error: format '%d' expects argument of type 'int', but argument 7 has type 'uint32_t' {aka 'long unsigned int'} [-Werror=format=]
+  274 |                  fb->len, avg_size, size_ratio);
+      | ^          
+/home/steps/esp/esp-idf/components/log/include/esp_log.h:308:59: note: in definition of macro 'LOG_FORMAT'
+  308 | #define LOG_FORMAT(letter, format)  LOG_COLOR_ ## letter #letter " (%" PRIu32 ") %s: " format LOG_RESET_COLOR "\n"
+      |                                                           ^~~~~~
+/home/steps/esp/esp-idf/components/log/include/esp_log.h:464:41: note: in expansion of macro 'ESP_LOG_LEVEL'
+  464 |         if ( LOG_LOCAL_LEVEL >= level ) ESP_LOG_LEVEL(level, tag, format, ##__VA_ARGS__); \
+      |                                         ^~~~~~~~~~~~~
+/home/steps/esp/esp-idf/components/log/include/esp_log.h:369:38: note: in expansion of macro 'ESP_LOG_LEVEL_LOCAL'
+  369 | #define ESP_LOGD( tag, format, ... ) ESP_LOG_LEVEL_LOCAL(ESP_LOG_DEBUG,   tag, format, ##__VA_ARGS__)
+      |                                      ^~~~~~~~~~~~~~~~~~~
+/home/steps/projetos/espCam_imageAnalysis/esp32/main/model/init_hw.c:273:9: note: in expansion of macro 'ESP_LOGD'
+  273 |         ESP_LOGD(TAG, "🔍 Possível tint detectado - Tamanho anômalo: %d vs %d (ratio: %.2f)",
+      |         ^~~~~~~~
+cc1: some warnings being treated as errors
+make[2]: *** [esp-idf/main/CMakeFiles/__idf_main.dir/build.make:160: esp-idf/main/CMakeFiles/__idf_main.dir/model/chip_info.c.obj] Error 1
+make[2]: *** Waiting for unfinished jobs....
+cc1: some warnings being treated as errors
+make[2]: *** [esp-idf/main/CMakeFiles/__idf_main.dir/build.make:132: esp-idf/main/CMakeFiles/__idf_main.dir/model/init_hw.c.obj] Error 1
+make[1]: *** [CMakeFiles/Makefile2:4688: esp-idf/main/CMakeFiles/__idf_main.dir/all] Error 2
+make[1]: *** Waiting for unfinished jobs....
+make: *** [Makefile:136: all] Error 2

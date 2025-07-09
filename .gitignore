@@ -1,48 +1,168 @@
-# Build ESP32
-esp32/build/
-esp32/sdkconfig
-esp32/managed_components/
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
 
-# SPIFFS
-esp32/spiffs_image/*.jpg
-esp32/spiffs_image/*.bin
-server/spiffs_image.bin
+# C extensions
+*.so
 
-# Python
-server/venv/
-server/__pycache__/
-scripts/__pycache__/
-*.pyc
-*.pyo
-*.pyd
+# Distribution / packaging
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
 
-# Dados científicos (não versionar dados coletados)
-data/databases/*.db
-data/images/
-data/reports/
-logs/*.log
+# PyInstaller
+#  Usually these files are written by a python script from a template
+#  before PyInstaller builds the exe, so as to inject date/other infos into it.
+*.manifest
+*.spec
 
-# Arquivos temporários de desenvolvimento
-server/*.log
-server/*.png
+# Installer logs
+pip-log.txt
+pip-delete-this-directory.txt
 
-# Imagens processadas (legacy)
-imagens/*_320x240.jpg
-imagens/diferenca.jpg
-server/extracted_images/
-server/extracted_final_images/
+# Unit test / coverage reports
+htmlcov/
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+.hypothesis/
+.pytest_cache/
 
-# Reports (legacy)
-reports/
+# Translations
+*.mo
+*.pot
 
-# Sistema
-.DS_Store
-Thumbs.db
+# Django stuff:
+*.log
+local_settings.py
+db.sqlite3
+
+# Flask stuff:
+instance/
+.webassets-cache
+
+# Scrapy stuff:
+.scrapy
+
+# Sphinx documentation
+docs/_build/
+
+# PyBuilder
+target/
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# IPython
+profile_default/
+ipython_config.py
+
+# pyenv
+.python-version
+
+# celery beat schedule file
+celerybeat-schedule
+
+# SageMath parsed files
+*.sage.py
+
+# Environments
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# Spyder project settings
+.spyderproject
+.spyproject
+
+# Rope project settings
+.ropeproject
+
+# mkdocs documentation
+/site
+
+# mypy
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# Pyre type checker
+.pyre/
+
+# ESP32 specific
+build/
+.vscode/
+*.bin
+*.elf
+*.map
+sdkconfig.old
+dependencies.lock
+
+# Local config files
+config.h
+main/config.h
+src/firmware/main/config.h
+
+# IDE files
+.idea/
 *.swp
 *.swo
 *~
 
-# IDE
-.vscode/
-.idea/
-*.code-workspace 
+# OS files
+.DS_Store
+Thumbs.db
+
+# Virtual environments
+venv/
+.venv/
+env/
+.env/
+*/venv/
+*/env/
+
+# Temporary files
+*.tmp
+*.temp
+*.bak
+*.backup
+
+# Log files
+*.log
+logs/*.log
+
+# Data files (optional - uncomment if needed)
+# *.db
+# *.sqlite
+# *.sqlite3
+
+# Images (large files)
+*.jpg
+*.jpeg
+*.png
+*.gif
+received_images/ 
