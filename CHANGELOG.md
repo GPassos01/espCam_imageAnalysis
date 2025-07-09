@@ -8,6 +8,31 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 ## [Não Lançado]
 
 ### Adicionado
+- Sistema de argumentos de linha de comando para o monitor científico
+- Suporte a sessões personalizadas e nomes de teste
+- Script interativo para teste de versões (`test_versions.sh`)
+- Documentação atualizada com status detalhado dos testes
+- Sistema de detecção automática de versão baseada no firmware
+
+### Mudado
+- Monitor Python agora força versão baseada em `ACTIVE_VERSION.txt`
+- Estrutura de paths corrigida para nova arquitetura de projeto
+- Melhoria no sistema de logs com códigos visuais mais claros
+
+### Corrigido
+- **CRÍTICO**: Versão INTELLIGENT recriada após reestruturação do projeto
+- Correções de compilação para formatação de strings (`PRIu32`, `PRIu64`)
+- Paths incorretos no monitor científico (dados salvos em local errado)
+- Função `mqtt_send_alert` com parâmetros corretos
+- Sistema de backup automático para dados antigos
+
+### Status dos Testes
+- ✅ **Firmware e Servidor**: Testados manualmente, funcionando completamente
+- 🚧 **Ferramentas**: Scripts em `tools/` ainda não testados após reestruturação (Beta)
+
+## [2.0.1] - 2025-01-09
+
+### Adicionado
 - Sistema completo de análise avançada com 4 tipos de referências (diurna, noturna, tempo claro, tempo ruim)
 - Algoritmo de comparação RGB565 otimizado com blocos 32x32
 - Buffer histórico circular para análise temporal

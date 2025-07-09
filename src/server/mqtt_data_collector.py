@@ -22,7 +22,7 @@ from collections import defaultdict
 import argparse
 
 # Configurações
-MQTT_BROKER = "192.168.1.38"  # Auto-detectado
+MQTT_BROKER = "192.168.1.48"  # Auto-detectado
 MQTT_PORT = 1883
 MQTT_TOPICS = [
     "esp32cam/status",
@@ -33,7 +33,7 @@ MQTT_TOPICS = [
 ]
 
 # Diretórios para imagens separadas por versão (caminhos relativos ao projeto)
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 IMAGE_DIR_INTELLIGENT = os.path.join(BASE_DIR, "data", "images", "intelligent")
 IMAGE_DIR_SIMPLE = os.path.join(BASE_DIR, "data", "images", "simple")
 
@@ -50,7 +50,7 @@ stats_lock = threading.Lock()
 
 class ScientificMonitor:
     def __init__(self, forced_version=None, test_session=None, test_name=None):
-        self.client = mqtt.Client()
+        self.client = mqtt.Client(mqtt.CallbackAPIVersion.VERSION1)
         self.client.on_connect = self.on_connect
         self.client.on_message = self.on_message
         self.running = True
@@ -95,15 +95,17 @@ class ScientificMonitor:
             }
         }
         
+        # Criar diretórios necessários ANTES de configurar bancos
+        os.makedirs(os.path.dirname(DB_INTELLIGENT), exist_ok=True)
+        os.makedirs(os.path.dirname(DB_SIMPLE), exist_ok=True)
+        os.makedirs(IMAGE_DIR_INTELLIGENT, exist_ok=True)
+        os.makedirs(IMAGE_DIR_SIMPLE, exist_ok=True)
+        
         # Configurar bancos de dados
         self.setup_databases()
         
         # Registrar sessão de teste
         self.register_test_session()
-        
-        # Criar diretórios
-        os.makedirs(IMAGE_DIR_INTELLIGENT, exist_ok=True)
-        os.makedirs(IMAGE_DIR_SIMPLE, exist_ok=True)
         
         print("🚀 Iniciando Sistema de Monitoramento Científico")
         print("=" * 60)
@@ -636,28 +638,61 @@ def signal_handler(sig, frame):
     monitor.stop()
     sys.exit(0)
 
-if __name__ == "__main__":
+def main():
+    """Função principal para inicializar o monitor"""
+    import signal
+    import argparse
+    
     # Parser de argumentos
     parser = argparse.ArgumentParser(description='Monitor Científico ESP32-CAM')
-    parser.add_argument('--version', '-v', choices=['intelligent', 'simple'], 
-                        help='Forçar versão específica (intelligent ou simple)')
+    parser.add_argument('--force-version', '-v', choices=['intelligent', 'simple'], 
+                        help='Forçar versão específica (sobrepõe configuração do firmware)')
     parser.add_argument('--session', '-s', type=str,
                         help='ID da sessão de teste (ex: baseline_static_001)')
     parser.add_argument('--test-name', '-t', type=str,
                         help='Nome do teste (ex: "Baseline Estático 10min")')
     args = parser.parse_args()
     
-    # Configurar handler de sinal
-    signal.signal(signal.SIGINT, signal_handler)
+    # Verificar se deve forçar versão (prioridade: argumento > firmware > automático)
+    forced_version = None
     
-    # Criar e executar monitor com parâmetros de sessão
-    monitor = ScientificMonitor(
-        forced_version=args.version,
-        test_session=args.session,
-        test_name=args.test_name
-    )
+    if args.force_version:
+        forced_version = args.force_version
+        print(f"🔧 Versão FORÇADA via argumento: {forced_version.upper()}")
+    else:
+        try:
+            with open('../firmware/main/ACTIVE_VERSION.txt', 'r') as f:
+                firmware_version = f.read().strip().lower()
+                if firmware_version in ['intelligent', 'simple']:
+                    forced_version = firmware_version
+                    print(f"🔧 Versão FORÇADA baseada no firmware: {firmware_version.upper()}")
+        except FileNotFoundError:
+            print("⚠️  Arquivo ACTIVE_VERSION.txt não encontrado. Usando detecção automática.")
+    
+    # Inicializar monitor com versão forçada se configurada
+    global monitor
+    if forced_version:
+        monitor = ScientificMonitor(
+            forced_version=forced_version,
+            test_session=args.session,
+            test_name=args.test_name
+        )
+        print(f"🚀 Monitor iniciado em modo FORÇADO: {forced_version.upper()}")
+    else:
+        monitor = ScientificMonitor(
+            test_session=args.session,
+            test_name=args.test_name
+        )
+        print("🚀 Monitor iniciado em modo DETECÇÃO AUTOMÁTICA")
+    
+    # Configurar handler para interrupção
+    signal.signal(signal.SIGINT, signal_handler)
     
     try:
         monitor.run()
     except KeyboardInterrupt:
-        monitor.stop() 
+        print("\n🛑 Interrupção detectada...")
+        monitor.stop()
+
+if __name__ == "__main__":
+    main() 

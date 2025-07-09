@@ -70,12 +70,37 @@ pip install -r requirements.txt
 git clone https://github.com/seu-usuario/espCam_imageAnalysis.git
 cd espCam_imageAnalysis
 
-# Configure o ambiente
-./scripts/setup.sh
+# ⚠️ ATENÇÃO: Use setup manual até ferramentas serem testadas
+# Configure o ambiente manualmente:
+cd src/firmware
+idf.py build
 
-# Execute os testes
-./scripts/run_tests.sh
+cd ../server
+python3 -m venv venv
+source venv/bin/activate
+pip install paho-mqtt matplotlib numpy scipy pillow
+
+# ⚠️ Scripts automatizados ainda em BETA (não testados)
+# ./tools/build/setup.sh  # ← NÃO USE ainda
 ```
+
+### 🧪 Status de Testes (IMPORTANTE)
+
+**✅ Componentes Testados:**
+- **Firmware ESP32-CAM**: Ambas versões (INTELLIGENT/SIMPLE) funcionando
+- **Servidor Python**: Monitor científico estável
+- **Comunicação MQTT**: Testada e estável
+
+**🚧 Componentes em Beta (NÃO testados):**
+- **Scripts em `/tools/`**: Ferramentas de build, deployment, análise
+- **Testes automatizados**: Suite de testes ainda não validada
+- **CI/CD**: Pipeline GitHub Actions não testado
+
+**Para contribuir com segurança:**
+1. **Use compilação manual** do firmware via `idf.py`
+2. **Execute servidor** diretamente com `python3 mqtt_data_collector.py`  
+3. **Evite scripts automatizados** até serem devidamente testados
+4. **Teste suas mudanças** manualmente antes de enviar PR
 
 ## 📐 Padrões de Código
 

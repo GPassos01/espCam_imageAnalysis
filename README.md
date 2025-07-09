@@ -201,6 +201,47 @@ pip install -r requirements.txt
 python mqtt_data_collector.py
 ```
 
+## 🧪 Status dos Testes
+
+### ✅ **Funcionalidades Testadas Manualmente**
+- **✅ Firmware ESP32-CAM**: Ambas as versões (INTELLIGENT/SIMPLE) funcionando
+- **✅ Servidor Python**: Monitor científico coletando dados via MQTT
+- **✅ Análise de Imagens**: Algoritmo RGB565 detectando mudanças corretamente
+- **✅ Transmissão MQTT**: Comunicação estável entre ESP32-CAM e servidor
+- **✅ Banco de Dados**: SQLite armazenando imagens e estatísticas
+- **✅ Estrutura de Projeto**: Reestruturação profissional concluída
+
+### 🚧 **Ferramentas em Beta (Não Testadas)**
+> ⚠️ **ATENÇÃO**: As ferramentas de desenvolvimento e scripts automatizados ainda não foram completamente testados após a reestruturação do projeto.
+
+- **🔧 Tools de Build**: `tools/build/` - Scripts de compilação automatizada
+- **🛠️ Tools de Development**: `tools/development/` - Ferramentas de desenvolvimento
+- **🚀 Tools de Deployment**: `tools/deployment/` - Scripts de deploy
+- **📊 Tools de Analysis**: `tools/analysis/` - Análise científica automatizada
+
+### 🎯 **Como Testar o Projeto**
+
+**Para uso básico (recomendado):**
+```bash
+# 1. Firmware: Compilação manual via ESP-IDF
+cd src/firmware
+idf.py build flash monitor
+
+# 2. Servidor: Execução manual
+cd src/server  
+source venv/bin/activate
+python3 mqtt_data_collector.py
+```
+
+**Para testar diferentes versões:**
+```bash
+# Testar versão SIMPLE (baseline)
+python3 mqtt_data_collector.py --force-version simple
+
+# Testar versão INTELLIGENT (economia de dados)  
+python3 mqtt_data_collector.py --force-version intelligent
+```
+
 ## 📖 Documentação
 
 ### 📚 Documentação Completa
