@@ -1,0 +1,65 @@
+version: 2
+
+updates:
+  # Python dependencies
+  - package-ecosystem: "pip"
+    directory: "/src/server"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "09:00"
+      timezone: "America/Sao_Paulo"
+    open-pull-requests-limit: 5
+    reviewers:
+      - "GPassos01"
+    assignees:
+      - "GPassos01"
+    commit-message:
+      prefix: "🔧 deps(python):"
+      include: "scope"
+    labels:
+      - "dependencies"
+      - "python"
+      - "automerge"
+    allow:
+      - dependency-type: "direct"
+      - dependency-type: "indirect"
+    
+  # GitHub Actions
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "10:00"
+      timezone: "America/Sao_Paulo"
+    open-pull-requests-limit: 3
+    reviewers:
+      - "GPassos01"
+    assignees:
+      - "GPassos01"
+    commit-message:
+      prefix: "🔧 deps(actions):"
+      include: "scope"
+    labels:
+      - "dependencies"
+      - "github-actions"
+      - "automerge"
+    
+  # Docker (se houver Dockerfile no futuro)
+  - package-ecosystem: "docker"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "tuesday"
+      time: "09:00"
+      timezone: "America/Sao_Paulo"
+    open-pull-requests-limit: 2
+    reviewers:
+      - "GPassos01"
+    commit-message:
+      prefix: "🔧 deps(docker):"
+      include: "scope"
+    labels:
+      - "dependencies"
+      - "docker" 

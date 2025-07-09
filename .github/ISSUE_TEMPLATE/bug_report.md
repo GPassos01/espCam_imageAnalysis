@@ -1,43 +1,74 @@
 ---
-name: Relatar Bug
-about: Crie um relatório para nos ajudar a melhorar
+name: 🐛 Bug Report
+about: Relatar um problema ou erro no sistema ESP32-CAM
 title: '[BUG] '
-labels: 'bug'
-assignees: ''
-
+labels: ['bug', 'needs-triage']
+assignees: ['GPassos01']
 ---
 
-## 🐛 Descrição do Bug
-Uma descrição clara e concisa do bug.
+## 🐛 **Descrição do Bug**
+Descrição clara e concisa do problema encontrado.
 
-## 📋 Passos para Reproduzir
-1. Configure '...'
-2. Execute '....'
-3. Observe '....'
+## 🔄 **Como Reproduzir**
+Passos para reproduzir o comportamento:
+1. Vá para '...'
+2. Clique em '....'
+3. Role até '....'
 4. Veja o erro
 
-## ✅ Comportamento Esperado
-Uma descrição clara do que você esperava que acontecesse.
+## ✅ **Comportamento Esperado**
+Descrição clara do que deveria acontecer.
 
-## ❌ Comportamento Atual
-O que realmente aconteceu.
-
-## 📸 Screenshots/Logs
+## 📸 **Screenshots/Logs**
 Se aplicável, adicione screenshots ou logs para ajudar a explicar o problema.
 
 ```
-Cole logs relevantes aqui
+# Cole aqui os logs do ESP32-CAM ou servidor Python
 ```
 
-## 🖥️ Ambiente
-- **OS:** [ex: Ubuntu 22.04]
-- **ESP-IDF Version:** [ex: v5.0.1]
-- **Python Version:** [ex: 3.9.7]
-- **Hardware:** [ex: ESP32-CAM AI-Thinker v1.0]
-- **Versão do Firmware:** [Inteligente/Simples]
+## 🖥️ **Ambiente (complete as informações):**
 
-## 📎 Contexto Adicional
+### **Hardware:**
+- **ESP32-CAM Model**: [ex: AI Thinker ESP32-CAM]
+- **Câmera**: [ex: OV2640]
+- **Alimentação**: [ex: 5V via USB, 3.3V regulado]
+- **Antena**: [Interna/Externa]
+
+### **Software:**
+- **Versão do Projeto**: [ex: v1.0.0]
+- **ESP-IDF Version**: [ex: v5.2.5]
+- **Python Version**: [ex: 3.9.2]
+- **SO**: [ex: Ubuntu 22.04, Windows 11]
+
+### **Rede:**
+- **MQTT Broker**: [ex: Mosquitto local, AWS IoT]
+- **WiFi**: [Frequência 2.4GHz, intensidade do sinal]
+
+## 🔧 **Configurações Relevantes**
+```c
+// Cole aqui configurações relevantes do config.h
+```
+
+```python
+# Cole aqui configurações relevantes do Python
+```
+
+## 📊 **Logs Adicionais**
+```
+# ESP32-CAM Serial Monitor
+I (12345) WIFI: connected to WiFi
+...
+
+# Python Server
+2024-01-09 10:30:15 - INFO - Monitor iniciado...
+...
+```
+
+## 🎯 **Contexto Adicional**
 Adicione qualquer outro contexto sobre o problema aqui.
 
-## 🔧 Possível Solução
-Se você tem uma ideia de como corrigir, descreva aqui. 
+## ✅ **Checklist**
+- [ ] Verifiquei se este bug já foi reportado
+- [ ] Testei com a versão mais recente
+- [ ] Incluí logs relevantes
+- [ ] Especifiquei o ambiente completo 
