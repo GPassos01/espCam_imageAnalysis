@@ -180,7 +180,7 @@ esp32-cam-flood-monitor/
 
 ```bash
 # 1. Clone o repositório
-git clone https://github.com/seu-usuario/esp32-cam-flood-monitor.git
+git clone https://github.com/GPassos01/espCam_imageAnalysis.git
 cd esp32-cam-flood-monitor
 
 # 2. Configure o ESP-IDF
@@ -299,7 +299,7 @@ Use os [templates de issue](.github/ISSUE_TEMPLATE/) para reportar bugs ou solic
 - [ ] **API REST** - API completa para integração externa
 - [ ] **Backup automático** - Sistema de backup de dados
 
-Veja a [lista completa de issues](https://github.com/seu-usuario/esp32-cam-flood-monitor/issues) para propostas de funcionalidades e bugs conhecidos.
+Veja a [lista completa de issues](https://github.com/GPassos01/espCam_imageAnalysis/issues) para propostas de funcionalidades e bugs conhecidos.
 
 ## 📄 Licença
 
@@ -309,7 +309,7 @@ Distribuído sob a Licença MIT. Veja `LICENSE` para mais informações.
 
 **Gabriel Passos** - gabriel.passos@unesp.br
 
-**Link do Projeto:** [https://github.com/seu-usuario/esp32-cam-flood-monitor](https://github.com/seu-usuario/esp32-cam-flood-monitor)
+**Link do Projeto:** [https://github.com/GPassos01/espCam_imageAnalysis](https://github.com/GPassos01/espCam_imageAnalysis)
 
 ## 🙏 Agradecimentos
 
@@ -325,6 +325,6 @@ Distribuído sob a Licença MIT. Veja `LICENSE` para mais informações.
   
 **⭐ Se este projeto foi útil, considere dar uma estrela!**
 
-[![Star History Chart](https://api.star-history.com/svg?repos=seu-usuario/esp32-cam-flood-monitor&type=Date)](https://star-history.com/#seu-usuario/esp32-cam-flood-monitor&Date)
+[![Star History Chart](https://api.star-history.com/svg?repos=GPassos01/espCam_imageAnalysis&type=Date)](https://star-history.com/#GPassos01/espCam_imageAnalysis&Date)
 
 </div>
