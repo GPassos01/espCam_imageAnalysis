@@ -165,4 +165,13 @@ logs/*.log
 *.jpeg
 *.png
 *.gif
-received_images/ 
+received_images/
+
+# Security - Ignore files with potential secrets
+src/firmware/sdkconfig.old
+src/firmware/sdkconfig.backup*
+**/README.md.backup
+**/*password*
+**/*secret*
+**/*credential*
+mqtt_config.txt.backup 
