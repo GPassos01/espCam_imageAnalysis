@@ -323,7 +323,7 @@ Distribuído sob a Licença MIT. Veja `LICENSE` para mais informações.
 
 <div align="center">
   
-** Se este projeto foi útil, considere dar uma estrela!**
+**Se este projeto foi útil, considere dar uma estrela!**
 
 [![Star History Chart](https://api.star-history.com/svg?repos=GPassos01/espCam_imageAnalysis&type=Date)](https://star-history.com/#GPassos01/espCam_imageAnalysis&Date)
 
