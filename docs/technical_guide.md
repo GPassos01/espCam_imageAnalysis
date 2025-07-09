@@ -1,4 +1,4 @@
-# 📋 Documentação Técnica - Sistema de Monitoramento de Enchentes ESP32-CAM
+# Documentação Técnica
 
 **Versão:** 1.0  
 **Data:** Janeiro 2025  
@@ -281,7 +281,7 @@ W IMG_MONITOR: Heap baixa: 45KB
 
 ---
 
-## 📚 Referências Técnicas
+## Referências Técnicas
 
 1. **ESP32 Technical Reference Manual** - Espressif Systems
 2. **OV2640 Camera Module Datasheet** - OmniVision
@@ -290,5 +290,5 @@ W IMG_MONITOR: Heap baixa: 45KB
 
 ---
 
-**📧 Contato:** gabriel.passos@unesp.br  
-**🏫 IGCE/UNESP** - Iniciação Científica 2025 
+**Contato:** gabriel.passos@unesp.br  
+**IGCE/UNESP** - Iniciação Científica 2025 
