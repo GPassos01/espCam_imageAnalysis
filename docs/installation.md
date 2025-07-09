@@ -1,8 +1,8 @@
-# 🚀 Guia de Instalação
+# Guia de Instalação
 
 Este guia fornece instruções detalhadas para instalar e configurar o ESP32-CAM Flood Monitor em diferentes ambientes.
 
-## 📋 Índice
+## Índice
 
 - [Pré-requisitos](#-pré-requisitos)
 - [Instalação do ESP-IDF](#-instalação-do-esp-idf)
@@ -12,7 +12,7 @@ Este guia fornece instruções detalhadas para instalar e configurar o ESP32-CAM
 - [Verificação da Instalação](#-verificação-da-instalação)
 - [Troubleshooting](#-troubleshooting)
 
-## 🔧 Pré-requisitos
+## Pré-requisitos
 
 ### Hardware Necessário
 
@@ -37,7 +37,7 @@ Este guia fornece instruções detalhadas para instalar e configurar o ESP32-CAM
 - **ESP-IDF v5.0+**
 - **Editor de código** (VS Code recomendado)
 
-## 🛠️ Instalação do ESP-IDF
+## Instalação do ESP-IDF
 
 ### Linux/macOS
 
@@ -86,7 +86,7 @@ idf.py --version
 xtensa-esp32-elf-gcc --version
 ```
 
-## 🔌 Setup do Hardware
+## Setup do Hardware
 
 ### Conexões ESP32-CAM + FTDI
 
@@ -115,7 +115,7 @@ ESP32-CAM          FTDI Programmer
               └─── GND (só para upload)
 ```
 
-## ⚙️ Configuração do Firmware
+## Configuração do Firmware
 
 ### 1. Clone do Projeto
 
@@ -188,7 +188,7 @@ idf.py -p /dev/ttyUSB0 flash
 idf.py -p /dev/ttyUSB0 monitor
 ```
 
-## 🐍 Instalação do Servidor
+## Instalação do Servidor
 
 ### 1. Ambiente Python
 
@@ -254,7 +254,7 @@ python mqtt_data_collector.py
 mosquitto_pub -h localhost -t "test/topic" -m "Hello MQTT"
 ```
 
-## ✅ Verificação da Instalação
+## Verificação da Instalação
 
 ### Checklist Completo
 
@@ -301,7 +301,7 @@ pip list | grep paho-mqtt
 ls -la server/monitoring_data.db
 ```
 
-## 🚨 Troubleshooting
+## Troubleshooting
 
 ### Problemas Comuns
 
