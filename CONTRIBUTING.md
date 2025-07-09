@@ -1,8 +1,8 @@
-# 🤝 Guia de Contribuição
+# Guia de Contribuição
 
 Obrigado por considerar contribuir para o projeto ESP32-CAM Flood Monitor! Este documento fornece diretrizes para contribuições.
 
-## 📋 Índice
+## Índice
 
 - [Código de Conduta](#código-de-conduta)
 - [Como Posso Contribuir?](#como-posso-contribuir)
@@ -11,13 +11,13 @@ Obrigado por considerar contribuir para o projeto ESP32-CAM Flood Monitor! Este 
 - [Padrões de Código](#padrões-de-código)
 - [Processo de Pull Request](#processo-de-pull-request)
 
-## 📜 Código de Conduta
+## Código de Conduta
 
 Este projeto adota o [Contributor Covenant](https://www.contributor-covenant.org/). Ao participar, você concorda em manter este código. Por favor, reporte comportamentos inaceitáveis para gabriel.passos@unesp.br.
 
-## 🎯 Como Posso Contribuir?
+## Como Posso Contribuir?
 
-### 🐛 Reportando Bugs
+### Reportando Bugs
 
 Antes de criar um relatório de bug:
 - Verifique a [lista de issues](https://github.com/seu-usuario/espCam_imageAnalysis/issues)
@@ -30,7 +30,7 @@ Antes de criar um relatório de bug:
 3. Descreva os passos para reproduzir
 4. Indique o comportamento esperado vs atual
 
-### 💡 Sugerindo Melhorias
+### Sugerindo Melhorias
 
 Melhorias são rastreadas como issues do GitHub. Para sugerir:
 1. Use um título claro e descritivo
@@ -38,7 +38,7 @@ Melhorias são rastreadas como issues do GitHub. Para sugerir:
 3. Explique por que seria útil para a maioria dos usuários
 4. Liste exemplos de como seria usada
 
-### 🔧 Pull Requests
+### Pull Requests
 
 1. Fork o repositório
 2. Crie uma branch (`git checkout -b feature/MinhaFeature`)
@@ -46,7 +46,7 @@ Melhorias são rastreadas como issues do GitHub. Para sugerir:
 4. Push para a branch (`git push origin feature/MinhaFeature`)
 5. Abra um Pull Request
 
-## 🛠️ Configuração do Ambiente
+## Configuração do Ambiente
 
 ### Pré-requisitos
 
@@ -70,7 +70,7 @@ pip install -r requirements.txt
 git clone https://github.com/seu-usuario/espCam_imageAnalysis.git
 cd espCam_imageAnalysis
 
-# ⚠️ ATENÇÃO: Use setup manual até ferramentas serem testadas
+# ATENÇÃO: Use setup manual até ferramentas serem testadas
 # Configure o ambiente manualmente:
 cd src/firmware
 idf.py build
@@ -80,18 +80,18 @@ python3 -m venv venv
 source venv/bin/activate
 pip install paho-mqtt matplotlib numpy scipy pillow
 
-# ⚠️ Scripts automatizados ainda em BETA (não testados)
+# Scripts automatizados ainda em BETA (não testados)
 # ./tools/build/setup.sh  # ← NÃO USE ainda
 ```
 
-### 🧪 Status de Testes (IMPORTANTE)
+### Status de Testes (IMPORTANTE)
 
-**✅ Componentes Testados:**
+** Componentes Testados:**
 - **Firmware ESP32-CAM**: Ambas versões (INTELLIGENT/SIMPLE) funcionando
 - **Servidor Python**: Monitor científico estável
 - **Comunicação MQTT**: Testada e estável
 
-**🚧 Componentes em Beta (NÃO testados):**
+** Componentes em Beta (NÃO testados):**
 - **Scripts em `/tools/`**: Ferramentas de build, deployment, análise
 - **Testes automatizados**: Suite de testes ainda não validada
 - **CI/CD**: Pipeline GitHub Actions não testado
@@ -144,7 +144,7 @@ def process_mqtt_data(topic: str, payload: dict) -> bool:
     pass
 ```
 
-## 🔄 Processo de Pull Request
+## Processo de Pull Request
 
 1. **Certifique-se que:**
    - [ ] O código compila sem warnings
@@ -165,7 +165,7 @@ def process_mqtt_data(topic: str, payload: dict) -> bool:
    - Screenshots/logs se aplicável
    - Issues relacionadas
 
-## 📝 Commits
+## Commits
 
 Use [Conventional Commits](https://www.conventionalcommits.org/):
 
@@ -177,7 +177,7 @@ test: adiciona testes unitários para compare.c
 refactor: otimiza algoritmo de comparação RGB565
 ```
 
-## 🧪 Testes
+## Testes
 
 Antes de submeter:
 
@@ -195,16 +195,16 @@ cppcheck esp32/main/
 pylint server/
 ```
 
-## 📚 Documentação
+## Documentação
 
 - Atualize o README.md se necessário
 - Documente novas APIs em `/docs/api/`
 - Adicione exemplos em `/examples/`
 - Atualize o CHANGELOG.md
 
-## ❓ Dúvidas?
+## Dúvidas?
 
-- Abra uma [discussion](https://github.com/seu-usuario/espCam_imageAnalysis/discussions)
+- Abra uma [discussion](https://github.com/GPassos01/espCam_imageAnalysis/discussions)
 - Entre em contato: gabriel.passos@unesp.br
 - Consulte a [documentação](./docs/)
 
