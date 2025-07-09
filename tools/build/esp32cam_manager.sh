@@ -22,24 +22,24 @@ echo -e "${BLUE}█                                      █${NC}"
 echo -e "${BLUE}████████████████████████████████████████${NC}"
 
 # Verificar se estamos no diretório correto
-# Se executado de scripts/, o arquivo estará em ../esp32/main/main.c
-# Se executado da raiz, o arquivo estará em esp32/main/main.c
-if [ -f "../esp32/main/main.c" ]; then
-    # Executado de dentro da pasta scripts/
+# Se executado de tools/, o arquivo estará em ../src/firmware/main/main.c
+# Se executado da raiz, o arquivo estará em src/firmware/main/main.c
+if [ -f "../src/firmware/main/main.c" ]; then
+    # Executado de dentro da pasta tools/
     cd ..
-elif [ ! -f "esp32/main/main.c" ]; then
-    # Não está nem na raiz nem em scripts/
+elif [ ! -f "src/firmware/main/main.c" ]; then
+    # Não está nem na raiz nem em tools/
     echo -e "${RED}❌ Execute este script a partir da pasta raiz do projeto${NC}"
-    echo -e "${YELLOW}💡 Use: ./scripts/esp32cam_manager.sh${NC}"
+    echo -e "${YELLOW}💡 Use: ./tools/build/esp32cam_manager.sh${NC}"
     exit 1
 fi
 # Se chegou aqui, está na pasta raiz ou foi movido para ela
 
 # Detectar versão atual
 detect_current_version() {
-    if grep -q "IMG_MONITOR_SIMPLE" esp32/main/main.c 2>/dev/null; then
+    if grep -q "IMG_MONITOR_SIMPLE" src/firmware/main/main.c 2>/dev/null; then
         echo "simple"
-    elif grep -q "IMG_MONITOR" esp32/main/main.c 2>/dev/null; then
+    elif grep -q "IMG_MONITOR" src/firmware/main/main.c 2>/dev/null; then
         echo "intelligent"
     else
         echo "unknown"
@@ -99,8 +99,8 @@ else:
     fi
     
     # Build do projeto
-    if [ -f "esp32/build/esp32_cam_monitor.bin" ]; then
-        size=$(stat -c%s esp32/build/esp32_cam_monitor.bin 2>/dev/null || stat -f%z esp32/build/esp32_cam_monitor.bin)
+    if [ -f "src/firmware/build/esp32_cam_monitor.bin" ]; then
+        size=$(stat -c%s src/firmware/build/esp32_cam_monitor.bin 2>/dev/null || stat -f%z src/firmware/build/esp32_cam_monitor.bin)
         echo -e "   ✅ Build: Disponível ($(($size / 1024)) KB)"
     else
         echo -e "   ⚠️  Build: Não encontrado"
@@ -173,14 +173,14 @@ main_menu() {
 # Função 1: Setup completo
 run_setup() {
     echo -e "${YELLOW}🔧 Executando setup completo...${NC}"
-    ./scripts/setup.sh
+    ./tools/build/setup.sh
 }
 
 # Função 2: Compilar e flash
 compile_and_flash() {
     echo -e "${YELLOW}🔨 Compilando e fazendo flash...${NC}"
     
-    cd esp32
+    cd src/firmware
     
     # Limpar build anterior
     if [ -d "build" ]; then
@@ -215,19 +215,19 @@ compile_and_flash() {
 # Função 3: Alternar versões
 switch_versions() {
     echo -e "${YELLOW}🔄 Alternando versões...${NC}"
-    ./scripts/switch_version.sh
+    ./tools/development/switch_version.sh
 }
 
 # Função 4: Configurar MQTT
 configure_mqtt() {
     echo -e "${YELLOW}📡 Configurando MQTT...${NC}"
-    ./scripts/find_mosquitto_ip.sh
+    ./tools/deployment/find_mosquitto_ip.sh
 }
 
 # Função 5: Testes científicos
 run_scientific_tests() {
     echo -e "${YELLOW}🔬 Executando testes científicos...${NC}"
-    ./scripts/run_scientific_tests.sh
+    ./tools/analysis/run_scientific_tests.sh
 }
 
 # Função 6: Monitor científico
@@ -238,7 +238,7 @@ toggle_scientific_monitor() {
         echo -e "${GREEN}✅ Monitor parado${NC}"
     else
         echo -e "${YELLOW}🚀 Iniciando monitor científico...${NC}"
-        cd server
+        cd src/server
         
         # Verificar dependências
         python3 -c "import paho.mqtt.client, sqlite3, json" 2>/dev/null || {
@@ -275,10 +275,10 @@ generate_reports() {
     echo -e "${YELLOW}📊 Gerando relatórios científicos...${NC}"
     
     if [ -f "data/databases/monitoring_intelligent.db" ] || [ -f "data/databases/monitoring_simple.db" ]; then
-        cd scripts
+        cd tools/analysis
         echo -e "${YELLOW}📊 Gerando relatórios científicos...${NC}"
         python3 generate_report.py
-        cd ..
+        cd ../..
         echo -e "${GREEN}✅ Relatórios gerados${NC}"
         
         if [ -d "data/reports" ]; then

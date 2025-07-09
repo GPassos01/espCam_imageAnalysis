@@ -22,10 +22,10 @@ echo -e "${BLUE}Gabriel Passos - UNESP 2025${NC}"
 echo -e "${BLUE}========================================${NC}"
 
 # Verificar se estamos no diretório correto
-if [ -f "../esp32/main/main.c" ] && [ -f "../server/mqtt_data_collector.py" ]; then
+if [ -f "../src/firmware/main/main.c" ] && [ -f "../src/server/mqtt_data_collector.py" ]; then
     # Executado de dentro da pasta scripts/
     cd ..
-elif [ ! -f "esp32/main/main.c" ] || [ ! -f "server/mqtt_data_collector.py" ]; then
+elif [ ! -f "src/firmware/main/main.c" ] || [ ! -f "src/server/mqtt_data_collector.py" ]; then
     # Não está nem na raiz nem em scripts/
     echo -e "${RED}❌ Erro: Execute este script a partir da pasta raiz do projeto${NC}"
     echo -e "${YELLOW}💡 Use: ./scripts/run_scientific_tests.sh${NC}"

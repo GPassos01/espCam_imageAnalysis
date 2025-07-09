@@ -119,29 +119,29 @@ update_config_files() {
     echo -e "${YELLOW}📝 Atualizando configurações...${NC}"
     
     # Atualizar config.h do ESP32
-    if [ -f "esp32/main/config.h" ]; then
+    if [ -f "src/firmware/main/config.h" ]; then
         # Backup do arquivo original
-        cp esp32/main/config.h esp32/main/config.h.backup
+        cp src/firmware/main/config.h src/firmware/main/config.h.backup
         
         # Atualizar MQTT_BROKER_URI
-        sed -i "s|#define MQTT_BROKER_URI.*|#define MQTT_BROKER_URI  \"mqtt://$mqtt_host:$mqtt_port\"  // Auto-detectado|g" esp32/main/config.h
+        sed -i "s|#define MQTT_BROKER_URI.*|#define MQTT_BROKER_URI  \"mqtt://$mqtt_host:$mqtt_port\"  // Auto-detectado|g" src/firmware/main/config.h
         
-        echo -e "${GREEN}✅ esp32/main/config.h atualizado${NC}"
+        echo -e "${GREEN}✅ src/firmware/main/config.h atualizado${NC}"
     else
-        echo -e "${YELLOW}⚠️  esp32/main/config.h não encontrado${NC}"
+        echo -e "${YELLOW}⚠️  src/firmware/main/config.h não encontrado${NC}"
     fi
     
     # Atualizar servidor científico
-    if [ -f "server/mqtt_data_collector.py" ]; then
+    if [ -f "src/server/mqtt_data_collector.py" ]; then
         # Backup do arquivo original
-        cp server/mqtt_data_collector.py server/mqtt_data_collector.py.backup
+        cp src/server/mqtt_data_collector.py src/server/mqtt_data_collector.py.backup
         
         # Atualizar MQTT_BROKER
-        sed -i "s|MQTT_BROKER = .*|MQTT_BROKER = \"$mqtt_host\"  # Auto-detectado|g" server/mqtt_data_collector.py
+        sed -i "s|MQTT_BROKER = .*|MQTT_BROKER = \"$mqtt_host\"  # Auto-detectado|g" src/server/mqtt_data_collector.py
         
-        echo -e "${GREEN}✅ server/mqtt_data_collector.py atualizado${NC}"
+        echo -e "${GREEN}✅ src/server/mqtt_data_collector.py atualizado${NC}"
     else
-        echo -e "${YELLOW}⚠️  server/mqtt_data_collector.py não encontrado${NC}"
+        echo -e "${YELLOW}⚠️  src/server/mqtt_data_collector.py não encontrado${NC}"
     fi
     
     # Criar arquivo de configuração para referência
@@ -291,8 +291,8 @@ test_current_config() {
     echo -e "${YELLOW}🧪 Testando configuração atual...${NC}"
     
     # Ler configuração do config.h
-    if [ -f "esp32/main/config.h" ]; then
-        mqtt_uri=$(grep "MQTT_BROKER_URI" "esp32/main/config.h" | cut -d'"' -f2)
+    if [ -f "src/firmware/main/config.h" ]; then
+        mqtt_uri=$(grep "MQTT_BROKER_URI" "src/firmware/main/config.h" | cut -d'"' -f2)
         if [[ $mqtt_uri =~ mqtt://([^:]+):([0-9]+) ]]; then
             mqtt_host="${BASH_REMATCH[1]}"
             mqtt_port="${BASH_REMATCH[2]}"
@@ -315,13 +315,13 @@ test_current_config() {
 }
 
 # Verificar se estamos no diretório correto
-if [ -f "../esp32/main/config.h" ]; then
-    # Executado de dentro da pasta scripts/
+if [ -f "../src/firmware/main/config.h" ]; then
+    # Executado de dentro da pasta tools/
     cd ..
-elif [ ! -f "esp32/main/config.h" ]; then
-    # Não está nem na raiz nem em scripts/
+elif [ ! -f "src/firmware/main/config.h" ]; then
+    # Não está nem na raiz nem em tools/
     echo -e "${RED}❌ Execute este script a partir da pasta raiz do projeto${NC}"
-    echo -e "${YELLOW}💡 Use: ./scripts/find_mosquitto_ip.sh${NC}"
+    echo -e "${YELLOW}💡 Use: ./tools/deployment/find_mosquitto_ip.sh${NC}"
     exit 1
 fi
 

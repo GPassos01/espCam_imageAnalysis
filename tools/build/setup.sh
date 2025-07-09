@@ -19,7 +19,7 @@ echo -e "${BLUE}Gabriel Passos - UNESP 2025${NC}"
 echo -e "${BLUE}========================================${NC}"
 
 # Verificar se estamos no diretório correto
-if [ ! -f "esp32/CMakeLists.txt" ]; then
+if [ ! -f "src/firmware/CMakeLists.txt" ]; then
     echo -e "${RED}❌ Erro: Execute este script no diretório raiz do projeto${NC}"
     exit 1
 fi
@@ -63,8 +63,8 @@ check_command "idf.py"
 check_python_deps
 echo -e "${GREEN}✅ ESP-IDF encontrado${NC}"
 
-# Navegar para o diretório esp32
-cd esp32
+# Navegar para o diretório firmware
+cd src/firmware
 
 # Detectar versão atual
 current_version="unknown"
@@ -114,7 +114,7 @@ if [ $? -eq 0 ]; then
         echo -e "${YELLOW}   - Ideal para baseline de testes${NC}"
     fi
     
-    cd ..
+    cd ../..
     
     # Verificar estrutura do projeto científico
     echo -e "${BLUE}🔬 Verificando estrutura científica...${NC}"
@@ -128,10 +128,10 @@ if [ $? -eq 0 ]; then
     
     # Verificar arquivos críticos
     critical_files=(
-        "esp32/main/main.c"
-        "esp32/main/config.h"
-        "server/mqtt_data_collector.py"
-        "scripts/generate_report.py"
+        "src/firmware/main/main.c"
+        "src/firmware/main/config.h"
+        "src/server/mqtt_data_collector.py"
+        "tools/analysis/generate_report.py"
     )
     
     missing_files=()
@@ -154,9 +154,9 @@ if [ $? -eq 0 ]; then
     echo -e "${GREEN}════════════════════════════════════════${NC}"
     echo -e "${GREEN}📋 PRÓXIMOS PASSOS:${NC}"
     echo -e "${GREEN}   1. Flash: idf.py flash monitor${NC}"
-    echo -e "${GREEN}   2. Configurar MQTT: ./scripts/find_mosquitto_ip.sh${NC}"
-    echo -e "${GREEN}   3. Gerar relatório: python3 scripts/generate_report.py${NC}"
-    echo -e "${GREEN}   4. Monitorar sistema: python3 server/mqtt_data_collector.py${NC}"
+    echo -e "${GREEN}   2. Configurar MQTT: ./tools/deployment/find_mosquitto_ip.sh${NC}"
+    echo -e "${GREEN}   3. Gerar relatório: python3 tools/analysis/generate_report.py${NC}"
+    echo -e "${GREEN}   4. Monitorar sistema: python3 src/server/mqtt_data_collector.py${NC}"
     echo -e "${GREEN}════════════════════════════════════════${NC}"
     
 else

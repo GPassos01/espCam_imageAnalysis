@@ -14,7 +14,7 @@ NC='\033[0m' # No Color
 
 # Diretório do projeto
 PROJECT_DIR="$(cd "$(dirname "$0")/.." && pwd)"
-ESP32_MAIN_DIR="$PROJECT_DIR/esp32/main"
+ESP32_MAIN_DIR="$PROJECT_DIR/src/firmware/main"
 
 echo -e "${BLUE}========================================${NC}"
 echo -e "${BLUE}🔄 Alternador de Versões ESP32-CAM${NC}"
