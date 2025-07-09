@@ -1,64 +1,55 @@
-# 🆘 Suporte
+# Suporte
 
-## 📋 Como Obter Ajuda
+## Como Obter Ajuda
 
 Existem várias maneiras de obter suporte para o ESP32-CAM Flood Monitor:
 
-### 🔍 Recursos de Autoajuda
+### Recursos de Autoajuda
 
-1. **📖 [Documentação](docs/)** - Guias completos e referências técnicas
-2. **❓ [FAQ](docs/faq.md)** - Perguntas frequentes e soluções rápidas
-3. **🔧 [Troubleshooting](docs/troubleshooting.md)** - Solução de problemas comuns
-4. **📺 [Tutoriais em Vídeo](docs/videos.md)** - Tutoriais visuais passo a passo
+1. **[Documentação](docs/)** - Guias completos e referências técnicas
+2. **[FAQ](docs/faq.md)** - Perguntas frequentes e soluções rápidas
+3. **[Troubleshooting](docs/troubleshooting.md)** - Solução de problemas comuns
+4. **[Tutoriais em Vídeo](docs/videos.md)** - Tutoriais visuais passo a passo
 
-### 💬 Suporte da Comunidade
+### Suporte da Comunidade
 
-- **🐛 [Issues do GitHub](https://github.com/seu-usuario/esp32-cam-flood-monitor/issues)** - Para bugs e solicitações de funcionalidades
-- **💡 [Discussions](https://github.com/seu-usuario/esp32-cam-flood-monitor/discussions)** - Para discussões gerais e dúvidas
-- **📧 [Lista de Email](mailto:gabriel.passos@unesp.br)** - Para suporte direto
+- **[Issues do GitHub](https://github.com/seu-usuario/esp32-cam-flood-monitor/issues)** - Para bugs e solicitações de funcionalidades
+- **[Discussions](https://github.com/seu-usuario/esp32-cam-flood-monitor/discussions)** - Para discussões gerais e dúvidas
+- **[Lista de Email](mailto:gabriel.passos@unesp.br)** - Para suporte direto
 
-### 🚨 Suporte de Emergência
+### Suporte de Emergência
 
 Para problemas críticos ou urgentes:
 - **Email:** gabriel.passos@unesp.br
 - **Assunto:** `[URGENT] ESP32-CAM - Descrição do Problema`
 
-## 🏷️ Tipos de Suporte
+## Tipos de Suporte
 
-### ✅ Incluído no Suporte Gratuito
+### Incluído no Suporte
 
-- ✅ Bugs confirmados no software
-- ✅ Problemas de documentação
-- ✅ Questões sobre configuração básica
-- ✅ Esclarecimentos sobre funcionalidades
-- ✅ Problemas de instalação em ambientes suportados
+- Bugs confirmados no software
+- Problemas de documentação
+- Questões sobre configuração básica
+- Esclarecimentos sobre funcionalidades
+- Problemas de instalação em ambientes suportados
 
-### ⚠️ Suporte Limitado
+### Suporte Limitado
 
-- ⚠️ Configurações específicas de hardware
-- ⚠️ Integração com sistemas terceiros
-- ⚠️ Modificações personalizadas do código
-- ⚠️ Problemas de rede/infraestrutura local
+- Configurações específicas de hardware
+- Integração com sistemas terceiros
+- Modificações personalizadas do código
+- Problemas de rede/infraestrutura local
 
-### ❌ Não Incluído
+### Não Incluído
 
-- ❌ Desenvolvimento de funcionalidades sob demanda
-- ❌ Consultoria personalizada
-- ❌ Suporte para versões não suportadas
-- ❌ Problemas causados por modificações não autorizadas
+- Desenvolvimento de funcionalidades sob demanda
+- Consultoria personalizada
+- Suporte para versões não suportadas
+- Problemas causados por modificações não autorizadas
 
-## 📊 Tempos de Resposta Esperados
+## Antes de Solicitar Suporte
 
-| Prioridade | Tempo de Resposta | Descrição |
-|------------|------------------|-----------|
-| 🔴 **Crítica** | < 24 horas | Sistema completamente inoperante |
-| 🟠 **Alta** | < 48 horas | Funcionalidade principal afetada |
-| 🟡 **Média** | < 1 semana | Funcionalidades secundárias |
-| 🟢 **Baixa** | < 2 semanas | Melhorias e sugestões |
-
-## 🛠️ Antes de Solicitar Suporte
-
-### ✅ Checklist Básico
+### Checklist Básico
 
 Antes de abrir uma issue ou solicitar suporte, verifique:
 
@@ -68,7 +59,7 @@ Antes de abrir uma issue ou solicitar suporte, verifique:
 - [ ] Você tentou reproduzir o problema em um ambiente limpo?
 - [ ] Você tem logs ou mensagens de erro disponíveis?
 
-### 📋 Informações Necessárias
+### Informações Necessárias
 
 Quando solicitar suporte, inclua sempre:
 
@@ -91,52 +82,52 @@ Quando solicitar suporte, inclua sempre:
 - Resultados obtidos
 ```
 
-## 🎓 Recursos de Aprendizado
+## Recursos de Aprendizado
 
-### 📚 Documentação Oficial
+### Documentação Oficial
 
 - **[Guia de Instalação](docs/installation.md)** - Setup completo do ambiente
 - **[Configuração](docs/configuration.md)** - Configuração avançada
 - **[API Reference](docs/api.md)** - Referência completa da API
 - **[Protocolo MQTT](docs/mqtt-protocol.md)** - Especificação do protocolo
 
-### 🔧 Tutoriais Práticos
+### Tutoriais Práticos
 
 - **[Primeiro Setup](docs/quickstart.md)** - Configuração inicial
 - **[Análise de Imagens](docs/image-analysis.md)** - Como funciona a análise
 - **[Troubleshooting](docs/troubleshooting.md)** - Problemas comuns
 
-### 📺 Recursos Externos
+### Recursos Externos
 
 - **[ESP-IDF Programming Guide](https://docs.espressif.com/projects/esp-idf/)**
 - **[MQTT.org](https://mqtt.org/)** - Especificação MQTT
 - **[Python MQTT Client](https://pypi.org/project/paho-mqtt/)**
 
-## 🤝 Como Contribuir com Suporte
+## Como Contribuir com Suporte
 
 ### Para a Comunidade
 
-- 💡 Responder questões em [Discussions](https://github.com/seu-usuario/esp32-cam-flood-monitor/discussions)
-- 📝 Melhorar a documentação
-- 🐛 Reportar bugs e problemas
-- ⭐ Dar estrela no repositório
+- Responder questões em [Discussions](https://github.com/seu-usuario/esp32-cam-flood-monitor/discussions)
+- Melhorar a documentação
+- Reportar bugs e problemas
+- Dar estrela no repositório
 
 ### Para o Projeto
 
-- 📖 Escrever tutoriais e guias
-- 🔧 Contribuir com código
-- 🧪 Testar em diferentes ambientes
-- 📢 Divulgar o projeto
+- Escrever tutoriais e guias
+- Contribuir com código
+- Testar em diferentes ambientes
+- Divulgar o projeto
 
-## 📞 Contato Direto
+## Contato Direto
 
 ### Equipe de Desenvolvimento
 
 **Gabriel Passos de Oliveira**
-- 📧 **Email:** gabriel.passos@unesp.br
-- 🏛️ **Instituição:** IGCE/UNESP - Rio Claro
-- 🔬 **Área:** Iniciação Científica - Monitoramento Fluvial
-- 🕒 **Horário:** Segunda a Sexta, 8h às 17h (GMT-3)
+- **Email:** gabriel.passos@unesp.br
+- **Instituição:** IGCE/UNESP - Rio Claro
+- **Área:** Iniciação Científica - Monitoramento Fluvial
+- **Horário:** Segunda a Sexta, 8h às 17h (GMT-3)
 
 ### Diretrizes para Contato Direto
 
@@ -157,7 +148,7 @@ Quando solicitar suporte, inclua sempre:
    Categorias: BUG, FEATURE, QUESTION, SECURITY, URGENT
    ```
 
-## 🌍 Comunidade Global
+## Comunidade Global
 
 ### Idiomas Suportados
 
@@ -172,4 +163,4 @@ Quando solicitar suporte, inclua sempre:
 
 ---
 
-> 💡 **Dica:** A melhor forma de obter suporte rápido é fornecer informações completas e claras sobre seu problema. Quanto mais detalhes, melhor podemos ajudar! 
+> **Dica:** A melhor forma de obter suporte rápido é fornecer informações completas e claras sobre seu problema. Quanto mais detalhes, melhor podemos ajudar! 
