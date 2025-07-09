@@ -1,12 +1,12 @@
-# Cenários de Teste Científicos - ESP32-CAM
+# Cenários de Teste - ESP32-CAM
 
-## 🎯 Objetivo da Análise Científica
+## Objetivo da Análise
 
 Coletar dados quantitativos para comparação entre as duas versões do sistema ESP32-CAM:
 - **Versão INTELIGENTE**: Com comparação de imagens e detecção de mudanças
 - **Versão SIMPLES**: Envio de todas as imagens sem processamento
 
-## 📊 Métricas a Coletar
+## Métricas a Coletar
 
 ### **1. Métricas de Rede**
 - **Throughput**: Bytes por segundo transmitidos
@@ -28,7 +28,7 @@ Coletar dados quantitativos para comparação entre as duas versões do sistema 
 - **Falsos negativos**: Movimentos não detectados
 - **Tempo de resposta**: Latência para gerar alertas
 
-## 🧪 Protocolos de Teste
+## Protocolos de Teste
 
 ### **Teste 1: Baseline Estático (30 minutos)**
 
@@ -100,7 +100,7 @@ Movimentos: 5cm a cada 2 minutos
 3. Correlacionar com detecções automáticas
 4. Calcular precisão e recall
 
-## 📋 Protocolo de Coleta de Dados
+## Protocolo de Coleta de Dados
 
 ### **Preparação**
 1. **Configurar ambiente**:
@@ -145,7 +145,7 @@ Movimentos: 5cm a cada 2 minutos
    cp -r data/reports/ backup/
    ```
 
-## 📈 Análise Estatística
+## Análise Estatística
 
 ### **Métricas de Eficiência**
 ```python
@@ -167,7 +167,7 @@ energy_efficiency = processed_images / total_processing_time
 - **Análise de variância**: Para múltiplos cenários
 - **Correlação de Pearson**: Entre métricas diferentes
 
-## 🎯 Resultados Esperados para Artigo
+## Resultados Esperados
 
 ### **Hipóteses a Validar**
 1. **H1**: Versão inteligente reduz significativamente o tráfego de rede (>70%)
@@ -181,7 +181,7 @@ energy_efficiency = processed_images / total_processing_time
 - **Análise de custo-benefício** quantitativa
 - **Discussão de trade-offs** identificados
 
-## 🔬 Validação Científica
+## Validação Científica
 
 ### **Reprodutibilidade**
 - Todos os testes devem ser **repetidos 3 vezes**
@@ -201,7 +201,7 @@ energy_efficiency = processed_images / total_processing_time
 - **Análise de outliers** e tratamento
 - **Discussão de limitações** do estudo
 
-## 📊 Template de Relatório
+## Template de Relatório
 
 ```
 TÍTULO: Análise Comparativa de Sistemas IoT de Monitoramento 
@@ -236,5 +236,5 @@ CONCLUSÕES:
 
 **Implementado por**: Gabriel Passos - UNESP 2025  
 **Objetivo**: Fundamentação científica para artigo acadêmico  
-**Status**: ✅ Pronto para execução  
+**Status**: Pronto para execução  
 **Estimativa**: 3-5 dias de coleta + 2 dias de análise 
