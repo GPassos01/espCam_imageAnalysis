@@ -1,28 +1,28 @@
-# 🚀 Otimizações para ESP32-CAM com 8MB PSRAM (4MB Utilizáveis)
+# Otimizações para ESP32-CAM com 8MB PSRAM (4MB Utilizáveis)
 
-## 📋 Descoberta e Limitações Técnicas
+## Descoberta e Limitações Técnicas
 
 Durante a identificação do hardware, descobrimos que seu ESP32-CAM possui **8MB de PSRAM física** ao invés dos típicos 4MB. Porém, devido a limitações de arquitetura do ESP32, apenas **~4MB são utilizáveis**.
 
 > ⚠️ **IMPORTANTE**: O ESP32 original pode mapear apenas 4MB de PSRAM externa no espaço de endereçamento, mesmo quando 8MB estão fisicamente presentes. Isso é uma limitação de hardware do chip ESP32, não da placa ESP32-CAM.
 
-### 🔍 Hardware Identificado
+### Hardware Identificado
 - **Chip**: ESP32-D0WD-V3 (revisão v3.1)
 - **PSRAM**: 8MB física (8192 KB)
 - **PSRAM Utilizável**: ~4MB (4081 KB) - Limitação do ESP32
 - **Flash**: 4MB
 - **Cores**: 2 (Dual Core @ 240MHz)
 
-## 🎯 Evolução das Otimizações
+## Evolução das Otimizações
 
-### 📈 **Histórico de Melhorias**
+### **Histórico de Melhorias**
 ```
 Versão 1.0: QVGA 320x240 (76.800 pixels)
 Versão 2.0: VGA 640x480 (307.200 pixels) 
 Versão 3.0: HVGA 480x320 (153.600 pixels) ← ATUAL
 ```
 
-### ✅ **Configuração Atual Otimizada (HVGA)**
+### **Configuração Atual Otimizada (HVGA)**
 ```
 RESOLUÇÃO: HVGA 480x320 (sweet spot)
 QUALIDADE: JPEG 5 (premium)
@@ -30,9 +30,9 @@ MEMÓRIA: 490KB utilizados (13.6% de 4MB)
 EFICIÊNCIA: Melhor qualidade + menor uso de recursos
 ```
 
-## 🎯 **OTIMIZAÇÃO HVGA: CONFIGURAÇÃO ATUAL**
+## **OTIMIZAÇÃO HVGA: CONFIGURAÇÃO ATUAL**
 
-### **📊 ESPECIFICAÇÕES ATUAIS:**
+### **ESPECIFICAÇÕES ATUAIS:**
 
 #### **Resolução HVGA (480x320):**
 ```c
@@ -55,7 +55,7 @@ EFICIÊNCIA: Melhor qualidade + menor uso de recursos
 #define PSRAM_USAGE_LIMIT     0.9f       // Usar 90% da PSRAM disponível
 ```
 
-### **📈 COMPARAÇÃO DE EVOLUÇÃO:**
+### **COMPARAÇÃO DE EVOLUÇÃO:**
 
 | Aspecto | QVGA v1.0 | VGA v2.0 | HVGA v3.0 (Atual) |
 |---------|-----------|----------|-------------------|
@@ -66,7 +66,7 @@ EFICIÊNCIA: Melhor qualidade + menor uso de recursos
 | **Uso PSRAM** | 200KB | 700KB | **490KB** |
 | **Eficiência** | Básica | Alta resolução | **Otimizada** |
 
-## 📊 Uso de Memória Atual
+## Uso de Memória Atual
 
 ### Distribuição da PSRAM (4MB utilizáveis)
 ```
@@ -116,7 +116,7 @@ typedef struct {
 } temporal_analysis_t;
 ```
 
-## 🎯 Configurações de Detecção Atuais
+## Configurações de Detecção Atuais
 
 ### **Thresholds Ajustados para HVGA:**
 ```c
@@ -133,27 +133,27 @@ typedef struct {
 4. **Atualização de referência** (contextual)
 5. **Padrão anômalo detectado** (análise temporal)
 
-## 📈 Benefícios da Configuração Atual
+## Benefícios da Configuração Atual
 
-### **✅ Qualidade Visual:**
+### **Qualidade Visual:**
 - **JPEG Quality 5**: Significativamente menos artefatos
 - **Bordas nítidas**: Melhor definição de contornos
 - **Cores precisas**: Menos distorção de compressão
 - **153.600 pixels**: Suficientes para detecção precisa
 
-### **✅ Eficiência de Recursos:**
+### **Eficiência de Recursos:**
 - **490KB total**: Apenas 13.6% da PSRAM utilizável
 - **3.2MB livres**: Margem excelente para expansões
 - **Processamento rápido**: 50% menos pixels que VGA
 - **Transmissão eficiente**: Arquivos 30% menores
 
-### **✅ Inteligência do Sistema:**
+### **Inteligência do Sistema:**
 - **Análise temporal**: Histórico de 3 imagens
 - **Referências contextuais**: 4 contextos diferentes
 - **Detecção de anomalias**: Padrões não usuais
 - **Aprendizado adaptativo**: Ajuste às condições
 
-## 🚀 Performance Atual
+## Performance Atual
 
 ### **Métricas de Sistema:**
 ```
@@ -172,7 +172,7 @@ Economia de dados: 82% vs versão simples
 Latência de alerta: <2 segundos
 ```
 
-## 🔧 Configurações Recomendadas
+## Configurações Recomendadas
 
 ### **Para Máxima Qualidade:**
 ```c
@@ -195,30 +195,30 @@ Latência de alerta: <2 segundos
 #define CHANGE_THRESHOLD       3.0f      // Sensibilidade ideal
 ```
 
-## 💡 Possíveis Expansões Futuras
+## Possíveis Expansões Futuras
 
 ### **Com 3.2MB PSRAM Disponível:**
-- 🎥 **Buffer de vídeo**: Gravação de 2-3 segundos
-- 🔍 **Análise mais sofisticada**: Algoritmos de visão computacional
-- 📱 **Interface web**: Visualização histórica local
-- 🌐 **Multi-dispositivo**: Sincronização entre câmeras
-- 🤖 **IA embarcada**: TensorFlow Lite micro
+- **Buffer de vídeo**: Gravação de 2-3 segundos
+- **Análise mais sofisticada**: Algoritmos de visão computacional
+- **Interface web**: Visualização histórica local
+- **Multi-dispositivo**: Sincronização entre câmeras
+- **IA embarcada**: TensorFlow Lite micro
 
-## 🎯 Casos de Uso Ideais
+## Casos de Uso Ideais
 
 ### **Monitoramento de Enchentes:**
-- ✅ **HVGA perfeita**: Detecta mudanças de nível d'água
-- ✅ **Qualidade suficiente**: Para análise visual humana
-- ✅ **Eficiência premium**: Menos dados, melhor qualidade
-- ✅ **Análise temporal**: Detecta tendências de subida/descida
+- **HVGA perfeita**: Detecta mudanças de nível d'água
+- **Qualidade suficiente**: Para análise visual humana
+- **Eficiência premium**: Menos dados, melhor qualidade
+- **Análise temporal**: Detecta tendências de subida/descida
 
 ### **Vigilância Geral:**
-- ✅ **Detecção de movimento**: Resolução adequada
-- ✅ **Identificação de objetos**: Qualidade melhorada
-- ✅ **Armazenamento eficiente**: Menos espaço necessário
-- ✅ **Alertas inteligentes**: Reduz falsos positivos
+- **Detecção de movimento**: Resolução adequada
+- **Identificação de objetos**: Qualidade melhorada
+- **Armazenamento eficiente**: Menos espaço necessário
+- **Alertas inteligentes**: Reduz falsos positivos
 
-## 📊 Comparação com Hardware Típico
+## Comparação com Hardware Típico
 
 ### **ESP32-CAM Típico vs Nosso Hardware:**
 ```
@@ -235,14 +235,14 @@ Nosso ESP32-CAM Premium:
 - Recursos: Análise avançada + histórico + contexto
 ```
 
-## ✨ Conclusão
+## Conclusão
 
 A configuração atual **HVGA com 8MB PSRAM** representa o **sweet spot perfeito**:
 
-- **📈 Qualidade visual superior** com JPEG 5
-- **🚀 Eficiência excepcional** usando apenas 13.6% da PSRAM
-- **🧠 Inteligência avançada** com análise temporal e contextual  
-- **⚡ Performance otimizada** para detecção em tempo real
-- **🔧 Flexibilidade futura** com 3.2MB disponíveis para expansões
+- **Qualidade visual superior** com JPEG 5
+- **Eficiência excepcional** usando apenas 13.6% da PSRAM
+- **Inteligência avançada** com análise temporal e contextual  
+- **Performance otimizada** para detecção em tempo real
+- **Flexibilidade futura** com 3.2MB disponíveis para expansões
 
 **Esta é uma configuração premium que oferece o melhor de ambos os mundos: qualidade excepcional com eficiência máxima de recursos!** 
