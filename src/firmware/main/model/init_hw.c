@@ -270,8 +270,8 @@ bool detect_green_tint(camera_fb_t *fb) {
     float size_ratio = (float)fb->len / avg_size;
     
     if (size_ratio < 0.7 || size_ratio > 1.4) {
-        ESP_LOGD(TAG, "🔍 Possível tint detectado - Tamanho anômalo: %d vs %d (ratio: %.2f)", 
-                 fb->len, avg_size, size_ratio);
+        ESP_LOGD(TAG, "🔍 Possível tint detectado - Tamanho anômalo: %" PRIu32 " vs %" PRIu32 " (ratio: %.2f)", 
+                 (uint32_t)fb->len, avg_size, size_ratio);
         return true;
     }
     

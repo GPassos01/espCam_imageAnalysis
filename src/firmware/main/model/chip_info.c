@@ -53,13 +53,13 @@ void print_chip_info(void) {
              esp_psram_is_initialized() ? "Inicializado" : "Não disponível");
     
     if (esp_psram_is_initialized()) {
-        ESP_LOGI(TAG, "   PSRAM Tamanho: %zu KB", esp_psram_get_size() / 1024);
+        ESP_LOGI(TAG, "   PSRAM Tamanho: %" PRIu32 " KB", (uint32_t)(esp_psram_get_size() / 1024));
     }
     
     // Heap
-    ESP_LOGI(TAG, "   Heap Total: ~%zu KB", esp_get_free_heap_size() / 1024 + 100); // Estimativa
-    ESP_LOGI(TAG, "   Heap Livre: %zu KB", esp_get_free_heap_size() / 1024);
-    ESP_LOGI(TAG, "   Heap Mínimo: %zu KB", esp_get_minimum_free_heap_size() / 1024);
+    ESP_LOGI(TAG, "   Heap Total: ~%" PRIu32 " KB", (uint32_t)(esp_get_free_heap_size() / 1024 + 100)); // Estimativa
+    ESP_LOGI(TAG, "   Heap Livre: %" PRIu32 " KB", (uint32_t)(esp_get_free_heap_size() / 1024));
+    ESP_LOGI(TAG, "   Heap Mínimo: %" PRIu32 " KB", (uint32_t)(esp_get_minimum_free_heap_size() / 1024));
     
     // MAC Address
     uint8_t mac[6];
