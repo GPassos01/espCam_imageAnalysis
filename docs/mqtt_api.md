@@ -2,7 +2,7 @@
 
 Documentação completa do protocolo de comunicação MQTT utilizado no sistema.
 
-## 📋 Visão Geral
+## Visão Geral
 
 O sistema utiliza MQTT v3.1.1 para comunicação entre ESP32-CAM e servidor. A escolha do MQTT se deve à sua eficiência em ambientes com largura de banda limitada e suporte nativo no ESP-IDF.
 
@@ -16,7 +16,7 @@ O sistema utiliza MQTT v3.1.1 para comunicação entre ESP32-CAM e servidor. A e
 
 ---
 
-## 📨 Tópicos MQTT
+## Tópicos MQTT
 
 ### Estrutura de Tópicos
 
@@ -47,7 +47,7 @@ esp32cam/
 
 ---
 
-## 📄 Formato das Mensagens
+## Formato das Mensagens
 
 ### monitoring/data
 Dados periódicos de monitoramento enviados a cada captura.
@@ -123,7 +123,7 @@ Estatísticas do WiFi sniffer.
 
 ---
 
-## 🔄 Fluxo de Comunicação
+## Fluxo de Comunicação
 
 ### Sequência Normal
 
@@ -169,7 +169,7 @@ stateDiagram-v2
 
 ---
 
-## 💻 Exemplos de Código
+## Exemplos de Código
 
 ### Publicar do ESP32
 
@@ -230,7 +230,7 @@ mosquitto_pub -h localhost -t esp32cam/alert \
 
 ---
 
-## ⚙️ Configurações e Otimizações
+## Configurações e Otimizações
 
 ### QoS (Quality of Service)
 
@@ -258,7 +258,7 @@ mosquitto_pub -h localhost -t esp32cam/alert \
 
 ---
 
-## 🔒 Segurança
+## Segurança
 
 ### Implementado
 
@@ -276,7 +276,7 @@ mosquitto_pub -h localhost -t esp32cam/alert \
 
 ---
 
-## 📊 Monitoramento e Debug
+## Monitoramento e Debug
 
 ### Logs do Broker
 
