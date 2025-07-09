@@ -1,4 +1,4 @@
-name: 🚀 CI/CD Pipeline
+name: CI/CD ESP32-CAM Flood Monitor
 
 on:
   push:
@@ -17,7 +17,7 @@ jobs:
   # ESP32 Firmware Build and Test
   # ===============================================
   firmware-build:
-    name: 🔧 ESP32 Firmware Build
+    name: ESP32 Firmware Build
     runs-on: ubuntu-latest
     
     strategy:
@@ -25,18 +25,18 @@ jobs:
         version: [intelligent, simple]
     
     steps:
-    - name: 📥 Checkout code
+    - name: Checkout code
       uses: actions/checkout@v4
       with:
         submodules: recursive
     
-    - name: 🔧 Setup ESP-IDF
+    - name: Setup ESP-IDF
       uses: espressif/esp-idf-ci-action@v1
       with:
         esp_idf_version: ${{ env.ESP_IDF_VERSION }}
         target: esp32
     
-    - name: 🏗️ Build Firmware (${{ matrix.version }})
+    - name: Build Firmware (${{ matrix.version }})
       working-directory: src/firmware
       run: |
         # Configure version
@@ -49,7 +49,7 @@ jobs:
         ls -la build/
         test -f build/esp32_cam_monitor.bin
     
-    - name: 📦 Upload Firmware Artifacts
+    - name: Upload Firmware Artifacts
       uses: actions/upload-artifact@v4
       with:
         name: firmware-${{ matrix.version }}
@@ -64,34 +64,34 @@ jobs:
   # Python Server Test
   # ===============================================
   server-test:
-    name: 🐍 Python Server Test
+    name: Python Server Test
     runs-on: ubuntu-latest
     
     strategy:
       matrix:
-        python-version: [3.9, 3.10, 3.11]
+        python-version: ["3.9", "3.10", "3.11"]
     
     steps:
-    - name: 📥 Checkout code
+    - name: Checkout code
       uses: actions/checkout@v4
     
-    - name: 🐍 Setup Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v4
+    - name: Setup Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v5
       with:
         python-version: ${{ matrix.python-version }}
     
-    - name: 📦 Install Dependencies
+    - name: Install Dependencies
       working-directory: src/server
       run: |
         python -m pip install --upgrade pip
         pip install paho-mqtt matplotlib numpy scipy pillow pytest
         pip install -r requirements.txt || echo "requirements.txt not found"
     
-    - name: 🧪 Run Server Tests
+    - name: Run Server Tests
       working-directory: src/server
       run: |
         # Basic import test
-        python -c "import mqtt_data_collector; print('✅ Import successful')"
+        python -c "import mqtt_data_collector; print('Import successful')"
         
         # Help test
         python mqtt_data_collector.py --help
@@ -99,7 +99,7 @@ jobs:
         # Syntax check
         python -m py_compile mqtt_data_collector.py
     
-    - name: 📊 Test Data Directory Structure
+    - name: Test Data Directory Structure
       run: |
         mkdir -p data/{images/{intelligent,simple},databases,reports}
         python -c "
@@ -107,21 +107,21 @@ jobs:
         required_dirs = ['data/images/intelligent', 'data/images/simple', 'data/databases']
         for dir_path in required_dirs:
             assert os.path.exists(dir_path), f'Missing: {dir_path}'
-        print('✅ Data structure OK')
+        print('Data structure OK')
         "
 
   # ===============================================
   # Documentation Check
   # ===============================================
   documentation:
-    name: 📚 Documentation Check
+    name: Documentation Check
     runs-on: ubuntu-latest
     
     steps:
-    - name: 📥 Checkout code
+    - name: Checkout code
       uses: actions/checkout@v4
     
-    - name: 🔍 Check Required Files
+    - name: Check Required Files
       run: |
         required_files=(
           "README.md"
@@ -135,14 +135,14 @@ jobs:
         
         for file in "${required_files[@]}"; do
           if [[ -f "$file" ]]; then
-            echo "✅ $file exists"
+            echo "$file exists"
           else
-            echo "❌ $file missing"
+            echo "$file missing"
             exit 1
           fi
         done
     
-    - name: 📖 Check README structure
+    - name: Check README structure
       run: |
         # Check if README has key sections
         required_sections=(
@@ -155,9 +155,9 @@ jobs:
         
         for section in "${required_sections[@]}"; do
           if grep -q "$section" README.md; then
-            echo "✅ Section '$section' found"
+            echo "Section '$section' found"
           else
-            echo "⚠️ Section '$section' not found"
+            echo "Section '$section' not found"
           fi
         done
 
@@ -165,17 +165,17 @@ jobs:
   # Tools Validation (Beta)
   # ===============================================
   tools-validation:
-    name: 🛠️ Tools Validation (Beta)
+    name: Tools Validation (Beta)
     runs-on: ubuntu-latest
     continue-on-error: true  # Beta tools may fail
     
     steps:
-    - name: 📥 Checkout code
+    - name: Checkout code
       uses: actions/checkout@v4
     
-    - name: 🔍 Check Tools Structure
+    - name: Check Tools Structure
       run: |
-        echo "🧪 Validating tools structure..."
+        echo "Validating tools structure..."
         
         tools_dirs=(
           "tools/build"
@@ -186,157 +186,80 @@ jobs:
         
         for dir in "${tools_dirs[@]}"; do
           if [[ -d "$dir" ]]; then
-            echo "✅ $dir exists"
+            echo "$dir exists"
             ls -la "$dir"
           else
-            echo "⚠️ $dir missing"
+            echo "$dir missing"
           fi
         done
     
-    - name: 🔧 Test Tools Syntax
+    - name: Test Tools Syntax
       run: |
-        echo "🔍 Checking shell scripts syntax..."
+        echo "Checking shell scripts syntax..."
         
         find tools/ -name "*.sh" -type f | while read script; do
           echo "Checking $script..."
-          bash -n "$script" && echo "✅ $script syntax OK" || echo "❌ $script has syntax errors"
+          bash -n "$script" && echo "$script syntax OK" || echo "$script has syntax errors"
         done
 
   # ===============================================
   # Security Scan
   # ===============================================
   security-scan:
-    name: 🔒 Security Scan
+    name: Security Scan
     runs-on: ubuntu-latest
     
     steps:
-    - name: 📥 Checkout code
+    - name: Checkout code
       uses: actions/checkout@v4
     
-    - name: 🔍 Run Secret Scan
+    - name: Run Secret Scan
       run: |
-        echo "🔍 Scanning for secrets..."
+        echo "Scanning for secrets..."
         
         # Check for common secret patterns
         if grep -r -i "password\s*=" src/ || \
            grep -r -i "secret\s*=" src/ || \
            grep -r -i "api[_-]key" src/; then
-          echo "⚠️ Potential secrets found"
+          echo "Potential secrets found"
           exit 1
         else
-          echo "✅ No obvious secrets found"
+          echo "No obvious secrets found"
         fi
     
-    - name: 📋 License Check
+    - name: License Check
       run: |
         if [[ -f "LICENSE" ]]; then
-          echo "✅ License file exists"
+          echo "License file exists"
           head -n 5 LICENSE
         else
-          echo "❌ No license file found"
+          echo "No license file found"
           exit 1
         fi
-
-  # ===============================================
-  # Release Build (only on tags)
-  # ===============================================
-  release-build:
-    name: 🚀 Release Build
-    runs-on: ubuntu-latest
-    if: startsWith(github.ref, 'refs/tags/v')
-    needs: [firmware-build, server-test, documentation]
-    
-    steps:
-    - name: 📥 Checkout code
-      uses: actions/checkout@v4
-    
-    - name: 🏷️ Get Version
-      id: version
-      run: echo "VERSION=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
-    
-    - name: 🔧 Setup ESP-IDF
-      uses: espressif/esp-idf-ci-action@v1
-      with:
-        esp_idf_version: ${{ env.ESP_IDF_VERSION }}
-        target: esp32
-    
-    - name: 🏗️ Build Release Firmware
-      working-directory: src/firmware
-      run: |
-        # Build both versions
-        for version in intelligent simple; do
-          echo "Building $version version..."
-          echo "$version" | tr '[:lower:]' '[:upper:]' > main/ACTIVE_VERSION.txt
-          idf.py fullclean
-          idf.py build
-          
-          # Create release directory
-          mkdir -p ../../release/$version
-          cp build/esp32_cam_monitor.bin ../../release/$version/
-          cp build/bootloader/bootloader.bin ../../release/$version/
-          cp build/partition_table/partition-table.bin ../../release/$version/
-        done
-    
-    - name: 📦 Create Release Archive
-      run: |
-        # Create release package
-        mkdir -p release-package
-        
-        # Copy firmware builds
-        cp -r release/ release-package/firmware/
-        
-        # Copy server
-        cp -r src/server/ release-package/
-        
-        # Copy documentation
-        cp README.md CHANGELOG.md LICENSE release-package/
-        
-        # Create installation script
-        cat > release-package/install.sh << 'EOF'
-        #!/bin/bash
-        echo "🚀 ESP32-CAM Flood Monitor Installation"
-        echo "Versão: ${{ steps.version.outputs.VERSION }}"
-        echo "Por Gabriel Passos - IGCE/UNESP"
-        echo ""
-        echo "📋 Pré-requisitos:"
-        echo "- ESP-IDF v5.0+"
-        echo "- Python 3.9+"
-        echo ""
-        echo "📖 Consulte README.md para instruções completas"
-        EOF
-        chmod +x release-package/install.sh
-        
-        # Create archive
-        tar -czf esp32-cam-monitor-${{ steps.version.outputs.VERSION }}.tar.gz release-package/
-    
-    - name: 📤 Upload Release Assets
-      uses: actions/upload-artifact@v4
-      with:
-        name: release-${{ steps.version.outputs.VERSION }}
-        path: esp32-cam-monitor-${{ steps.version.outputs.VERSION }}.tar.gz
 
   # ===============================================
   # Notification
   # ===============================================
   notify:
-    name: 📢 Notification
+    name: Build Status Notification
     runs-on: ubuntu-latest
-    needs: [firmware-build, server-test, documentation]
+    needs: [server-test, documentation, tools-validation, security-scan]
     if: always()
     
     steps:
-    - name: 📊 Build Status
+    - name: Build Status Summary
       run: |
-        echo "🔍 Build Status Summary:"
-        echo "Firmware Build: ${{ needs.firmware-build.result }}"
+        echo "Build Status Summary:"
         echo "Server Test: ${{ needs.server-test.result }}" 
         echo "Documentation: ${{ needs.documentation.result }}"
+        echo "Tools Validation: ${{ needs.tools-validation.result }}"
+        echo "Security Scan: ${{ needs.security-scan.result }}"
         
-        if [[ "${{ needs.firmware-build.result }}" == "success" && 
-              "${{ needs.server-test.result }}" == "success" && 
-              "${{ needs.documentation.result }}" == "success" ]]; then
-          echo "✅ All checks passed!"
+        if [[ "${{ needs.server-test.result }}" == "success" && 
+              "${{ needs.documentation.result }}" == "success" && 
+              "${{ needs.security-scan.result }}" == "success" ]]; then
+          echo "Core checks passed!"
         else
-          echo "❌ Some checks failed"
+          echo "Some checks failed"
           exit 1
         fi 

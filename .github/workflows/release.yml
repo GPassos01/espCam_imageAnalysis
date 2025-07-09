@@ -1,32 +1,32 @@
-name: 🚀 Auto Release
+name: Auto Release
 
 on:
   push:
     tags:
       - 'v*.*.*'
 
+permissions:
+  contents: write
+
 jobs:
   create-release:
-    name: 📦 Create GitHub Release
+    name: Create GitHub Release
     runs-on: ubuntu-latest
     
-    permissions:
-      contents: write
-      
     steps:
-    - name: 📥 Checkout code
+    - name: Checkout code
       uses: actions/checkout@v4
       with:
         fetch-depth: 0
     
-    - name: 🏷️ Get version
+    - name: Get version
       id: version
       run: |
         VERSION=${GITHUB_REF#refs/tags/}
         echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
-        echo "🏷️ Release version: $VERSION"
+        echo "Release version: $VERSION"
     
-    - name: 📝 Generate Release Notes
+    - name: Generate Release Notes
       id: notes
       run: |
         # Extract version from CHANGELOG.md
@@ -34,11 +34,11 @@ jobs:
         
         # Create release notes
         cat > release_notes.md << EOF
-        # 🚀 ESP32-CAM Flood Monitor $VERSION
+        # ESP32-CAM Flood Monitor $VERSION
         
         ## Sistema de Monitoramento Inteligente para Detecção de Mudanças Fluviais
         
-        ### ✅ **Principais Funcionalidades**
+        ### Principais Funcionalidades
         - **Sistema ESP32-CAM completo** com análise inteligente RGB565
         - **Algoritmo de comparação** por blocos 32x32 pixels
         - **Monitor científico Python** com argumentos CLI
@@ -46,148 +46,70 @@ jobs:
         - **Comunicação MQTT robusta** com reconexão automática
         - **Documentação profissional** completa
         
-        ### 🔧 **Melhorias Técnicas**
+        ### Melhorias Técnicas
         - Versão INTELLIGENT recriada e otimizada
         - Estrutura de projeto profissional
         - Sistema de backup automático
         - Scripts de teste para comparação de versões
         - Workflows GitHub Actions automatizados
         
-        ### 🧪 **Status dos Testes**
+        ### Status dos Testes
         - ✅ **Core System**: Firmware + Servidor testados e funcionais
         - 🚧 **Tools**: Scripts em beta para próximas versões
         
-        ### 📥 **Instalação Rápida**
+        ### Instalação Rápida
         \`\`\`bash
-        # Opção 1: Clone do repositório
+        # Clone do repositório
         git clone https://github.com/GPassos01/espCam_imageAnalysis.git
         cd espCam_imageAnalysis
         
-        # Opção 2: Download dos binários (veja Assets abaixo)
-        # - firmware-intelligent.zip
-        # - firmware-simple.zip  
-        # - esp32-cam-monitor-$VERSION.tar.gz
+        # Siga README.md para configuração completa
         \`\`\`
         
-        ### 🔧 **Configuração Rápida**
-        1. **ESP32**: Flash firmware (.bin files)
+        ### Configuração Rápida
+        1. **ESP32**: Configure firmware conforme documentação
         2. **Servidor**: Configure Python + MQTT
         3. **Monitor**: Execute \`python mqtt_data_collector.py\`
         
-        ### 📖 **Documentação Completa**
+        ### Documentação Completa
         - [README.md](README.md) - Guia completo
         - [CHANGELOG.md](CHANGELOG.md) - Histórico de mudanças
         - [CONTRIBUTING.md](CONTRIBUTING.md) - Como contribuir
         
-        ### 🎯 **Próximo Release**: v1.1.0 com ferramentas completas
+        ### Próximo Release
+        v1.1.0 com ferramentas completas
         
         ---
         **Por Gabriel Passos - IGCE/UNESP**  
         **Sistema de Monitoramento de Enchentes - Projeto Científico**
         EOF
         
+        # Store release notes for later use
         echo "RELEASE_NOTES<<EOF" >> $GITHUB_OUTPUT
         cat release_notes.md >> $GITHUB_OUTPUT
         echo "EOF" >> $GITHUB_OUTPUT
     
-    - name: 🔧 Setup ESP-IDF
-      uses: espressif/esp-idf-ci-action@v1
+    - name: Setup Python
+      uses: actions/setup-python@v5
       with:
-        esp_idf_version: v5.2.5
-        target: esp32
+        python-version: '3.9'
     
-    - name: 🏗️ Build Release Firmware
-      working-directory: src/firmware
-      run: |
-        # Build both versions for release
-        for version in intelligent simple; do
-          echo "🔧 Building $version version..."
-          echo "$version" | tr '[:lower:]' '[:upper:]' > main/ACTIVE_VERSION.txt
-          idf.py fullclean
-          idf.py build
-          
-          # Create release directory
-          mkdir -p ../../release-assets/$version
-          cp build/esp32_cam_monitor.bin ../../release-assets/$version/
-          cp build/bootloader/bootloader.bin ../../release-assets/$version/
-          cp build/partition_table/partition-table.bin ../../release-assets/$version/
-          
-          # Create flash script
-          cat > ../../release-assets/$version/flash.sh << 'FLASH_EOF'
-        #!/bin/bash
-        echo "🔧 ESP32-CAM Flash Script - Versão: $version"
-        echo "Port padrão: /dev/ttyUSB0 (altere se necessário)"
-        
-        PORT=${1:-/dev/ttyUSB0}
-        
-        echo "📡 Fazendo flash no ESP32-CAM..."
-        esptool.py --chip esp32 \
-          --port $PORT \
-          --baud 460800 \
-          --before default_reset \
-          --after hard_reset \
-          write_flash -z \
-          --flash_mode dio \
-          --flash_freq 40m \
-          --flash_size detect \
-          0x1000 bootloader.bin \
-          0x10000 esp32_cam_monitor.bin \
-          0x8000 partition-table.bin
-        
-        echo "✅ Flash concluído!"
-        FLASH_EOF
-          chmod +x ../../release-assets/$version/flash.sh
-          
-          # Create README for version
-          cat > ../../release-assets/$version/README.md << VERSION_EOF
-        # ESP32-CAM Firmware - Versão ${version^^}
-        
-        ## 📁 Arquivos
-        - \`esp32_cam_monitor.bin\` - Firmware principal
-        - \`bootloader.bin\` - Bootloader ESP32
-        - \`partition-table.bin\` - Tabela de partições
-        - \`flash.sh\` - Script de flash automatizado
-        
-        ## 🔧 Flash Manual
-        \`\`\`bash
-        # Via ESP-IDF
-        idf.py -p /dev/ttyUSB0 flash
-        
-        # Via esptool
-        ./flash.sh [porta]
-        \`\`\`
-        
-        ## ⚙️ Configuração
-        1. Edite \`config.h\` se necessário
-        2. Configure WiFi e MQTT
-        3. Faça upload do firmware
-        4. Execute monitor Python
-        VERSION_EOF
-          
-          # Create ZIP for version
-          cd ../../release-assets
-          zip -r firmware-$version.zip $version/
-          cd ..
-        done
-    
-    - name: 📦 Create Release Package
+    - name: Create Release Package
       run: |
         # Create complete release package
-        mkdir -p complete-package
+        mkdir -p release-package
         
-        # Copy firmware builds
-        cp -r release-assets/ complete-package/firmware/
-        
-        # Copy server
-        cp -r src/server/ complete-package/
-        rm -rf complete-package/server/__pycache__
+        # Copy server code
+        cp -r src/server/ release-package/
+        rm -rf release-package/server/__pycache__ || true
+        rm -rf release-package/server/venv || true
         
         # Copy essential documentation
-        cp README.md CHANGELOG.md LICENSE complete-package/
-        cp CONTRIBUTING.md CODE_OF_CONDUCT.md complete-package/
+        cp README.md CHANGELOG.md LICENSE release-package/
+        cp CONTRIBUTING.md CODE_OF_CONDUCT.md release-package/
         
         # Create installation script
-        cat > complete-package/install.sh << 'INSTALL_EOF'
+        cat > release-package/install.sh << 'INSTALL_EOF'
         #!/bin/bash
         # ESP32-CAM Flood Monitor Installation Script
         # Versão: ${{ steps.version.outputs.VERSION }}
@@ -195,90 +117,70 @@ jobs:
         
         set -e
         
-        echo "🚀 ESP32-CAM Flood Monitor Installation"
+        echo "ESP32-CAM Flood Monitor Installation"
         echo "Versão: ${{ steps.version.outputs.VERSION }}"
         echo "========================================="
         
         # Check prerequisites
-        echo "🔍 Verificando pré-requisitos..."
+        echo "Verificando pré-requisitos..."
         
         if ! command -v python3 &> /dev/null; then
-            echo "❌ Python 3 não encontrado. Instale Python 3.9+"
+            echo "Python 3 não encontrado. Instale Python 3.9+"
             exit 1
         fi
         
         PYTHON_VERSION=$(python3 --version | cut -d' ' -f2 | cut -d'.' -f1,2)
-        echo "✅ Python $PYTHON_VERSION encontrado"
+        echo "Python $PYTHON_VERSION encontrado"
         
         # Install Python dependencies
-        echo "📦 Instalando dependências Python..."
+        echo "Instalando dependências Python..."
         cd server
         python3 -m venv venv
         source venv/bin/activate
         pip install paho-mqtt matplotlib numpy scipy pillow
         
-        echo "✅ Instalação concluída!"
+        echo "Instalação concluída!"
         echo ""
-        echo "📖 Próximos passos:"
-        echo "1. Configure seu ESP32-CAM com firmware da pasta firmware/"
+        echo "Próximos passos:"
+        echo "1. Configure seu ESP32-CAM conforme documentação"
         echo "2. Edite configurações MQTT"
         echo "3. Execute: cd server && source venv/bin/activate && python mqtt_data_collector.py"
         echo ""
-        echo "📚 Consulte README.md para instruções detalhadas"
+        echo "Consulte README.md para instruções detalhadas"
         INSTALL_EOF
-        chmod +x complete-package/install.sh
+        chmod +x release-package/install.sh
+        
+        # Create requirements.txt for server
+        cat > release-package/server/requirements.txt << 'REQ_EOF'
+        paho-mqtt>=1.6.0
+        matplotlib>=3.5.0
+        numpy>=1.21.0
+        scipy>=1.7.0
+        pillow>=8.3.0
+        REQ_EOF
         
         # Create final archive
-        tar -czf esp32-cam-monitor-${{ steps.version.outputs.VERSION }}.tar.gz complete-package/
+        tar -czf esp32-cam-monitor-${{ steps.version.outputs.VERSION }}.tar.gz release-package/
     
-    - name: 🚀 Create GitHub Release
-      uses: actions/create-release@v1
-      id: create_release
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    - name: Create GitHub Release
+      uses: softprops/action-gh-release@v1
       with:
-        tag_name: ${{ steps.version.outputs.VERSION }}
-        release_name: ESP32-CAM Flood Monitor ${{ steps.version.outputs.VERSION }}
+        name: ESP32-CAM Flood Monitor ${{ steps.version.outputs.VERSION }}
         body: ${{ steps.notes.outputs.RELEASE_NOTES }}
+        files: |
+          esp32-cam-monitor-${{ steps.version.outputs.VERSION }}.tar.gz
         draft: false
         prerelease: false
-    
-    - name: 📤 Upload Complete Package
-      uses: actions/upload-release-asset@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ./esp32-cam-monitor-${{ steps.version.outputs.VERSION }}.tar.gz
-        asset_name: esp32-cam-monitor-${{ steps.version.outputs.VERSION }}.tar.gz
-        asset_content_type: application/gzip
     
-    - name: 📤 Upload Firmware INTELLIGENT
-      uses: actions/upload-release-asset@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ./release-assets/firmware-intelligent.zip
-        asset_name: firmware-intelligent.zip
-        asset_content_type: application/zip
-    
-    - name: 📤 Upload Firmware SIMPLE
-      uses: actions/upload-release-asset@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ./release-assets/firmware-simple.zip
-        asset_name: firmware-simple.zip
-        asset_content_type: application/zip
-    
-    - name: 📢 Release Summary
+    - name: Release Summary
       run: |
-        echo "✅ Release ${{ steps.version.outputs.VERSION }} criado com sucesso!"
-        echo "📦 Assets criados:"
+        echo "Release ${{ steps.version.outputs.VERSION }} criado com sucesso!"
+        echo "Assets criados:"
         echo "  - esp32-cam-monitor-${{ steps.version.outputs.VERSION }}.tar.gz (pacote completo)"
-        echo "  - firmware-intelligent.zip (firmware inteligente)"
-        echo "  - firmware-simple.zip (firmware simples)"
         echo ""
-        echo "🔗 URL: ${{ steps.create_release.outputs.html_url }}" 
+        echo "Próximos passos:"
+        echo "1. Download do arquivo .tar.gz"
+        echo "2. Extração: tar -xzf esp32-cam-monitor-${{ steps.version.outputs.VERSION }}.tar.gz"
+        echo "3. Execução: ./install.sh" 
