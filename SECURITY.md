@@ -1,17 +1,19 @@
-# 🔒 Política de Segurança
+# Política de Segurança
 
-## 📊 Versões Suportadas
+O suporte a segurança do projeto atualmente é minima pois ainda não houve foco nessa parte do desenvolvimento. Em breve havera aumento considerado nesse quesito. Peço que tenha paciência pois ainda sou apenas um :D. 
 
-Atualmente oferecemos suporte de segurança para as seguintes versões:
+## Versões Suportadas
 
-| Versão | Suporte           |
+Ofereço suporte de segurança para as seguintes versões:
+
+| Versão | Suporte          |
 | ------ | -----------------|
-| 1.0.x  | ✅ Suportado     |
-| < 1.0  | ❌ Não suportado |
+| 1.0.x  |    Suportado     |
+| < 1.0  |   Não suportado  |
 
-## 🚨 Reportando Vulnerabilidades
+## Reportando Vulnerabilidades
 
-A segurança do nosso projeto é uma prioridade. Se você descobrir uma vulnerabilidade de segurança, por favor nos ajude a resolvê-la de forma responsável.
+Se você descobrir uma vulnerabilidade de segurança, por favor me ajude a resolvê-la de forma responsável.
 
 ### Como Reportar
 
@@ -29,49 +31,16 @@ Por favor, inclua as seguintes informações em seu relatório:
 - **Impacto potencial** da vulnerabilidade
 - **Sugestões de correção** (se houver)
 
-### O Que Esperamos
-
-- **Resposta inicial:** Dentro de 48 horas
-- **Confirmação:** Dentro de 7 dias
-- **Correção:** Dependendo da severidade (1-30 dias)
-- **Divulgação:** Após correção e teste
-
-## 🛡️ Práticas de Segurança
-
-### Firmware ESP32-CAM
-
-- **Criptografia:** Todas as credenciais WiFi/MQTT são armazenadas de forma segura
-- **Validação:** Dados de entrada são validados antes do processamento
-- **Atualizações:** OTA (Over-The-Air) updates com verificação de assinatura
-- **Isolamento:** Separação entre código crítico e funcionalidades secundárias
-
-### Servidor Python
-
-- **Sanitização:** Todos os dados MQTT são sanitizados antes do armazenamento
-- **Banco de Dados:** SQLite com prepared statements para prevenir injection
-- **Logs:** Logs não contêm informações sensíveis
-- **Dependências:** Dependências regulares auditadas para vulnerabilidades
-
-### Rede e Comunicação
-
-- **MQTT:** Suporte a TLS/SSL para comunicação segura
-- **WiFi:** WPA2/WPA3 obrigatório para conexões
-- **Firewall:** Recomendações de configuração de firewall
-- **VPN:** Suporte para conexões VPN quando necessário
-
-## 🔍 Auditoria de Segurança
+## Auditoria de Segurança
 
 ### Autoavaliação Regular
 
-- ✅ Análise estática de código (SAST)
-- ✅ Verificação de dependências vulneráveis
-- ✅ Testes de penetração básicos
-- ✅ Revisão de configurações de segurança
+- Análise estática de código (SAST)
+- Verificação de dependências vulneráveis
+- Revisão de configurações de segurança
 
 ### Ferramentas Utilizadas
 
-- **ESP-IDF Security:** Ferramentas nativas do ESP-IDF
-- **Bandit:** Scanner de segurança para Python
 - **Safety:** Verificação de dependências Python
 - **GitHub Security Advisories:** Monitoramento automático
 
@@ -93,23 +62,23 @@ Por favor, inclua as seguintes informações em seu relatório:
 - [ ] Monitorar logs de segurança
 - [ ] Implementar backup seguro
 
-## 🆘 Incidentes de Segurança
+## Incidentes de Segurança
 
 Em caso de incidente de segurança:
 
 1. **Isole** o sistema afetado
 2. **Documente** o que aconteceu
-3. **Reporte** imediatamente para gabriel.passos@unesp.br
+3. **Reporte** para gabriel.passos@unesp.br
 4. **Não** tente "consertar" antes de reportar
 5. **Preserve** evidências para análise
 
-## 📞 Contato de Emergência
+## Contato de Emergência
 
 **Responsável pela Segurança:** Gabriel Passos de Oliveira  
 **Email:** gabriel.passos@unesp.br  
 **Instituição:** IGCE/UNESP - Rio Claro  
 
-**Tempo de Resposta:**
+**Tempo de Resposta (média):**
 - **Crítico:** < 4 horas
 - **Alto:** < 24 horas  
 - **Médio:** < 72 horas
@@ -117,5 +86,5 @@ Em caso de incidente de segurança:
 
 ---
 
-**Última atualização:** Janeiro 2025  
-**Próxima revisão:** Julho 2025 
+**Última atualização:** Julho 2025  
+**Próxima revisão:** A definir 
