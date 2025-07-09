@@ -1,19 +1,19 @@
-# 🛠️ Tools - ESP32-CAM Flood Monitor
+# Tools (BETA)
 
-Ferramentas utilitárias para desenvolvimento, build, deployment e análise do sistema ESP32-CAM.
+Ferramentas utilitárias para desenvolvimento, build, deployment e análise do sistema ESP32-CAM. Ainda não testado completamente
 
-## 📁 Estrutura Organizada
+## Estrutura Organizada
 
 ```
 tools/
-├── build/                  # 🔨 Scripts de build e setup
-├── development/            # 🧪 Ferramentas de desenvolvimento  
-├── deployment/             # 🚀 Scripts de deploy e produção
-├── analysis/               # 📊 Análise científica e relatórios
+├── build/                  # Scripts de build e setup
+├── development/            # Ferramentas de desenvolvimento  
+├── deployment/             # Scripts de deploy e produção
+├── analysis/               # Análise científica e relatórios
 └── README.md              # Este arquivo
 ```
 
-## 🔨 Build & Setup
+## Build & Setup
 
 ### `build/setup.sh`
 Script principal de configuração automática do ambiente:
@@ -53,7 +53,7 @@ Gerenciador avançado do ESP32-CAM com funções específicas:
 ./build/esp32cam_manager.sh --build --flash
 ```
 
-## 🧪 Development
+## Development
 
 ### `development/switch_version.sh`
 Alterna entre versões INTELLIGENT e SIMPLE:
@@ -128,12 +128,12 @@ Localiza e configura broker MQTT automaticamente:
 ```
 
 **Funcionalidades:**
-- 🔍 Scan automático da rede local
-- ✅ Verificação de conectividade MQTT
-- ⚙️ Configuração automática do config.h
-- 📋 Relatório de brokers encontrados
+- Scan automático da rede local
+- Verificação de conectividade MQTT
+- Configuração automática do config.h
+- Relatório de brokers encontrados
 
-## 📊 Analysis
+## Analysis
 
 ### `analysis/generate_report.py`
 Gerador principal de relatórios científicos:
@@ -153,10 +153,10 @@ python analysis/generate_report.py --device ESP32CAM_001
 ```
 
 **Tipos de relatório:**
-- 📊 **Científico**: Análise estatística completa
-- 📈 **Performance**: Métricas de sistema
-- 🔍 **Comparativo**: INTELLIGENT vs SIMPLE
-- 📱 **Executivo**: Resumo para gestores
+- **Científico**: Análise estatística completa
+- **Performance**: Métricas de sistema
+- **Comparativo**: INTELLIGENT vs SIMPLE
+- **Executivo**: Resumo para gestores
 
 ### `analysis/run_scientific_tests.sh`
 Protocolo automatizado de testes científicos:
@@ -173,12 +173,12 @@ Protocolo automatizado de testes científicos:
 ```
 
 **Protocolos inclusos:**
-- 🧪 **Controlado**: Ambiente de laboratório
-- 🌍 **Campo**: Condições reais de rio
-- 🌤️ **Ambiental**: Diferentes condições climáticas
-- ⚡ **Performance**: Stress test do sistema
+- **Controlado**: Ambiente de laboratório
+- **Campo**: Condições reais de rio
+- **Ambiental**: Diferentes condições climáticas
+- **Performance**: Stress test do sistema
 
-## 🎯 Casos de Uso Comuns
+## Casos de Uso Comuns
 
 ### 1. **Setup Inicial de Desenvolvimento**
 ```bash
@@ -224,7 +224,7 @@ python analysis/generate_report.py --scientific --format all
 ./development/test_session_manager.py --production-check
 ```
 
-## 📋 Dependências
+## Dependências
 
 ### Build & Development
 ```bash
@@ -251,7 +251,7 @@ pip install jinja2 reportlab weasyprint
 sudo apt install texlive-full
 ```
 
-## 🔧 Configuração Avançada
+## Configuração Avançada
 
 ### Personalização de Scripts
 
@@ -283,7 +283,7 @@ Os tools são compatíveis com pipelines de CI/CD:
   run: tools/analysis/generate_report.py --ci --format json
 ```
 
-## 🚨 Troubleshooting
+## Troubleshooting
 
 ### Problemas Comuns
 
@@ -314,12 +314,12 @@ python tools/analysis/generate_report.py --validate-data
 python tools/analysis/generate_report.py --debug
 ```
 
-## 📞 Suporte
+## Suporte
 
-- 📖 **Documentação**: [../docs/](../docs/)
-- 🐛 **Issues**: [GitHub Issues](https://github.com/seu-usuario/esp32-cam-flood-monitor/issues)
-- 📧 **Contato**: gabriel.passos@unesp.br
+- **Documentação**: [../docs/](../docs/)
+- **Issues**: [GitHub Issues](https://github.com/GPassos01/espCam_imageAnalysis/issues)
+- **Contato**: gabriel.passos@unesp.br
 
 ---
 
-> 🛠️ **Dica**: Execute sempre `./build/setup.sh --check` antes de usar outras ferramentas para garantir que o ambiente está configurado corretamente! 
+> **Dica**: Execute sempre `./build/setup.sh --check` antes de usar outras ferramentas para garantir que o ambiente está configurado corretamente! 
