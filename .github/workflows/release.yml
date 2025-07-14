@@ -163,7 +163,7 @@ jobs:
         tar -czf esp32-cam-monitor-${{ steps.version.outputs.VERSION }}.tar.gz release-package/
     
     - name: Create GitHub Release
-      uses: softprops/action-gh-release@v1
+      uses: softprops/action-gh-release@v2
       with:
         name: ESP32-CAM Flood Monitor ${{ steps.version.outputs.VERSION }}
         body: ${{ steps.notes.outputs.RELEASE_NOTES }}
