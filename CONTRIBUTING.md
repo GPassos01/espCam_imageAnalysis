@@ -1,8 +1,8 @@
-# 🤝 Guia de Contribuição
+# Guia de Contribuição
 
 Obrigado por considerar contribuir para o projeto ESP32-CAM Flood Monitor! Este documento fornece diretrizes para contribuições.
 
-## 📋 Índice
+## Índice
 
 - [Código de Conduta](#código-de-conduta)
 - [Como Posso Contribuir?](#como-posso-contribuir)
@@ -11,202 +11,71 @@ Obrigado por considerar contribuir para o projeto ESP32-CAM Flood Monitor! Este 
 - [Padrões de Código](#padrões-de-código)
 - [Processo de Pull Request](#processo-de-pull-request)
 
-## 📜 Código de Conduta
+## Código de Conduta
 
 Este projeto adota o [Contributor Covenant](https://www.contributor-covenant.org/). Ao participar, você concorda em manter este código. Por favor, reporte comportamentos inaceitáveis para gabriel.passos@unesp.br.
 
-## 🎯 Como Posso Contribuir?
+## Como Posso Contribuir?
 
-### 🐛 Reportando Bugs
+### Reportando Bugs
+- Verifique a [lista de issues](https://github.com/GPassos01/espCam_imageAnalysis/issues) para ver se o bug já foi reportado.
+- Use o template de issue para bugs e inclua o máximo de detalhes possível (logs, versão do ESP-IDF, passos para reproduzir).
 
-Antes de criar um relatório de bug:
-- Verifique a [lista de issues](https://github.com/seu-usuario/espCam_imageAnalysis/issues)
-- Certifique-se de estar usando a versão mais recente
-- Colete informações sobre o ambiente (ESP-IDF version, Python version, OS)
+### Sugerindo Melhorias
+- Use um título claro e descritivo.
+- Explique detalhadamente a melhoria e por que ela é necessária.
 
-**Para reportar um bug:**
-1. Use o template de issue para bugs
-2. Inclua logs detalhados
-3. Descreva os passos para reproduzir
-4. Indique o comportamento esperado vs atual
-
-### 💡 Sugerindo Melhorias
-
-Melhorias são rastreadas como issues do GitHub. Para sugerir:
-1. Use um título claro e descritivo
-2. Forneça uma descrição detalhada da melhoria sugerida
-3. Explique por que seria útil para a maioria dos usuários
-4. Liste exemplos de como seria usada
-
-### 🔧 Pull Requests
-
-1. Fork o repositório
-2. Crie uma branch (`git checkout -b feature/MinhaFeature`)
-3. Commit suas mudanças (`git commit -m 'Add: nova funcionalidade X'`)
-4. Push para a branch (`git push origin feature/MinhaFeature`)
-5. Abra um Pull Request
-
-## 🛠️ Configuração do Ambiente
+## Configuração do Ambiente
 
 ### Pré-requisitos
-
-```bash
-# ESP-IDF
-esp-idf >= 5.0
-
-# Python
-python >= 3.8
-pip install -r requirements.txt
-
-# Hardware
-- ESP32-CAM AI-Thinker
-- FTDI USB-Serial
-```
+- **ESP-IDF**: Versão 5.2 ou superior.
+- **Hardware**: ESP32-CAM e um conversor FTDI.
+- **Ferramentas Host**: `gcc`, `g++`, `cmake` e `ImageMagick`.
 
 ### Setup Inicial
-
 ```bash
-# Clone o repositório
-git clone https://github.com/seu-usuario/espCam_imageAnalysis.git
+# 1. Clone o repositório
+git clone https://github.com/GPassos01/espCam_imageAnalysis.git
 cd espCam_imageAnalysis
 
-# ⚠️ ATENÇÃO: Use setup manual até ferramentas serem testadas
-# Configure o ambiente manualmente:
+# 2. Compile e execute os testes no seu PC
+cd tools/host_infer
+mkdir build && cd build
+cmake .. && make
+cd ../../.. # Voltar para a raiz
+./tools/test_dataset_summary.sh # Opcional, mas recomendado
+
+# 3. Compile e grave o firmware
 cd src/firmware
-idf.py build
-
-cd ../server
-python3 -m venv venv
-source venv/bin/activate
-pip install paho-mqtt matplotlib numpy scipy pillow
-
-# ⚠️ Scripts automatizados ainda em BETA (não testados)
-# ./tools/build/setup.sh  # ← NÃO USE ainda
+. $IDF_PATH/export.sh
+idf.py -p /dev/ttyUSB0 build flash storage-flash monitor
 ```
-
-### 🧪 Status de Testes (IMPORTANTE)
-
-**✅ Componentes Testados:**
-- **Firmware ESP32-CAM**: Ambas versões (INTELLIGENT/SIMPLE) funcionando
-- **Servidor Python**: Monitor científico estável
-- **Comunicação MQTT**: Testada e estável
-
-**🚧 Componentes em Beta (NÃO testados):**
-- **Scripts em `/tools/`**: Ferramentas de build, deployment, análise
-- **Testes automatizados**: Suite de testes ainda não validada
-- **CI/CD**: Pipeline GitHub Actions não testado
-
-**Para contribuir com segurança:**
-1. **Use compilação manual** do firmware via `idf.py`
-2. **Execute servidor** diretamente com `python3 mqtt_data_collector.py`  
-3. **Evite scripts automatizados** até serem devidamente testados
-4. **Teste suas mudanças** manualmente antes de enviar PR
 
 ## 📐 Padrões de Código
 
 ### C/C++ (ESP32)
-- Use o estilo K&R para chaves
-- Identação: 4 espaços
-- Nomes de funções: snake_case
-- Constantes: UPPER_CASE
-- Comentários em português são aceitos
+- Estilo K&R para chaves.
+- Indentação: 4 espaços.
+- Nomes de funções: `snake_case`.
+- Constantes: `UPPER_CASE`.
+- Comentários em português.
+- O código é modularizado em componentes (`src/firmware/main/components`), cada um com sua responsabilidade (rede, sistema de arquivos, análise).
 
-```c
-// Exemplo
-esp_err_t process_image_data(camera_fb_t *fb) {
-    if (!fb) {
-        ESP_LOGE(TAG, "Frame buffer inválido");
-        return ESP_ERR_INVALID_ARG;
-    }
-    
-    // Processamento aqui
-    return ESP_OK;
-}
-```
-
-### Python
-- Siga PEP 8
-- Use type hints quando possível
-- Docstrings obrigatórias para funções públicas
-
-```python
-def process_mqtt_data(topic: str, payload: dict) -> bool:
-    """
-    Processa dados MQTT recebidos.
-    
-    Args:
-        topic: Tópico MQTT
-        payload: Dados em formato dict
-        
-    Returns:
-        bool: True se processado com sucesso
-    """
-    pass
-```
-
-## 🔄 Processo de Pull Request
+## Processo de Pull Request
 
 1. **Certifique-se que:**
-   - [ ] O código compila sem warnings
-   - [ ] Os testes passam
-   - [ ] A documentação foi atualizada
-   - [ ] O CHANGELOG.md foi atualizado
+   - [ ] O código compila sem warnings.
+   - [ ] A documentação foi atualizada (se aplicável).
+   - [ ] O `CHANGELOG.md` foi atualizado.
+2. **Use um título seguindo o padrão [Conventional Commits](https://www.conventionalcommits.org/).**
+   - Ex: `feat: adiciona suporte para sensor de temperatura`
+   - Ex: `fix: corrige falha ao decodificar JPEG`
+3. **A descrição deve ser clara e objetiva.**
 
-2. **Título do PR:**
-   - `feat:` para novas funcionalidades
-   - `fix:` para correções
-   - `docs:` para documentação
-   - `test:` para testes
-   - `refactor:` para refatoração
+## Dúvidas?
 
-3. **Descrição deve incluir:**
-   - Motivação para a mudança
-   - Descrição detalhada da implementação
-   - Screenshots/logs se aplicável
-   - Issues relacionadas
-
-## 📝 Commits
-
-Use [Conventional Commits](https://www.conventionalcommits.org/):
-
-```
-feat: adiciona detecção de anomalias no buffer histórico
-fix: corrige vazamento de memória na PSRAM
-docs: atualiza guia de instalação para ESP-IDF 5.1
-test: adiciona testes unitários para compare.c
-refactor: otimiza algoritmo de comparação RGB565
-```
-
-## 🧪 Testes
-
-Antes de submeter:
-
-```bash
-# Testes unitários
-cd esp32
-idf.py test
-
-# Testes de integração
-cd ../scripts
-./run_tests.sh
-
-# Análise estática
-cppcheck esp32/main/
-pylint server/
-```
-
-## 📚 Documentação
-
-- Atualize o README.md se necessário
-- Documente novas APIs em `/docs/api/`
-- Adicione exemplos em `/examples/`
-- Atualize o CHANGELOG.md
-
-## ❓ Dúvidas?
-
-- Abra uma [discussion](https://github.com/seu-usuario/espCam_imageAnalysis/discussions)
-- Entre em contato: gabriel.passos@unesp.br
-- Consulte a [documentação](./docs/)
+- Abra uma [discussion](https://github.com/GPassos01/espCam_imageAnalysis/discussions).
+- Entre em contato: gabriel.passos@unesp.br.
 
 ---
 

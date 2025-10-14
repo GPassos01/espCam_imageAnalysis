@@ -31,6 +31,13 @@
 // Módulo
 #include "init_net.h"
 #include "config.h"
+#include "cJSON.h"
+#include "esp_timer.h"
+#include "esp_camera.h"
+#include "img_converters.h"
+#include "mbedtls/base64.h"
+#include "model/ei_inference.h"
+#include "model/mqtt_send.h"
 
 #define WIFI_MAXIMUM_RETRY 5
 #define MQTT_MAXIMUM_RETRY 5
@@ -85,6 +92,8 @@ static void mqtt_event_handler(void *handler_args, esp_event_base_t base, int32_
             ESP_LOGI(TAG, "MQTT Conectado");
             mqtt_retry_num = 0;
             xEventGroupSetBits(s_mqtt_event_group, MQTT_CONNECTED_BIT);
+            // Assinar comandos
+            esp_mqtt_client_subscribe(client, MQTT_TOPIC_CMD_CLASSIFY, 1);
             break;
         case MQTT_EVENT_DISCONNECTED:
             ESP_LOGI(TAG, "MQTT Desconectado");
@@ -101,6 +110,68 @@ static void mqtt_event_handler(void *handler_args, esp_event_base_t base, int32_
                 ESP_LOGE(TAG, "Falha ao conectar MQTT após %d tentativas", MQTT_MAXIMUM_RETRY);
             }
             break;
+        case MQTT_EVENT_DATA: {
+            // Receber comandos
+            if (event->topic && event->data && event->topic_len > 0 && event->data_len > 0) {
+                char topic[128] = {0};
+                int tlen = event->topic_len < (int)sizeof(topic)-1 ? event->topic_len : (int)sizeof(topic)-1;
+                memcpy(topic, event->topic, tlen);
+
+                if (strncmp(topic, MQTT_TOPIC_CMD_CLASSIFY, strlen(MQTT_TOPIC_CMD_CLASSIFY)) == 0) {
+                    // Espera JSON: { "image_base64": "..." }
+                    char *payload = malloc(event->data_len + 1);
+                    if (!payload) break;
+                    memcpy(payload, event->data, event->data_len);
+                    payload[event->data_len] = '\0';
+
+                    cJSON *root = cJSON_Parse(payload);
+                    free(payload);
+                    if (!root) break;
+
+                    cJSON *img_b64 = cJSON_GetObjectItem(root, "image_base64");
+                    cJSON *req_id  = cJSON_GetObjectItem(root, "request_id");
+                    cJSON *img_name= cJSON_GetObjectItem(root, "image_name");
+                    if (cJSON_IsString(img_b64) && img_b64->valuestring) {
+                        const char* b64 = img_b64->valuestring;
+                        size_t b64_len = strlen(b64);
+                        size_t bin_len = (b64_len / 4) * 3 + 4;
+                        unsigned char *bin = (unsigned char*)heap_caps_malloc(bin_len, MALLOC_CAP_8BIT | MALLOC_CAP_SPIRAM);
+                        size_t out_len = 0;
+                        if (bin) {
+                            int r = mbedtls_base64_decode(bin, bin_len, &out_len, (const unsigned char*)b64, b64_len);
+                            if (r == 0 && out_len > 0) {
+                                // Montar camera_fb_t fake para JPEG
+                                camera_fb_t fb = {0};
+                                fb.buf = bin;
+                                fb.len = out_len;
+                                fb.format = PIXFORMAT_JPEG;
+                                // width/height desconhecidos até decodificar; EI pode usar somente o buffer JPEG
+
+                                ei_result_t res = {0};
+                                if (ei_run_inference(&fb, &res) == ESP_OK) {
+                                    // Converter para mqtt_prediction_t e enviar
+                                    mqtt_prediction_t preds[8];
+                                    int n = res.count < 8 ? res.count : 8;
+                                    for (int i = 0; i < n; ++i) {
+                                        preds[i].label = res.predictions[i].label;
+                                        preds[i].score = res.predictions[i].score;
+                                    }
+                                    const char* rid = (cJSON_IsString(req_id) && req_id->valuestring) ? req_id->valuestring : NULL;
+                                    const char* iname = (cJSON_IsString(img_name) && img_name->valuestring) ? img_name->valuestring : NULL;
+                                    mqtt_send_predictions_ex(preds, n, res.latency_ms, rid, iname);
+                                    ei_free_result(&res);
+                                }
+                                heap_caps_free(bin);
+                            } else {
+                                heap_caps_free(bin);
+                            }
+                        }
+                    }
+                    cJSON_Delete(root);
+                }
+            }
+            break;
+        }
         default:
             ESP_LOGI(TAG, "Outro evento MQTT: %d", event->event_id);
             break;

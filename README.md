@@ -1,330 +1,138 @@
-# 🌊 ESP32-CAM Flood Monitor
+# ESP32-CAM Análise de Imagens com Edge Impulse
 
 <div align="center">
 
 [![MIT License](https://img.shields.io/badge/License-MIT-green.svg)](https://choosealicense.com/licenses/mit/)
-[![ESP-IDF](https://img.shields.io/badge/ESP--IDF-v5.0+-blue.svg)](https://docs.espressif.com/projects/esp-idf/en/stable/)
-[![Python](https://img.shields.io/badge/Python-3.9+-blue.svg)](https://www.python.org/)
-[![MQTT](https://img.shields.io/badge/MQTT-5.0-orange.svg)](https://mqtt.org/)
+[![ESP-IDF](https://img.shields.io/badge/ESP--IDF-v5.2+-blue.svg)](https://docs.espressif.com/projects/esp-idf/en/stable/)
+[![Edge Impulse](https://img.shields.io/badge/Edge_Impulse-ML-orange.svg)](https://www.edgeimpulse.com/)
 [![Contributions Welcome](https://img.shields.io/badge/contributions-welcome-brightgreen.svg?style=flat)](CONTRIBUTING.md)
 
-*Sistema científico de monitoramento fluvial inteligente usando ESP32-CAM para detecção automática de mudanças visuais em rios*
-
-[🚀 Início Rápido](#-início-rápido) • [📖 Documentação](#-documentação) • [🤝 Contribuir](#-como-contribuir) • [📬 Suporte](#-suporte)
+*Firmware para ESP32-CAM que utiliza um modelo de Machine Learning do Edge Impulse para classificar imagens armazenadas no sistema de arquivos SPIFFS.*
 
 </div>
 
 ---
 
-## 📋 Índice
+## Índice
 
 - [Sobre o Projeto](#-sobre-o-projeto)
 - [Funcionalidades](#-funcionalidades)
 - [Estrutura do Projeto](#-estrutura-do-projeto)
 - [Tecnologias Utilizadas](#-tecnologias-utilizadas)
 - [Início Rápido](#-início-rápido)
-- [Instalação](#-instalação)
-- [Uso](#-uso)
-- [Arquitetura](#-arquitetura)
-- [Documentação](#-documentação)
 - [Como Contribuir](#-como-contribuir)
-- [Roadmap](#-roadmap)
 - [Licença](#-licença)
-- [Contato](#-contato)
-- [Agradecimentos](#-agradecimentos)
 
-## 🎯 Sobre o Projeto
+## Sobre o Projeto
 
-O **ESP32-CAM Flood Monitor** é um sistema de monitoramento científico desenvolvido para detectar mudanças visuais em ambientes fluviais usando análise inteligente de imagens. O projeto implementa duas versões para comparação científica:
+Este projeto implementa um firmware para a placa **ESP32-CAM** capaz de executar inferências de Machine Learning em imagens. O sistema é projetado para carregar imagens diretamente do sistema de arquivos flash (SPIFFS) e classificá-las usando um modelo treinado na plataforma **Edge Impulse**.
 
-### 🧠 Versão Inteligente
-- **Análise local avançada** com algoritmo RGB565 otimizado
-- **4 tipos de referência**: diurna, noturna, tempo claro e tempo ruim
-- **Detecção inteligente** com blocos 32x32 pixels
-- **Transmissão seletiva** baseada em mudanças significativas
+É uma solução embarcada para tarefas de visão computacional, ideal para aplicações de baixo custo e baixo consumo de energia onde a análise de imagem precisa ocorrer diretamente no dispositivo.
 
-### 📷 Versão Simples (Baseline)
-- **Captura contínua** a cada 15 segundos
-- **Transmissão total** de todas as imagens
-- **Dados básicos** de monitoramento
+### Aplicações
+- **Classificação de imagens** em campo.
+- **Monitoramento autônomo** de ambientes.
+- **Prova de conceito** para sistemas de visão embarcados.
+- **Análise de datasets** de imagens diretamente no hardware de destino.
 
-### 🎯 Aplicações
-- 🌊 **Monitoramento de enchentes** em tempo real
-- 🏞️ **Análise de mudanças ambientais** em rios
-- 📊 **Pesquisa científica** em hidrologia
-- 🚨 **Sistemas de alerta** para comunidades ribeirinhas
+## Funcionalidades
 
-## ✨ Funcionalidades
+- [x] **Firmware baseado em ESP-IDF**: Utiliza o framework oficial da Espressif para máxima performance e compatibilidade.
+- [x] **Integração com Edge Impulse**: Executa modelos de classificação de imagem (TFLite for Microcontrollers) de forma otimizada.
+- [x] **Processamento via SPIFFS**: Carrega e processa um ou mais arquivos de imagem `.jpg` armazenados na partição SPIFFS.
+- [x] **Pré-processamento Portátil**: Inclui um módulo de pré-processamento de imagem que garante consistência entre o teste no PC e a execução no dispositivo.
+- [x] **Ferramenta de Validação**: Acompanha um CLI (`host_infer`) que permite testar o modelo e o pré-processamento no PC antes de embarcar.
+- [x] **Conectividade**: Inclui suporte a WiFi e MQTT para envio dos resultados da classificação.
+- [x] **Gerenciamento de Memória**: Otimizado para usar a PSRAM externa, permitindo o processamento de imagens maiores.
 
-### 🔬 Análise Avançada de Imagens
-- [x] Algoritmo RGB565 otimizado para análise em tempo real
-- [x] Sistema de referências múltiplas (dia/noite/clima)
-- [x] Detecção de mudanças por blocos 32x32 pixels
-- [x] Filtros anti-ruído e correção automática
+## Estrutura do Projeto
 
-### 📡 Conectividade e Transmissão
-- [x] WiFi com reconexão automática
-- [x] MQTT 5.0 para transmissão de dados
-- [x] Protocolo otimizado para baixo consumo
-- [x] Buffer circular para dados históricos
-
-### 🔧 Recursos de Hardware
-- [x] Suporte completo para 8MB PSRAM
-- [x] Resolução HVGA (480x320) otimizada
-- [x] Sistema anti-esverdeado inteligente
-- [x] Monitoramento de recursos (CPU, memória, temperatura)
-
-### 📊 Monitoramento e Análise
-- [x] Dashboard web em tempo real
-- [x] Banco de dados SQLite para armazenamento
-- [x] Logs detalhados de eventos
-- [x] Métricas de desempenho científico
-
-## 🏗️ Estrutura do Projeto
-
-Esta estrutura segue as [melhores práticas para repositórios GitHub](https://medium.com/code-factory-berlin/github-repository-structure-best-practices-248e6effc405):
+A estrutura do projeto foi simplificada para focar nos componentes essenciais: o firmware e as ferramentas de validação.
 
 ```
-esp32-cam-flood-monitor/
-├── 📁 src/                          # 💻 Código fonte principal
-│   ├── firmware/                    # 🔧 Firmware ESP32-CAM (C/ESP-IDF)
-│   │   ├── main/                    # Código principal
-│   │   ├── components/              # Componentes customizados
-│   │   └── sdkconfig               # Configurações ESP-IDF
-│   └── server/                      # 🐍 Servidor Python
-│       ├── mqtt_data_collector.py   # Coletor principal MQTT
-│       ├── database/               # Módulos de banco de dados
-│       ├── web/                    # Interface web
-│       └── analysis/               # Análise de dados
-├── 📁 tests/                        # 🧪 Testes automatizados
-│   ├── firmware/                   # Testes do firmware
-│   ├── server/                     # Testes do servidor
-│   └── integration/                # Testes de integração
-├── 📁 examples/                     # 📖 Exemplos de uso
-│   ├── basic_setup/                # Setup básico para iniciantes
-│   ├── advanced_config/            # Configuração avançada
-│   └── scientific_analysis/        # Análise científica
-├── 📁 tools/                        # 🛠️ Ferramentas de desenvolvimento
-│   ├── build/                      # Scripts de build
-│   ├── development/                # Ferramentas de dev
-│   ├── deployment/                 # Scripts de deploy
-│   └── analysis/                   # Análise científica
-├── 📁 config/                       # ⚙️ Arquivos de configuração
-│   ├── mqtt/                       # Configurações MQTT
-│   ├── wifi/                       # Configurações WiFi
-│   └── templates/                  # Templates de config
-├── 📁 assets/                       # 🎨 Recursos estáticos
-│   ├── images/                     # Imagens da documentação
-│   ├── diagrams/                   # Diagramas de arquitetura
-│   └── videos/                     # Vídeos demonstrativos
-├── 📁 build/                        # 🔨 Scripts de build/CI
-│   ├── firmware/                   # Build do firmware
-│   └── docker/                     # Containers Docker
-├── 📁 docs/                         # 📚 Documentação completa
-│   ├── installation.md             # Guia de instalação
-│   ├── configuration.md            # Configuração avançada
-│   ├── api.md                      # Referência da API
-│   └── faq.md                      # Perguntas frequentes
-├── 📁 .github/                      # 🤖 GitHub específico
-│   ├── workflows/                  # GitHub Actions
-│   ├── ISSUE_TEMPLATE/             # Templates de issues
-│   └── pull_request_template.md    # Template de PR
-├── 📁 data/                         # 📊 Dados científicos
-├── 📁 logs/                         # 📋 Logs do sistema
-├── 📄 README.md                     # Este arquivo
-├── 📄 LICENSE                       # Licença MIT
-├── 📄 CONTRIBUTING.md               # Guia de contribuição
-├── 📄 CODE_OF_CONDUCT.md            # Código de conduta
-├── 📄 CHANGELOG.md                  # Histórico de mudanças
-├── 📄 SECURITY.md                   # Políticas de segurança
-└── 📄 SUPPORT.md                    # Guia de suporte
+espCam_imageAnalysis/
+├── src/
+│   └── firmware/             # Código fonte do firmware (ESP-IDF)
+│       ├── main/             # Lógica principal da aplicação
+│       │   ├── components/   # Módulos de software
+│       │   │   ├── analysis_manager/
+│       │   │   ├── network_manager/
+│       │   │   └── spiffs_manager/
+│       │   ├── model/        # Código de inferência do Edge Impulse
+│       │   └── portable/     # Módulo de pré-processamento
+│       ├── data/             # Imagens para serem gravadas no SPIFFS
+│       └── partitions.csv    # Tabela de partição (app + spiffs)
+├── archive/                  # Dataset completo de imagens para teste
+├── tools/
+│   ├── host_infer/           # Ferramenta para testar o modelo no PC
+│   └── ...                   # Scripts para build e teste
+├── README.md                 # Este arquivo
+└── LICENSE                   # Licença MIT
 ```
 
-## 🛠️ Tecnologias Utilizadas
+## Tecnologias Utilizadas
 
 ### Firmware (ESP32-CAM)
-- **ESP-IDF v5.0+** - Framework oficial Espressif
-- **FreeRTOS** - Sistema operacional em tempo real
-- **MQTT** - Protocolo de comunicação IoT
-- **JPEG** - Compressão de imagens otimizada
-
-### Servidor e Análise
-- **Python 3.9+** - Linguagem principal do servidor
-- **MQTT Client** - Cliente MQTT para recepção de dados
-- **SQLite** - Banco de dados local
-- **Matplotlib/Pandas** - Análise e visualização
+- **ESP-IDF v5.2+**: Framework oficial da Espressif.
+- **FreeRTOS**: Sistema operacional de tempo real.
+- **Edge Impulse SDK**: Para execução do modelo de ML.
+- **TFLite for Microcontrollers**: Backend de inferência.
+- **MQTT**: Protocolo para envio de resultados.
 
 ### Ferramentas de Desenvolvimento
-- **PlatformIO** / **ESP-IDF** - Desenvolvimento do firmware
-- **Git** - Controle de versão
-- **GitHub Actions** - CI/CD automático
+- **CMake**: Sistema de build.
+- **ImageMagick**: Para conversão de imagens para o teste no host.
+- **Git**: Controle de versão.
 
-## 🚀 Início Rápido
+## Início Rápido
 
 ### Pré-requisitos
 
-```bash
-# Hardware necessário
-- ESP32-CAM (recomendado: AI-Thinker)
-- Cartão MicroSD (opcional)
-- Fonte de alimentação 5V/3A
-- Cabo FTDI para programação
+- **Hardware**:
+  - ESP32-CAM (AI-Thinker ou similar)
+  - Conversor FTDI para programação
+- **Software**:
+  - ESP-IDF v5.2 ou superior configurado.
+  - As dependências da ferramenta `host_infer` (como `gcc`, `g++`, `cmake`).
+  - ImageMagick (`convert`).
 
-# Software necessário
-- ESP-IDF v5.0+ ou PlatformIO
-- Python 3.9+
-- Git
+### Testando no PC (Host)
+
+É altamente recomendado validar o modelo no PC antes de embarcar.
+
+```bash
+# 1. Compile a ferramenta de teste
+cd tools/host_infer
+mkdir build && cd build
+cmake ..
+make
+
+# 2. Execute o script de teste em todo o dataset
+cd ../../..  # Voltar para a raiz do projeto
+./tools/test_dataset_summary.sh
 ```
 
-### Instalação Rápida
+### Compilando e Gravando o Firmware
 
 ```bash
-# 1. Clone o repositório
-git clone https://github.com/seu-usuario/esp32-cam-flood-monitor.git
-cd esp32-cam-flood-monitor
+# 1. Adicione a imagem que deseja testar na ESP32
+#    - Coloque um arquivo .jpg dentro de 'src/firmware/data/'
 
-# 2. Configure o ESP-IDF
+# 2. Navegue para o diretório do firmware
+cd src/firmware
+
+# 3. Configure o ESP-IDF (se ainda não o fez)
 . $IDF_PATH/export.sh
 
-# 3. Configure o projeto
-cd src/firmware
-cp config/templates/config.example.h main/config.h
-# Edite config.h com suas configurações WiFi/MQTT
-
-# 4. Compile e faça upload
-idf.py build
-idf.py -p /dev/ttyUSB0 flash monitor
-
-# 5. Configure o servidor (terminal separado)
-cd ../server
-pip install -r requirements.txt
-python mqtt_data_collector.py
+# 4. Compile, grave o firmware e a partição SPIFFS
+idf.py -p /dev/ttyUSB0 build flash storage-flash monitor
 ```
+> **Nota**: Substitua `/dev/ttyUSB0` pela porta serial correta do seu dispositivo.
 
-## 🧪 Status dos Testes
+## Como Contribuir
 
-### ✅ **Funcionalidades Testadas Manualmente**
-- **✅ Firmware ESP32-CAM**: Ambas as versões (INTELLIGENT/SIMPLE) funcionando
-- **✅ Servidor Python**: Monitor científico coletando dados via MQTT
-- **✅ Análise de Imagens**: Algoritmo RGB565 detectando mudanças corretamente
-- **✅ Transmissão MQTT**: Comunicação estável entre ESP32-CAM e servidor
-- **✅ Banco de Dados**: SQLite armazenando imagens e estatísticas
-- **✅ Estrutura de Projeto**: Reestruturação profissional concluída
+Contribuições são bem-vindas! Por favor, leia nosso [Guia de Contribuição](CONTRIBUTING.md) para mais detalhes.
 
-### 🚧 **Ferramentas em Beta (Não Testadas)**
-> ⚠️ **ATENÇÃO**: As ferramentas de desenvolvimento e scripts automatizados ainda não foram completamente testados após a reestruturação do projeto.
-
-- **🔧 Tools de Build**: `tools/build/` - Scripts de compilação automatizada
-- **🛠️ Tools de Development**: `tools/development/` - Ferramentas de desenvolvimento
-- **🚀 Tools de Deployment**: `tools/deployment/` - Scripts de deploy
-- **📊 Tools de Analysis**: `tools/analysis/` - Análise científica automatizada
-
-### 🎯 **Como Testar o Projeto**
-
-**Para uso básico (recomendado):**
-```bash
-# 1. Firmware: Compilação manual via ESP-IDF
-cd src/firmware
-idf.py build flash monitor
-
-# 2. Servidor: Execução manual
-cd src/server  
-source venv/bin/activate
-python3 mqtt_data_collector.py
-```
-
-**Para testar diferentes versões:**
-```bash
-# Testar versão SIMPLE (baseline)
-python3 mqtt_data_collector.py --force-version simple
-
-# Testar versão INTELLIGENT (economia de dados)  
-python3 mqtt_data_collector.py --force-version intelligent
-```
-
-## 📖 Documentação
-
-### 📚 Documentação Completa
-- **[Guia de Instalação](docs/installation.md)** - Instalação detalhada passo a passo
-- **[Configuração](docs/configuration.md)** - Configuração avançada do sistema
-- **[API Reference](docs/api.md)** - Referência completa da API
-- **[Análise de Imagens](docs/image-analysis.md)** - Detalhes do algoritmo de análise
-- **[Troubleshooting](docs/troubleshooting.md)** - Solução de problemas comuns
-
-### 🔧 Guias Técnicos
-- **[Protocolo MQTT](docs/mqtt-protocol.md)** - Especificação do protocolo
-- **[Hardware Setup](docs/hardware.md)** - Configuração de hardware
-- **[Performance Tuning](docs/performance.md)** - Otimização de performance
-
-## 🏗️ Arquitetura
-
-```
-┌─────────────────┐    MQTT     ┌──────────────────┐    SQLite    ┌─────────────────┐
-│   ESP32-CAM     │ ──────────► │   MQTT Broker    │ ───────────► │   Data Storage  │
-│                 │             │   (Mosquitto)    │              │   (SQLite DB)   │
-│ • Captura       │             └──────────────────┘              └─────────────────┘
-│ • Análise       │                      │                                  │
-│ • Transmissão   │                      ▼                                  ▼
-└─────────────────┘             ┌──────────────────┐              ┌─────────────────┐
-                                │  Data Collector  │              │   Web Dashboard │
-                                │   (Python)       │              │   (Flask/HTML)  │
-                                └──────────────────┘              └─────────────────┘
-```
-
-## 🤝 Como Contribuir
-
-Adoramos contribuições! Por favor, leia nosso [Guia de Contribuição](CONTRIBUTING.md) para detalhes sobre nosso código de conduta e o processo para enviar pull requests.
-
-### 🐛 Reportando Bugs
-Use os [templates de issue](.github/ISSUE_TEMPLATE/) para reportar bugs ou solicitar funcionalidades.
-
-### 💡 Sugestões de Melhorias
-1. Faça fork do projeto
-2. Crie sua feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit suas mudanças (`git commit -m 'Add some AmazingFeature'`)
-4. Push para a branch (`git push origin feature/AmazingFeature`)
-5. Abra um Pull Request
-
-## 🗺️ Roadmap
-
-### v2.0.0 (Próxima Release)
-- [ ] **Análise ML/IA** - Implementação de modelos de machine learning
-- [ ] **Multi-sensor** - Suporte para sensores adicionais (temperatura, umidade)
-- [ ] **Cloud Integration** - Integração com AWS IoT/Google Cloud
-- [ ] **Mobile App** - Aplicativo móvel para monitoramento
-
-### v1.1.0 (Em Desenvolvimento)
-- [ ] **Dashboard Web** - Interface web responsiva
-- [ ] **Alertas configuráveis** - Sistema de notificações personalizáveis
-- [ ] **API REST** - API completa para integração externa
-- [ ] **Backup automático** - Sistema de backup de dados
-
-Veja a [lista completa de issues](https://github.com/seu-usuario/esp32-cam-flood-monitor/issues) para propostas de funcionalidades e bugs conhecidos.
-
-## 📄 Licença
+## Licença
 
 Distribuído sob a Licença MIT. Veja `LICENSE` para mais informações.
-
-## 📬 Contato
-
-**Gabriel Passos** - gabriel.passos@unesp.br
-
-**Link do Projeto:** [https://github.com/seu-usuario/esp32-cam-flood-monitor](https://github.com/seu-usuario/esp32-cam-flood-monitor)
-
-## 🙏 Agradecimentos
-
-* [ESP-IDF](https://docs.espressif.com/projects/esp-idf/) - Framework oficial Espressif
-* [MQTT.org](https://mqtt.org/) - Protocolo de comunicação IoT
-* [Choose an Open Source License](https://choosealicense.com) - Guia de licenças
-* [Img Shields](https://shields.io) - Badges para README
-* [Best-README-Template](https://github.com/othneildrew/Best-README-Template) - Template base
-
----
-
-<div align="center">
-  
-**⭐ Se este projeto foi útil, considere dar uma estrela!**
-
-[![Star History Chart](https://api.star-history.com/svg?repos=seu-usuario/esp32-cam-flood-monitor&type=Date)](https://star-history.com/#seu-usuario/esp32-cam-flood-monitor&Date)
-
-</div>

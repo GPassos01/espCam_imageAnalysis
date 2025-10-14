@@ -5,7 +5,24 @@ Todas as mudanças notáveis neste projeto serão documentadas neste arquivo.
 O formato é baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.0/),
 e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR/).
 
-## [Não Lançado]
+## [1.1.0] - 2025-10-14
+
+### Adicionado
+- **Machine Learning Embarcado**: Integração completa com um modelo de classificação de imagem treinado no **Edge Impulse**.
+- **Ferramenta de Teste no Host**: Um novo CLI em `tools/host_infer` foi criado para compilar e executar o mesmo modelo e código de pré-processamento em um PC, permitindo validação rápida.
+- **Módulo de Pré-processamento Portátil**: O código de redimensionamento e preparação da imagem (`portable_preprocess`) agora é compartilhado entre o firmware e a ferramenta host, garantindo consistência.
+- **Scripts de Validação de Dataset**: Adicionados scripts (`test_dataset_summary.sh`) para automatizar a classificação de todo o dataset de imagens no PC.
+
+### Mudado
+- **Foco do Projeto**: O projeto foi refatorado para se concentrar exclusivamente na inferência de ML embarcada, removendo o antigo sistema de detecção de mudança por comparação de pixels.
+- **Estrutura de Arquivos**: O repositório passou por uma limpeza massiva. Foram removidos o servidor Python, pastas de documentação legadas (`docs/`, `examples/`), testes antigos e ferramentas de build não utilizadas.
+
+### Corrigido
+- **Gerenciamento de Memória**: Corrigidos múltiplos bugs de corrupção de heap e watchdog timeouts na ESP32 durante o processamento de imagens grandes.
+- **Build do Firmware**: Resolvido um problema de linkagem (`-fno-lto`) que impedia o código C de chamar as funções C++ do Edge Impulse.
+- **Pré-processamento de Imagem**: O algoritmo de redimensionamento foi corrigido para replicar exatamente o método "Fit shortest" do Edge Impulse.
+
+## [1.0.2] 2025-07-09
 
 ### Adicionado
 - Sistema de argumentos de linha de comando para o monitor científico
@@ -27,10 +44,10 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 - Sistema de backup automático para dados antigos
 
 ### Status dos Testes
-- ✅ **Firmware e Servidor**: Testados manualmente, funcionando completamente
-- 🚧 **Ferramentas**: Scripts em `tools/` ainda não testados após reestruturação (Beta)
+- **Firmware e Servidor**: Testados manualmente, funcionando completamente
+- **Ferramentas**: Scripts em `tools/` ainda não testados após reestruturação (Beta)
 
-## [2.0.1] - 2025-01-09
+## [1.0.1] - 2025-07-09
 
 ### Adicionado
 - Sistema completo de análise avançada com 4 tipos de referências (diurna, noturna, tempo claro, tempo ruim)
@@ -46,7 +63,7 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 - Melhoria no algoritmo de detecção com filtros de ruído multi-camada
 - Refatoração completa da estrutura do projeto
 
-## [2.0.0] - 2025-01-15
+## [1.0.0] - 2025-07-09
 
 ### Adicionado
 - Duas versões do firmware: Inteligente (com comparação) e Simples (baseline)
@@ -72,7 +89,7 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 - Suporte para resoluções acima de HVGA (limitação de PSRAM)
 - Modo de debug verbose (substituído por logs estruturados)
 
-## [1.0.0] - 2024-12-01
+## [pré-release]
 
 ### Adicionado
 - Sistema básico de captura e envio de imagens
@@ -104,7 +121,7 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 - `Corrigido` para correções de bugs
 - `Segurança` para vulnerabilidades
 
-[Não Lançado]: https://github.com/seu-usuario/espCam_imageAnalysis/compare/v2.0.0...HEAD
-[2.0.0]: https://github.com/seu-usuario/espCam_imageAnalysis/compare/v1.0.0...v2.0.0
-[1.0.0]: https://github.com/seu-usuario/espCam_imageAnalysis/compare/v0.1.0...v1.0.0
-[0.1.0]: https://github.com/seu-usuario/espCam_imageAnalysis/releases/tag/v0.1.0 
+[Não Lançado]: https://github.com/GPassos01/espCam_imageAnalysis/compare/v2.0.0...HEAD
+[2.0.0]: https://github.com/GPassos01/espCam_imageAnalysis/compare/v1.0.0...v2.0.0
+[1.0.0]: https://github.com/GPassos01/espCam_imageAnalysis/compare/v0.1.0...v1.0.0
+[0.1.0]: https://github.com/GPassos01/espCam_imageAnalysis/releases/tag/v0.1.0 

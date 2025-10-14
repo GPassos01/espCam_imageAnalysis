@@ -22,7 +22,7 @@ from collections import defaultdict
 import argparse
 
 # Configurações
-MQTT_BROKER = "192.168.1.48"  # Auto-detectado
+MQTT_BROKER = "192.168.1.95"  # Auto-detectado
 MQTT_PORT = 1883
 MQTT_TOPICS = [
     "esp32cam/status",

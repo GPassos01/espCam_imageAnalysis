@@ -75,6 +75,24 @@ esp_err_t mqtt_send_monitoring_data(float difference, uint32_t image_size,
                                    uint16_t width, uint16_t height, 
                                    uint8_t format, const char* device_id);
 
+// =============== Predições Edge Impulse ===============
+typedef struct {
+    const char* label;
+    float score;
+} mqtt_prediction_t;
+
+/**
+ * @brief Envia predições do modelo Edge Impulse em JSON.
+ * Publica em MQTT_TOPIC_PREDICTIONS.
+ */
+esp_err_t mqtt_send_predictions(const mqtt_prediction_t* preds, int count, float latency_ms);
+
+/**
+ * @brief Versão estendida com request_id e image_name opcionais.
+ */
+esp_err_t mqtt_send_predictions_ex(const mqtt_prediction_t* preds, int count, float latency_ms,
+                                   const char* request_id, const char* image_name);
+
 #ifdef __cplusplus
 }
 #endif

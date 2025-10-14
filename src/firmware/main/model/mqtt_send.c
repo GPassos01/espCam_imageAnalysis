@@ -146,6 +146,57 @@ esp_err_t mqtt_send_image_with_info(camera_fb_t* frame, const char* topic, const
     return ESP_OK;
 }
 
+static esp_err_t mqtt_send_predictions_internal(const mqtt_prediction_t* preds, int count, float latency_ms,
+                                                const char* request_id, const char* image_name) {
+    if (!mqtt_client) {
+        ESP_LOGE(TAG, "Cliente MQTT não inicializado");
+        return ESP_ERR_INVALID_STATE;
+    }
+    if (!preds || count <= 0) {
+        ESP_LOGE(TAG, "Predições inválidas");
+        return ESP_ERR_INVALID_ARG;
+    }
+
+    cJSON *root = cJSON_CreateObject();
+    cJSON_AddStringToObject(root, "device_id", DEVICE_ID);
+    cJSON_AddNumberToObject(root, "timestamp", esp_timer_get_time() / 1000000);
+    cJSON_AddNumberToObject(root, "latency_ms", latency_ms);
+    if (request_id) cJSON_AddStringToObject(root, "request_id", request_id);
+    if (image_name) cJSON_AddStringToObject(root, "image_name", image_name);
+    cJSON *arr = cJSON_CreateArray();
+    for (int i = 0; i < count; ++i) {
+        cJSON *p = cJSON_CreateObject();
+        cJSON_AddStringToObject(p, "label", preds[i].label ? preds[i].label : "");
+        cJSON_AddNumberToObject(p, "score", preds[i].score);
+        cJSON_AddItemToArray(arr, p);
+    }
+    cJSON_AddItemToObject(root, "predictions", arr);
+
+    char *payload = cJSON_PrintUnformatted(root);
+    cJSON_Delete(root);
+    if (!payload) return ESP_ERR_NO_MEM;
+
+    char topic[96];
+    snprintf(topic, sizeof(topic), "%s/%s", MQTT_TOPIC_BASE, MQTT_TOPIC_PREDICTIONS);
+
+    int msg_id = esp_mqtt_client_publish(mqtt_client, topic, payload, strlen(payload), 1, 0);
+    free(payload);
+    if (msg_id < 0) {
+        ESP_LOGE(TAG, "Falha ao publicar predições via MQTT");
+        return ESP_FAIL;
+    }
+    return ESP_OK;
+}
+
+esp_err_t mqtt_send_predictions(const mqtt_prediction_t* preds, int count, float latency_ms) {
+    return mqtt_send_predictions_internal(preds, count, latency_ms, NULL, NULL);
+}
+
+esp_err_t mqtt_send_predictions_ex(const mqtt_prediction_t* preds, int count, float latency_ms,
+                                   const char* request_id, const char* image_name) {
+    return mqtt_send_predictions_internal(preds, count, latency_ms, request_id, image_name);
+}
+
 esp_err_t mqtt_send_monitoring(uint32_t free_heap, uint32_t free_psram, uint32_t uptime) {
     if (!mqtt_client) {
         ESP_LOGE(TAG, "Cliente MQTT não inicializado");

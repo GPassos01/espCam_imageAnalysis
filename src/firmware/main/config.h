@@ -15,12 +15,12 @@
 // =====================================================
 // CONFIGURAÇÕES DE REDE E COMUNICAÇÃO
 // =====================================================
-#define WIFI_SSID        "Racho Floresta"       // Nome da rede WiFi 2.4GHz
-#define WIFI_PASS        "jujumax1969"         // Senha da rede
+#define WIFI_SSID        "Steps 2.4G"       // Nome da rede WiFi 2.4GHz
+#define WIFI_PASS        "h%8Ka4D&"         // Senha da rede
 #define WIFI_MAXIMUM_RETRY  5               // Tentativas de reconexão WiFi
 
 // MQTT - Auto-detectado pelo script find_mosquitto_ip.sh
-#define MQTT_BROKER_URI  "mqtt://192.168.1.38:1883"  // Auto-detectado
+#define MQTT_BROKER_URI  "mqtt://192.168.1.6:1883"  // Auto-detectado
 #define MQTT_USERNAME    ""                 // Usuário MQTT (vazio = sem auth)
 #define MQTT_PASSWORD    ""                 // Senha MQTT (vazia = sem auth)
 
@@ -102,6 +102,9 @@
 #define MQTT_TOPIC_ALERT       "alert"    // Tópico para alertas
 #define MQTT_TOPIC_STATUS      "status"   // Tópico para status
 #define MQTT_TOPIC_IMAGE       "image"    // Tópico para imagens
+#define MQTT_TOPIC_PREDICTIONS "predictions" // Tópico para predições Edge Impulse
+// Comandos de classificação remota
+#define MQTT_TOPIC_CMD_CLASSIFY MQTT_TOPIC_BASE "/commands/classify"
 
 // =====================================================
 // MONITORAMENTO DE REDE (WIFI SNIFFER)

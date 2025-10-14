@@ -37,6 +37,8 @@
 #include "model/wifi_sniffer.h"
 #include "model/chip_info.h"
 #include "model/compare.h"
+#include "model/ei_inference.h"
+#include "model/test_dataset.h"
 #include "config.h"
 
 static const char *TAG = "IMG_MONITOR_INTELLIGENT";
@@ -202,6 +204,7 @@ static void capture_and_analyze_photo(void)
     bool should_send = false;
     float difference = 0.0f;
     const char* reason = "unknown";
+    ei_result_t ei_result = {0};
     
     // Primeira captura sempre é enviada e vira referência
     if (!reference_frame) {
@@ -213,6 +216,12 @@ static void capture_and_analyze_photo(void)
     } else {
         // Comparar com frame de referência
         difference = calculate_image_difference(reference_frame, fb);
+        
+        // Opcional: rodar inferência Edge Impulse para suporte a classes
+        // Se o usuário habilitar EI, os resultados poderão ser enviados via MQTT
+        if (ei_run_inference(fb, &ei_result) == ESP_OK) {
+            ESP_LOGI(TAG, "🧠 EI: %d classes, %.2f ms", ei_result.count, ei_result.latency_ms);
+        }
         last_difference = difference;
         
         ESP_LOGI(TAG, "🔍 Diferença calculada: %.1f%%", difference);
@@ -259,6 +268,9 @@ static void capture_and_analyze_photo(void)
     mqtt_send_monitoring(esp_get_free_heap_size(), 
                         heap_caps_get_free_size(MALLOC_CAP_SPIRAM), 
                         esp_timer_get_time() / 1000000);
+    
+    // Liberar memória EI
+    ei_free_result(&ei_result);
     
     // Liberar frame
     esp_camera_fb_return(fb);
@@ -352,6 +364,25 @@ void app_main(void)
     }
     ESP_LOGI(TAG, "✅ MQTT conectado!");
     
+    // Inicializar EI (opcional; não falhar se indisponível)
+    if (ei_init() == ESP_OK) {
+        ESP_LOGI(TAG, "🧠 Edge Impulse inicializado");
+        
+        // Inicializar SPIFFS para testes com dataset
+        if (init_spiffs() == ESP_OK) {
+            ESP_LOGI(TAG, "📁 SPIFFS inicializado - Teste de dataset disponível");
+            
+            // Executar teste automático se configurado
+            #ifdef RUN_DATASET_TEST_ON_BOOT
+            ESP_LOGI(TAG, "🧪 Executando teste automático do dataset...");
+            vTaskDelay(pdMS_TO_TICKS(2000));
+            test_dataset_images();
+            #endif
+        }
+    } else {
+        ESP_LOGW(TAG, "⚠️  Edge Impulse não inicializado (stub)");
+    }
+
     // Configurações finais
     ESP_LOGI(TAG, "🧠 Configuração INTELIGENTE:");
     ESP_LOGI(TAG, "   - Resolução: HVGA 480x320 (qualidade premium)");
