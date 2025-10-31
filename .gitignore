@@ -161,8 +161,4 @@ logs/*.log
 # *.sqlite3
 
 # Images (large files)
-*.jpg
-*.jpeg
-*.png
-*.gif
 received_images/ 
