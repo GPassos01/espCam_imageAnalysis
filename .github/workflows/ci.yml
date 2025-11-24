@@ -22,7 +22,7 @@ jobs:
     
     steps:
     - name: Checkout code
-      uses: actions/checkout@v5
+      uses: actions/checkout@v6
     
     - name: Validate Firmware Structure
       run: |
@@ -96,7 +96,7 @@ jobs:
     
     steps:
     - name: Checkout code
-      uses: actions/checkout@v5
+      uses: actions/checkout@v6
     
     - name: Setup Python ${{ matrix.python-version }}
       uses: actions/setup-python@v6
@@ -142,7 +142,7 @@ jobs:
     
     steps:
     - name: Checkout code
-      uses: actions/checkout@v5
+      uses: actions/checkout@v6
     
     - name: Check Required Files
       run: |
@@ -194,7 +194,7 @@ jobs:
     
     steps:
     - name: Checkout code
-      uses: actions/checkout@v5
+      uses: actions/checkout@v6
     
     - name: Check Tools Structure
       run: |
@@ -234,7 +234,7 @@ jobs:
     
     steps:
     - name: Checkout code
-      uses: actions/checkout@v5
+      uses: actions/checkout@v6
     
     - name: Run Secret Scan
       run: |
